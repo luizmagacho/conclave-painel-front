@@ -1,0 +1,25 @@
+export type Profile = {
+  id: string;
+  name: string;
+  roles: Role[];
+  enabled?: boolean | undefined;
+  createdAt?: string | undefined;
+  updatedAt?: string | undefined;
+};
+
+export type Role = {
+  name: string;
+  role: string;
+};
+
+export type ProfilePaginationParam = {
+  size: number;
+  page: number;
+  name?: string;
+  role?: string;
+};
+
+export type ProfileDTO = {
+  name: string;
+  roles: string[];
+};

@@ -1,0 +1,27 @@
+import { Pagination } from "@/types/pagination";
+import { Material, MaterialDTO, MaterialPaginationParam } from "./type";
+import http from "../http";
+
+const baseUrl = "/material";
+
+export async function getMaterials({
+  page,
+  size,
+  name,
+  type,
+}: MaterialPaginationParam) {
+  let res = await http.get<Pagination<Material>>(baseUrl, {
+    params: {
+      page,
+      size,
+      name,
+      type,
+    },
+  });
+  return res.data;
+}
+
+export async function postMaterial(material: MaterialDTO) {
+  let res = await http.post(baseUrl, material);
+  return res.status;
+}
