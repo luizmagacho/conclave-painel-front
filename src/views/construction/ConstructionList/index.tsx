@@ -212,3 +212,5 @@ function ConstructionList() {
     );
   }
 }
+
+export default ConstructionList;
