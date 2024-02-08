@@ -1,20 +1,19 @@
-import { MaterialContext } from "@/context/MaterialContext";
-import { Material, MaterialDTO } from "@/services/material/type";
+import InputSearch from "@/components/InputSearch";
+import { ConstructionContext } from "@/context/ConstructionContext";
+import { Construction, ConstructionDTO } from "@/services/construction/type";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { Toast } from "primereact/toast";
 import { useContext, useRef, useState } from "react";
-import MaterialCreateDialog from "../MaterialCreateDialog";
-import InputSearch from "@/components/InputSearch";
 
 interface Options {
   icon?: string;
   ariaLabel: string;
   tooltip?: string;
   label?: string;
-  onclick: (material: Material) => void;
+  onclick: (construction: Construction) => void;
 }
 
 interface OptionType {
@@ -23,35 +22,58 @@ interface OptionType {
 
 const columns = [
   {
-    field: "name",
-    header: "Nome",
+    field: "code",
+    header: "Obra",
   },
   {
-    field: "quantity",
-    header: "Quantidade",
+    field: "client",
+    header: "Cliente",
   },
   {
-    field: "metricUnit",
-    header: "Unidade Métrica",
+    field: "responsible",
+    header: "Resp.",
+  },
+  {
+    field: "responsible",
+    header: "Descrição do Serviço",
+  },
+  {
+    field: "cad",
+    header: "CAD",
+  },
+  {
+    field: "openingDate",
+    header: "Aberta em (1º Acesso)",
+  },
+  {
+    field: "closedDate",
+    header: "Encerrada em",
+  },
+
+  {
+    field: "bankBranch",
+    header: "AG",
   },
 ];
 
-function MaterialList() {
-  const [currMaterial, setCurrMaterial] = useState<Material | null>(null);
+function ConstructionList() {
+  const [currConstruction, setCurrConstruction] = useState<Construction | null>(
+    null
+  );
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [nameSearch, setNameSearch] = useState<string>("");
   const [optionType, setOptionType] = useState<OptionType>({
-    type: "Nome",
+    type: "Code",
   });
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
 
   const {
-    materials,
+    constructions,
     loading,
     totalElements,
-    handleGetMaterials,
-    handlePostMaterial,
-  } = useContext(MaterialContext);
+    handleGetConstructions,
+    handlePostConstruction,
+  } = useContext(ConstructionContext);
 
   const toast = useRef<Toast>(null);
   const [first, setFirst] = useState<number>(0);
@@ -65,22 +87,23 @@ function MaterialList() {
   ];
 
   const columnBodyOptions = {
-    options: (materials: Material) => optionsBodyTemplate(options, materials),
+    options: (constructions: Construction) =>
+      optionsBodyTemplate(options, constructions),
   };
 
-  function openDialog(material: Material) {
-    setCurrMaterial(material);
+  function openDialog(construction: Construction) {
+    setCurrConstruction(construction);
     setShowDialog(true);
   }
 
   function closeDialog() {
     setShowDialog((showDialog) => !showDialog);
-    setCurrMaterial(null);
+    setCurrConstruction(null);
   }
 
-  function onCreateMaterial(material: MaterialDTO) {
-    handlePostMaterial(material);
-    handleGetMaterials();
+  function onCreateConstruction(construction: ConstructionDTO) {
+    handlePostConstruction(construction);
+    handleGetConstructions();
   }
 
   function closeCreateDialog() {
@@ -89,12 +112,12 @@ function MaterialList() {
 
   function onPageChange(event: PaginatorPageChangeEvent) {
     const { page, first } = event;
-    handleGetMaterials(page);
+    handleGetConstructions(page);
     setFirst(first);
   }
 
   function onSearch(name: string) {
-    handleGetMaterials(0, name, optionType.type);
+    handleGetConstructions(0, name, optionType.type);
   }
 
   function onChangeSearch(name: string) {
@@ -124,8 +147,8 @@ function MaterialList() {
           </Button>
         </div>
         <DataTable
-          emptyMessage="Nenhum material encontrado."
-          value={materials}
+          emptyMessage="Nenhuma obra encontrada."
+          value={constructions}
           loading={loading}
           stripedRows
           showGridlines
@@ -152,39 +175,40 @@ function MaterialList() {
           totalRecords={totalElements}
           onPageChange={onPageChange}
         />
-        {showCreateDialog && (
-          <MaterialCreateDialog
-            visible={showCreateDialog}
-            onCreate={onCreateMaterial}
-            onHide={closeCreateDialog}
-          />
-        )}
+        {/* {showCreateDialog && (
+          // <MaterialCreateDialog
+          //   visible={showCreateDialog}
+          //   onCreate={onCreateMaterial}
+          //   onHide={closeCreateDialog}
+          // />
+        )} */}
       </section>
-      {currMaterial && <h3>Teste</h3>}
+      {currConstruction && <h3>Teste</h3>}
     </>
   );
-}
 
-function optionsBodyTemplate(elements: Options[], materials: Material) {
-  return (
-    <div className="flex gap-2">
-      {elements.map((el, index) => {
-        return (
-          <Button
-            key={index}
-            icon={el.icon}
-            label={el.label}
-            aria-label={el.ariaLabel}
-            tooltip={el.tooltip}
-            tooltipOptions={{ position: "top", className: "text-xs" }}
-            size="small"
-            severity="danger"
-            onClick={() => el.onclick(materials)}
-          />
-        );
-      })}
-    </div>
-  );
+  function optionsBodyTemplate(
+    elements: Options[],
+    constructions: Construction
+  ) {
+    return (
+      <div className="flex gap-2">
+        {elements.map((el, index) => {
+          return (
+            <Button
+              key={index}
+              icon={el.icon}
+              label={el.label}
+              aria-label={el.ariaLabel}
+              tooltip={el.tooltip}
+              tooltipOptions={{ position: "top", className: "text-xs" }}
+              size="small"
+              severity="danger"
+              onClick={() => el.onclick(constructions)}
+            />
+          );
+        })}
+      </div>
+    );
+  }
 }
-
-export default MaterialList;
