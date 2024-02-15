@@ -1,19 +1,19 @@
 import InputSearch from "@/components/InputSearch";
-import { ConstructionContext } from "@/context/ConstructionContext";
-import { Construction, ConstructionDTO } from "@/services/construction/type";
+import { ProfileContext } from "@/context/ProfileContext";
+import { Profile, ProfileDTO } from "@/services/profile/type";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
-import { Toast } from "primereact/toast";
-import { useContext, useRef, useState } from "react";
+import { useContext, useState } from "react";
+import ProfileCreateDialog from "../ProfileCreateDialog";
 
 interface Options {
   icon?: string;
   ariaLabel: string;
   tooltip?: string;
   label?: string;
-  onclick: (construction: Construction) => void;
+  onclick: (profile: Profile) => void;
 }
 
 interface OptionType {
@@ -22,60 +22,34 @@ interface OptionType {
 
 const columns = [
   {
-    field: "code",
-    header: "Obra",
+    field: "name",
+    header: "Nome",
   },
   {
-    field: "client",
-    header: "Cliente",
-  },
-  {
-    field: "responsible",
-    header: "Resp.",
-  },
-  {
-    field: "service",
-    header: "Descrição",
-  },
-  {
-    field: "cad",
-    header: "CAD",
-  },
-  {
-    field: "openingDate",
-    header: "Aberta em",
-  },
-  {
-    field: "closedDate",
-    header: "Encerrada em",
-  },
-
-  {
-    field: "bankBranch",
-    header: "AG",
+    field: "permissions",
+    header: "Permissões",
   },
 ];
 
-function ConstructionList() {
-  const [currConstruction, setCurrConstruction] = useState<Construction | null>(
-    null
-  );
+function ProfileList() {
+  const [currProfile, setCurrProfile] = useState<Profile | null>(null);
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [nameSearch, setNameSearch] = useState<string>("");
   const [optionType, setOptionType] = useState<OptionType>({
-    type: "Code",
+    type: "Nome",
   });
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
-
   const {
-    constructions,
+    profiles,
+    roles,
     loading,
     totalElements,
-    handleGetConstructions,
-    handlePostConstruction,
-  } = useContext(ConstructionContext);
+    handleGetProfiles,
+    handlePostProfile,
+    handleUpdateProfile,
+    handleDeleteProfile,
+  } = useContext(ProfileContext);
 
-  const toast = useRef<Toast>(null);
   const [first, setFirst] = useState<number>(0);
 
   const options: Options[] = [
@@ -87,48 +61,51 @@ function ConstructionList() {
   ];
 
   const columnBodyOptions = {
-    options: (constructions: Construction) =>
-      optionsBodyTemplate(options, constructions),
+    options: (profiles: Profile) => optionsBodyTemplate(options, profiles),
   };
 
-  function openDialog(construction: Construction) {
-    setCurrConstruction(construction);
+  function openDialog(profile: Profile) {
+    setCurrProfile(profile);
     setShowDialog(true);
   }
 
   function closeDialog() {
     setShowDialog((showDialog) => !showDialog);
-    setCurrConstruction(null);
-  }
-
-  function onCreateConstruction(construction: ConstructionDTO) {
-    handlePostConstruction(construction);
-    handleGetConstructions();
-  }
-
-  function closeCreateDialog() {
-    setShowCreateDialog((showCreateDialog) => !showCreateDialog);
+    setCurrProfile(null);
   }
 
   function onPageChange(event: PaginatorPageChangeEvent) {
     const { page, first } = event;
-    handleGetConstructions(page);
+    handleGetProfiles(page);
     setFirst(first);
   }
 
   function onSearch(name: string) {
-    handleGetConstructions(0, name, optionType.type);
+    handleGetProfiles(0, name, optionType.type);
   }
 
   function onChangeSearch(name: string) {
     setNameSearch(name);
   }
 
+  async function onCreateProfile(profile: ProfileDTO) {
+    await handlePostProfile(profile);
+    handleGetProfiles();
+  }
+
+  function openCreateDialog() {
+    setShowCreateDialog(true);
+  }
+
+  function closeCreateDialog() {
+    setShowCreateDialog((showCreateDialog) => !showCreateDialog);
+  }
+
   return (
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
-          <h1 className="m-0">Obras</h1>
+          <h1 className="m-0">Perfis</h1>
           <InputSearch
             onSearch={onSearch}
             onChange={onChangeSearch}
@@ -147,8 +124,8 @@ function ConstructionList() {
           </Button>
         </div>
         <DataTable
-          emptyMessage="Nenhuma obra encontrada."
-          value={constructions}
+          emptyMessage="Nenhum perfil encontrado."
+          value={profiles}
           loading={loading}
           stripedRows
           showGridlines
@@ -175,42 +152,39 @@ function ConstructionList() {
           totalRecords={totalElements}
           onPageChange={onPageChange}
         />
-        {/* {showCreateDialog && (
-          // <MaterialCreateDialog
-          //   visible={showCreateDialog}
-          //   onCreate={onCreateMaterial}
-          //   onHide={closeCreateDialog}
-          // />
-        )} */}
+        {showCreateDialog && (
+          <ProfileCreateDialog
+            visible={showCreateDialog}
+            onCreate={onCreateProfile}
+            onHide={closeCreateDialog}
+            roles={roles}
+          />
+        )}
       </section>
-      {currConstruction && <h3>Teste</h3>}
     </>
   );
-
-  function optionsBodyTemplate(
-    elements: Options[],
-    constructions: Construction
-  ) {
-    return (
-      <div className="flex gap-2">
-        {elements.map((el, index) => {
-          return (
-            <Button
-              key={index}
-              icon={el.icon}
-              label={el.label}
-              aria-label={el.ariaLabel}
-              tooltip={el.tooltip}
-              tooltipOptions={{ position: "top", className: "text-xs" }}
-              size="small"
-              severity="danger"
-              onClick={() => el.onclick(constructions)}
-            />
-          );
-        })}
-      </div>
-    );
-  }
 }
 
-export default ConstructionList;
+function optionsBodyTemplate(elements: Options[], profiles: Profile) {
+  return (
+    <div className="flex gap-2">
+      {elements.map((el, index) => {
+        return (
+          <Button
+            key={index}
+            icon={el.icon}
+            label={el.label}
+            aria-label={el.ariaLabel}
+            tooltip={el.tooltip}
+            tooltipOptions={{ position: "top", className: "text-xs" }}
+            size="small"
+            severity="danger"
+            onClick={() => el.onclick(profiles)}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+export default ProfileList;

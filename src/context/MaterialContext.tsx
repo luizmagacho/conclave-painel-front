@@ -1,5 +1,6 @@
 import { getMaterials, postMaterial } from "@/services/material";
 import { Material, MaterialDTO } from "@/services/material/type";
+import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { ReactNode, createContext, useEffect, useState } from "react";
 
@@ -49,7 +50,7 @@ export const MaterialProvider = ({ children }: ProviderProps) => {
       setMaterials(content || []);
       setTotalElements(totalElements);
     } catch (error) {
-      console.error(error);
+      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -65,6 +66,14 @@ export const MaterialProvider = ({ children }: ProviderProps) => {
     } finally {
       setLoading(false);
     }
+  }
+
+  function logout() {
+    Cookies.remove("portal.token");
+    Cookies.remove("portal.username");
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    router.push("/");
   }
 
   useEffect(() => {

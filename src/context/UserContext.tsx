@@ -1,6 +1,13 @@
 import { login } from "@/services/auth";
-import { getUsers } from "@/services/user";
-import { LoginDTO, User } from "@/services/user/type";
+import {
+  deleteUser,
+  getUser,
+  getUserById,
+  getUsers,
+  postUser,
+  updateUser,
+} from "@/services/user";
+import { LoginDTO, User, UserRequestDTO } from "@/services/user/type";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { ReactNode, createContext, useEffect, useState } from "react";
@@ -14,6 +21,10 @@ interface UserContextProps {
   loading: boolean;
   totalElements: number;
   handleGetUsers: (page?: number, name?: string) => Promise<void>;
+  handlePostUser: (user: UserRequestDTO) => Promise<void>;
+  handleUpdateUser: (user: User) => Promise<void>;
+  handleDeleteUser: (userId: string) => Promise<void>;
+  handleGetUser: (userId: string) => Promise<void>;
 }
 
 export const UserContext = createContext({} as UserContextProps);
@@ -46,6 +57,54 @@ export const UserProvider = ({ children }: ProviderProps) => {
     }
   }
 
+  async function handleGetUser(userId: string) {
+    setLoading(true);
+
+    try {
+      const resp = await getUserById(userId);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handlePostUser(user: UserRequestDTO) {
+    setLoading(true);
+
+    try {
+      const resp = await postUser(user);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleUpdateUser(user: User) {
+    setLoading(true);
+
+    try {
+      const resp = await updateUser(user);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleDeleteUser(userId: string) {
+    setLoading(true);
+
+    try {
+      const resp = await deleteUser(userId);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   function logout() {
     Cookies.remove("portal.token");
     window.localStorage.clear();
@@ -71,6 +130,10 @@ export const UserProvider = ({ children }: ProviderProps) => {
         loading,
         totalElements,
         handleGetUsers,
+        handlePostUser,
+        handleUpdateUser,
+        handleDeleteUser,
+        handleGetUser,
       }}
     >
       {children}

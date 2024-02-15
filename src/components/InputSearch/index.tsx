@@ -17,7 +17,7 @@ function InputSearch({ onSearch, onChange, inputType }: InputSearchProps) {
     }
   }
   return (
-    <span className="p-input-icon-left w-full">
+    <span className="p-input-icon-left w-90">
       <i className="pi pi-search" />
       <InputText
         placeholder="Search"

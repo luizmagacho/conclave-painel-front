@@ -8,14 +8,14 @@ export async function getProfiles({
   page,
   size,
   name,
-  role = "",
+  type,
 }: ProfilePaginationParam) {
   let res = await http.get<Pagination<Profile>>(baseUrl, {
     params: {
       page,
       size,
       name,
-      role,
+      type,
     },
   });
   return res.data;
@@ -29,6 +29,11 @@ export async function postProfile(profile: ProfileDTO) {
 export async function updateProfile(profile: Profile) {
   let res = await http.put(baseUrl, profile);
   return res.status;
+}
+
+export async function getAllProfiles() {
+  let res = await http.get<Profile[]>(`${baseUrl}/all`);
+  return res.data;
 }
 
 export async function getRoles() {

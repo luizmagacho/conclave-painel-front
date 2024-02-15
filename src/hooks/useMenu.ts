@@ -22,23 +22,12 @@ const useMenu = () => {
         {
           label: "Perfis",
           icon: "pi pi-id-card",
-          command: () => router.push("/perfis"),
+          command: () => router.push("/perfil"),
         },
         {
           label: "Financeiro",
           icon: "pi pi-id-card",
-          command: () => router.push("/perfis"),
-        },
-        {
-          label: "Cadastro",
-          icon: "pi pi-desktop",
-          items: [
-            {
-              label: "Departamentos",
-              icon: "pi pi-desktop",
-              command: () => router.push("/departamentos"),
-            },
-          ],
+          command: () => router.push("/perfil"),
         },
       ],
     },
@@ -46,17 +35,17 @@ const useMenu = () => {
 
   const items: MenuItem[] = [
     {
-      label: "Material",
+      label: "Controle de Material",
       icon: "pi pi-fw pi-building",
       command: () => router.push("/material"),
     },
     {
-      label: "Obras",
+      label: "Controle de Obras",
       icon: "pi pi-fw pi-file",
-      command: () => router.push("/obra"),
+      command: () => router.push("/obras"),
     },
     {
-      label: "Fornecedores",
+      label: "Controle de Fornecedores",
       icon: "pi pi-fw pi-file-export",
       command: () => {
         router.push("/fornecedores");

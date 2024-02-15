@@ -2,9 +2,10 @@ import Cookies from "js-cookie";
 
 import { ReactNode, createContext, useEffect, useState } from "react";
 import { LoginDTO, User } from "@/services/user/type";
-import { authenticate, login } from "@/services/auth";
+import { authenticate, login, statusToken } from "@/services/auth";
 import { getUser } from "@/services/user";
 import { useRouter } from "next/router";
+import { AuthResponse } from "@/services/auth/types";
 
 interface ProviderProps {
   children: ReactNode;
@@ -23,6 +24,9 @@ export const AuthContext = createContext({} as AuthContextProps);
 
 export const AuthProvider = ({ children }: ProviderProps) => {
   const [user, setUser] = useState<User>({} as User);
+  const [authResponse, setAuthResponse] = useState<AuthResponse>(
+    {} as AuthResponse
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const [msg, setMsg] = useState("");
   const router = useRouter();
@@ -43,12 +47,13 @@ export const AuthProvider = ({ children }: ProviderProps) => {
    */
   async function handleLogin(loginDTO: LoginDTO) {
     setLoading(true);
-    console.log("Entrou pra fazer login ");
     try {
       const resp = await login(loginDTO);
       console.log(resp);
       if (resp) {
+        Cookies.set("portal.id", resp.id);
         Cookies.set("portal.name", resp.name);
+        Cookies.set("portal.username", resp.username);
         Cookies.set("portal.role", resp.role);
         Cookies.set("portal.token", resp.token);
         router.push("/home");
@@ -74,6 +79,7 @@ export const AuthProvider = ({ children }: ProviderProps) => {
     Cookies.remove("portal.username");
     window.localStorage.clear();
     window.sessionStorage.clear();
+    router.push("/");
   }
 
   function softLogout() {
