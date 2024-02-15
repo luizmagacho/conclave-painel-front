@@ -1,5 +1,6 @@
 import { login } from "@/services/auth";
 import {
+  changePasswordUser,
   deleteUser,
   getUser,
   getUserById,
@@ -7,7 +8,12 @@ import {
   postUser,
   updateUser,
 } from "@/services/user";
-import { LoginDTO, User, UserRequestDTO } from "@/services/user/type";
+import {
+  LoginDTO,
+  User,
+  UserChangePasswordRequest,
+  UserRequestDTO,
+} from "@/services/user/type";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { ReactNode, createContext, useEffect, useState } from "react";
@@ -25,6 +31,9 @@ interface UserContextProps {
   handleUpdateUser: (user: User) => Promise<void>;
   handleDeleteUser: (userId: string) => Promise<void>;
   handleGetUser: (userId: string) => Promise<void>;
+  handleChangePassword: (
+    userChangePasswordRequest: UserChangePasswordRequest
+  ) => Promise<void>;
 }
 
 export const UserContext = createContext({} as UserContextProps);
@@ -105,6 +114,20 @@ export const UserProvider = ({ children }: ProviderProps) => {
     }
   }
 
+  async function handleChangePassword(
+    userChangePassword: UserChangePasswordRequest
+  ) {
+    setLoading(true);
+
+    try {
+      const resp = await changePasswordUser(userChangePassword);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   function logout() {
     Cookies.remove("portal.token");
     window.localStorage.clear();
@@ -134,6 +157,7 @@ export const UserProvider = ({ children }: ProviderProps) => {
         handleUpdateUser,
         handleDeleteUser,
         handleGetUser,
+        handleChangePassword,
       }}
     >
       {children}

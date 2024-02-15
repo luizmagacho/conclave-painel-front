@@ -1,17 +1,16 @@
 import LabelTitle from "@/components/LabelTitle";
+import { UserContext } from "@/context/UserContext";
 import { User, UserChangePasswordRequest } from "@/services/user/type";
+import Cookies from "js-cookie";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
-interface UserChangePassword {
-  onChangePassword: (user: UserChangePasswordRequest) => void;
-  data: User;
-}
-
-function UserChangePassword({ data, onChangePassword }: UserChangePassword) {
+function UserChangePassword() {
+  const id = Cookies.get("portal.id");
+  const name = Cookies.get("portal.name");
   const [updatedUser, setUpdatedUser] = useState<UserChangePasswordRequest>({
-    id: data.id,
+    id: id || "",
     password: "",
   });
   const [newPassword, setNewPassword] = useState<string>("");
@@ -22,6 +21,8 @@ function UserChangePassword({ data, onChangePassword }: UserChangePassword) {
     useState<boolean>(false);
   const [invalidSamePassword, setInvalidSamePassword] =
     useState<boolean>(false);
+  const { handleChangePassword } = useContext(UserContext);
+
   function validateFields() {
     setInvalidNewPassword(!newPassword || newPassword === "");
     setInvalidPasswordConfirm(!newPasswordConfirm || newPasswordConfirm === "");
@@ -29,7 +30,7 @@ function UserChangePassword({ data, onChangePassword }: UserChangePassword) {
     setInvalidSamePassword(newPassword !== newPasswordConfirm);
 
     if (!invalidNewPassword || !invalidPasswordConfirm) {
-      onChangePassword(updatedUser);
+      handleChangePassword(updatedUser);
     }
   }
 
@@ -37,7 +38,7 @@ function UserChangePassword({ data, onChangePassword }: UserChangePassword) {
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
-          <h1 className="m-0">Usuário: ${data.name}</h1>
+          <h1 className="m-0">Usuário: ${name}</h1>
         </div>
         <div className="field flex flex-column gap-2">
           <LabelTitle

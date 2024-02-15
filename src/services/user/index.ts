@@ -49,6 +49,6 @@ export async function deleteUser(userId: string) {
 export async function changePasswordUser(
   userChangePassword: UserChangePasswordRequest
 ) {
-  let res = await http.post(`${baseUrl}change-password`, userChangePassword);
+  let res = await http.post(`${baseUrl}/change-password`, userChangePassword);
   return res.status;
 }
