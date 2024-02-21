@@ -18,6 +18,7 @@ export type UserRequestDTO = {
   username: string;
   department: string;
   password: string;
+  profile: ProfileDTO;
 };
 
 export type LoginDTO = {

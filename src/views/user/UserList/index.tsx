@@ -10,6 +10,7 @@ import { useContext, useRef, useState } from "react";
 import UserCreateDialog from "../UserCreateDialog";
 import UserUpdateDialog from "../UserUpdateDialog";
 import UserDeleteDialog from "../UserDeleteDialog";
+import { ProfileContext } from "@/context/ProfileContext";
 
 interface Options {
   icon?: string;
@@ -33,7 +34,7 @@ const columns = [
     header: "E-mail",
   },
   {
-    field: "role",
+    field: "profile",
     header: "Perfil",
   },
 
@@ -62,6 +63,7 @@ function UserList() {
     handleUpdateUser,
     handleDeleteUser,
   } = useContext(UserContext);
+  const { profiles } = useContext(ProfileContext);
 
   const toast = useRef<Toast>(null);
   const [first, setFirst] = useState<number>(0);
@@ -196,6 +198,7 @@ function UserList() {
             visible={showCreateDialog}
             onCreate={onCreateUser}
             onHide={closeCreateDialog}
+            profiles={profiles}
           />
         )}
         {currUser && (

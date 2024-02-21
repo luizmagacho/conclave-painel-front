@@ -5,7 +5,7 @@ import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ProfileCreateDialog from "../ProfileCreateDialog";
 
 interface Options {
@@ -48,9 +48,15 @@ function ProfileList() {
     handlePostProfile,
     handleUpdateProfile,
     handleDeleteProfile,
+    handleGetRoles,
   } = useContext(ProfileContext);
 
   const [first, setFirst] = useState<number>(0);
+
+  useEffect(() => {
+    handleGetProfiles();
+    handleGetRoles();
+  }, []);
 
   const options: Options[] = [
     {

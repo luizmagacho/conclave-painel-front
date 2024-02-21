@@ -31,7 +31,7 @@ const http: HttpProps = {
     return this.axiosConfig.get<T>(route, body).catch((error) => {
       let response = error.response;
       console.log(response.status);
-      if (response.status === 403) {
+      if (response?.status === 403) {
         console.log("Entrou vai deslogar ");
         AuthManager.logout();
       }

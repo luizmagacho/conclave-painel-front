@@ -11,7 +11,7 @@ export async function authenticate({ email }: AuthRequest) {
 
 export async function login(login: LoginDTO) {
   let res = await http.post<LoginResponseDTO>(`${baseUrl}/login`, login);
-  console.log(login);
+  console.log(res.data);
   return res.data;
 }
 

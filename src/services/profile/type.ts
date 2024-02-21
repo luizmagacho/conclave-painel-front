@@ -21,5 +21,5 @@ export type ProfilePaginationParam = {
 
 export type ProfileDTO = {
   name: string;
-  permissions: Role[];
+  roles: Role[];
 };

@@ -22,11 +22,11 @@ function ProfileCreateDialog({
 }: ProfileCreateDialog) {
   const [newProfile, setNewProfile] = useState<ProfileDTO>({
     name: "",
-    permissions: [],
+    roles: [],
   });
   const [newRoles, setNewRoles] = useState<Role>();
   const [invalidName, setInvalidName] = useState<boolean>(false);
-  const [invalidPermissions, setInvalidPermissions] = useState<boolean>(false);
+  const [invalidRoles, setInvalidRoles] = useState<boolean>(false);
 
   useEffect(() => {
     // Verifique se newRoles é definido antes de usar
@@ -37,21 +37,19 @@ function ProfileCreateDialog({
     if (newRoles && Array.isArray(newRoles) && newRoles.length > 0) {
       setNewProfile((prevProfile) => ({
         ...prevProfile,
-        roles: [...prevProfile.permissions, ...newRoles],
+        roles: [...prevProfile.roles, ...newRoles],
       }));
     }
   }, [newRoles]);
 
   function validateFields() {
     setInvalidName(!newProfile.name || newProfile.name === "");
-    setInvalidPermissions(
-      !newProfile.permissions || newProfile.permissions.length === 0
-    );
+    setInvalidRoles(!newProfile.roles || newProfile.roles.length === 0);
     if (
       newProfile.name &&
       newProfile.name !== "" &&
-      newProfile.permissions &&
-      newProfile.permissions.length > 0
+      newProfile.roles &&
+      newProfile.roles.length > 0
     ) {
       onCreate(newProfile);
       onHide();
@@ -79,7 +77,7 @@ function ProfileCreateDialog({
               setNewProfile({ ...newProfile, name: e.target.value });
               setInvalidName(false);
             }}
-            value={setNewProfile?.name}
+            value={newProfile.name}
           />
           {invalidName && (
             <Message severity="error" text="Nome é obrigatório" />
@@ -100,10 +98,10 @@ function ProfileCreateDialog({
             display="chip"
             onChange={(e: MultiSelectChangeEvent) => {
               setNewRoles(e.value);
-              setInvalidPermissions(false);
+              setInvalidRoles(false);
             }}
           />
-          {invalidPermissions && (
+          {invalidRoles && (
             <Message severity="error" text="Selecione pelo menos uma opção" />
           )}
         </div>

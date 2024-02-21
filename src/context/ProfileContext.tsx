@@ -26,6 +26,7 @@ interface ProfileContextProps {
   handlePostProfile: (profile: ProfileDTO) => Promise<void>;
   handleUpdateProfile: (profile: Profile) => Promise<void>;
   handleDeleteProfile: (profileId: string) => Promise<void>;
+  handleGetRoles: () => Promise<void>;
 }
 
 export const ProfileContext = createContext({} as ProfileContextProps);
@@ -114,6 +115,7 @@ export const ProfileProvider = ({ children }: ProviderProps) => {
 
   useEffect(() => {
     handleGetProfiles();
+    handleGetRoles();
   }, []);
 
   return (
@@ -127,6 +129,7 @@ export const ProfileProvider = ({ children }: ProviderProps) => {
         handlePostProfile,
         handleUpdateProfile,
         handleDeleteProfile,
+        handleGetRoles,
       }}
     >
       {children}
