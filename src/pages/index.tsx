@@ -37,6 +37,7 @@ export default function Login(): JSX.Element {
     username: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [invalidUsername, setInvalidUsername] = useState<boolean>(false);
   const [invalidPassword, setInvalidPassword] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -44,7 +45,7 @@ export default function Login(): JSX.Element {
   const [msgError, setMsgError] = useState("");
   const { handleLogin, loading, msg, softLogout } = useContext(AuthContext);
 
-  const ERROR_TIME_AWAIT = 5000;
+  const ERROR_TIME_AWAIT = 3000;
 
   useEffect(() => {
     softLogout();
@@ -107,17 +108,18 @@ export default function Login(): JSX.Element {
                 className="font-semibold"
               />
               <InputText
-                type="password"
+                type={showPassword ? "text" : "password"}
                 onChange={(e) => {
                   setLogin({ ...login, password: e.target.value });
                   setInvalidUsername(false);
                   setInvalidUsername(false);
                 }}
-              />
-              {invalidUsername ||
-                (invalidPassword && (
-                  <Message severity="error" text="E-mail ou senha errados" />
-                ))}
+              >
+                <Button onClick={() => setShowPassword(!showPassword)}>
+                  {" "}
+                  {showPassword ? "OCULTAR" : "MOSTRAR"}
+                </Button>
+              </InputText>
               {hasError && <Message severity="error" text={msg} />}
               <Button
                 label="Esqueci a senha"

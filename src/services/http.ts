@@ -30,10 +30,9 @@ const http: HttpProps = {
   get: function <T>(route: string, body?: any) {
     return this.axiosConfig.get<T>(route, body).catch((error) => {
       let response = error.response;
-      if (
-        response?.data?.statusCode === 401 &&
-        response?.data?.message === "Acesso Negado"
-      ) {
+      console.log(response.status);
+      if (response?.status === 403) {
+        console.log("Entrou vai deslogar ");
         AuthManager.logout();
       }
       return error;
@@ -43,6 +42,7 @@ const http: HttpProps = {
   patch: function <T>(route: string, body?: any) {
     return this.axiosConfig.patch<T>(route, body).catch((error) => {
       let response = error.response;
+      console.log(response?.data?.statusCode);
       if (
         response?.data?.statusCode === 401 &&
         response?.data?.message === "Acesso Negado"
@@ -56,6 +56,7 @@ const http: HttpProps = {
   put: function <T>(route: string, body?: any) {
     return this.axiosConfig.put<T>(route, body).catch((error) => {
       let response = error.response;
+      console.log(response);
       if (
         response?.data?.statusCode === 401 &&
         response?.data?.message === "Acesso Negado"

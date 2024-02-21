@@ -2,9 +2,10 @@ import Cookies from "js-cookie";
 
 import { ReactNode, createContext, useEffect, useState } from "react";
 import { LoginDTO, User } from "@/services/user/type";
-import { authenticate, login } from "@/services/auth";
+import { authenticate, login, statusToken } from "@/services/auth";
 import { getUser } from "@/services/user";
 import { useRouter } from "next/router";
+import { AuthResponse } from "@/services/auth/types";
 
 interface ProviderProps {
   children: ReactNode;
@@ -23,34 +24,31 @@ export const AuthContext = createContext({} as AuthContextProps);
 
 export const AuthProvider = ({ children }: ProviderProps) => {
   const [user, setUser] = useState<User>({} as User);
+  const [authResponse, setAuthResponse] = useState<AuthResponse>(
+    {} as AuthResponse
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const [msg, setMsg] = useState("");
   const router = useRouter();
 
-  useEffect(() => {
-    const usr = Cookies.get("portal.name");
-    if (usr) {
-      setUser({
-        ...user,
-        name: usr,
-      });
-    }
-  }, []);
-
-  /**
-   * Por enquanto o token está chegando nulo
-   * Quando normalizar, descomentar as linhas abaixo!
-   */
   async function handleLogin(loginDTO: LoginDTO) {
     setLoading(true);
-    console.log("Entrou pra fazer login ");
     try {
       const resp = await login(loginDTO);
-      console.log(resp);
+      console.log("Printou ", resp);
       if (resp) {
+        Cookies.set("portal.id", resp.id);
         Cookies.set("portal.name", resp.name);
+        Cookies.set("portal.username", resp.username);
         Cookies.set("portal.role", resp.role);
         Cookies.set("portal.token", resp.token);
+        setUser({
+          ...user,
+          id: resp.id,
+          name: resp.name,
+          role: resp.role,
+          username: resp.username,
+        });
         router.push("/home");
       }
       if (!resp) {
@@ -72,13 +70,18 @@ export const AuthProvider = ({ children }: ProviderProps) => {
   function logout() {
     Cookies.remove("portal.token");
     Cookies.remove("portal.username");
+    Cookies.remove("portal.role");
+    Cookies.remove("portal.id");
     window.localStorage.clear();
     window.sessionStorage.clear();
+    router.push("/");
   }
 
   function softLogout() {
     Cookies.remove("portal.token");
     Cookies.remove("portal.username");
+    Cookies.remove("portal.role");
+    Cookies.remove("portal.id");
     window.localStorage.clear();
     window.sessionStorage.clear();
   }

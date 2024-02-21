@@ -1,7 +1,7 @@
 export type Profile = {
   id: string;
   name: string;
-  roles: Role[];
+  permissions: Role[];
   enabled?: boolean | undefined;
   createdAt?: string | undefined;
   updatedAt?: string | undefined;
@@ -16,10 +16,10 @@ export type ProfilePaginationParam = {
   size: number;
   page: number;
   name?: string;
-  role?: string;
+  type?: string;
 };
 
 export type ProfileDTO = {
   name: string;
-  roles: string[];
+  roles: Role[];
 };

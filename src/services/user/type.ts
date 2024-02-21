@@ -6,16 +6,19 @@ export type User = {
   id: string;
   name: string;
   username: string;
+  department: string;
   role: string;
+  profile: string;
   createdAt: string;
   updatedAt: string;
 };
 
 export type UserRequestDTO = {
   name: string;
-  email: string;
+  username: string;
   department: string;
   password: string;
+  profile: ProfileDTO;
 };
 
 export type LoginDTO = {
@@ -24,7 +27,9 @@ export type LoginDTO = {
 };
 
 export type LoginResponseDTO = {
+  id: string;
   name: string;
+  username: string;
   role: string;
   token: string;
 };
@@ -47,4 +52,9 @@ export type UserPaginationParam = {
   page: number;
   name?: string;
   email?: string;
+};
+
+export type UserChangePasswordRequest = {
+  id: string;
+  password: string;
 };

@@ -37,7 +37,7 @@ function LeftPanel({ children }: LeftPanelProps) {
         <div className="flex items-center justify-center">
           {visible && <Logo />}
           <Button
-            icon={visible ? "pi pi-arrow-left" : "pi pi-arrow-right"}
+            className={visible ? "pi pi-arrow-left" : "pi pi-arrow-right"}
             onClick={() => setVisible(!visible)}
             style={{
               color: "black",
