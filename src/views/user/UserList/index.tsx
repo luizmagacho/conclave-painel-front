@@ -34,7 +34,7 @@ const columns = [
     header: "E-mail",
   },
   {
-    field: "profile",
+    field: "profilesName",
     header: "Perfil",
   },
 
@@ -63,7 +63,7 @@ function UserList() {
     handleUpdateUser,
     handleDeleteUser,
   } = useContext(UserContext);
-  const { profiles } = useContext(ProfileContext);
+  const { profiles, allProfiles } = useContext(ProfileContext);
 
   const toast = useRef<Toast>(null);
   const [first, setFirst] = useState<number>(0);
@@ -207,6 +207,7 @@ function UserList() {
             visible={showDialog}
             onHide={closeDialog}
             onUpdate={onUpdateUser}
+            profiles={allProfiles}
           />
         )}
         {currDeleteUser && (

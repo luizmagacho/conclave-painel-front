@@ -1,4 +1,4 @@
-import { ProfileDTO } from "../profile/type";
+import { Profile, ProfileDTO } from "../profile/type";
 
 export type UserRole = "ADMIN" | "USER";
 
@@ -7,8 +7,10 @@ export type User = {
   name: string;
   username: string;
   department: string;
+  password: string;
   role: string;
-  profile: string;
+  profiles: Profile[];
+  profilesName: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -18,7 +20,7 @@ export type UserRequestDTO = {
   username: string;
   department: string;
   password: string;
-  profile: ProfileDTO;
+  profile: string[];
 };
 
 export type LoginDTO = {

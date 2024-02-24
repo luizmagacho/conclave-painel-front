@@ -1,16 +1,19 @@
 import LabelTitle from "@/components/LabelTitle";
+import { Profile } from "@/services/profile/type";
 import { User } from "@/services/user/type";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
-import { useState } from "react";
+import { MultiSelect, MultiSelectChangeEvent } from "primereact/multiselect";
+import { useEffect, useState } from "react";
 
 interface UserUpdateDialog {
   visible: boolean;
   onHide: () => void;
   onUpdate: (user: User) => void;
   data: User;
+  profiles: Profile[];
 }
 
 function UserUpdateDialog({
@@ -18,21 +21,46 @@ function UserUpdateDialog({
   onHide,
   onUpdate,
   data,
+  profiles,
 }: UserUpdateDialog) {
   const [updatedUser, setUpdatedUser] = useState<User>({
     id: data.id,
     name: data.name,
     username: data.username,
+    password: "",
     department: data.department,
     role: data.role,
-    profile: data.profile,
+    profiles: data.profiles,
+    profilesName: data.profilesName,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
   });
+  const [updatedProfiles, setUpdatedProfiles] = useState<Profile[]>([]);
   const [invalidName, setInvalidName] = useState<boolean>(false);
   const [invalidUsername, setInvalidUsername] = useState<boolean>(false);
   const [invalidDeparment, setInvalidDepartment] = useState<boolean>(false);
   const [invalidPassword, setInvalidPassword] = useState<boolean>(false);
+  const [invalidProfile, setInvalidProfile] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  useEffect(() => {
+    console.log("Lista de Profiles: ", profiles);
+    console.log("Profiles do usuário: ", data);
+    if (data.profiles) {
+      const selectedProfiles = profiles.filter((profile) =>
+        data.profiles.some((profileData) => profileData.id === profile.id)
+      );
+
+      setUpdatedProfiles(selectedProfiles);
+    }
+  }, [data, profiles]);
+
+  useEffect(() => {
+    setUpdatedUser({
+      ...updatedUser,
+      profiles: updatedProfiles,
+    });
+  }, [updatedProfiles]);
 
   function validateFields() {
     setInvalidName(!updatedUser.name || updatedUser.name === "");
@@ -40,6 +68,7 @@ function UserUpdateDialog({
     setInvalidDepartment(
       !updatedUser.department || updatedUser.department === ""
     );
+    setInvalidProfile(updatedUser.profiles.length === 0);
 
     if (
       !invalidName ||
@@ -96,6 +125,75 @@ function UserUpdateDialog({
           />
           {invalidUsername && (
             <Message severity="error" text="E-mail é obrigatório" />
+          )}
+        </div>
+        <div className="field flex flex-column gap-2">
+          <LabelTitle
+            text="Senha"
+            htmlFor="updated_password"
+            className="font-semibold"
+            required={true}
+          />
+          <div className="card">
+            <span className="p-input-icon-right w-full">
+              <i
+                className={showPassword ? "pi pi-eye" : "pi pi-eye-slash"}
+                onClick={() => setShowPassword(!showPassword)}
+              />
+              <InputText
+                className="w-full"
+                type={showPassword ? "text" : "password"}
+                onChange={(e) => {
+                  setUpdatedUser({ ...updatedUser, password: e.target.value });
+                  setInvalidPassword(false);
+                }}
+                value={updatedUser.password}
+              />
+            </span>
+          </div>
+          {invalidPassword && (
+            <Message severity="error" text="Senha é obrigatória" />
+          )}
+        </div>
+        <div className="field flex flex-column gap-2">
+          <LabelTitle
+            text="Departamento"
+            htmlFor="department"
+            className="font-semibold"
+          />
+
+          <InputText
+            type="text"
+            onChange={(e) => {
+              setUpdatedUser({ ...updatedUser, department: e.target.value });
+              setInvalidDepartment(false);
+            }}
+            value={updatedUser?.department}
+          />
+          {invalidDeparment && (
+            <Message severity="error" text="Departamento é obrigatório" />
+          )}
+        </div>
+        <div className="field flex flex-column gap-2">
+          <LabelTitle
+            text="Perfil"
+            htmlFor="profile"
+            className="font-semibold"
+            required={true}
+          />
+          <MultiSelect
+            value={updatedProfiles}
+            optionLabel="name"
+            placeholder="Escolha"
+            display="chip"
+            options={profiles}
+            onChange={(e: MultiSelectChangeEvent) => {
+              setUpdatedProfiles(e.value);
+              setInvalidProfile(false);
+            }}
+          />
+          {invalidProfile && (
+            <Message severity="error" text="Selecione pelo menos um perfil" />
           )}
         </div>
       </div>

@@ -42,6 +42,7 @@ export const AuthProvider = ({ children }: ProviderProps) => {
         Cookies.set("portal.username", resp.username);
         Cookies.set("portal.role", resp.role);
         Cookies.set("portal.token", resp.token);
+        window.sessionStorage.setItem("token", resp.token);
         setUser({
           ...user,
           id: resp.id,

@@ -1,4 +1,5 @@
 import { login } from "@/services/auth";
+import AuthManager from "@/services/auth/functions";
 import {
   changePasswordUser,
   deleteUser,
@@ -61,6 +62,7 @@ export const UserProvider = ({ children }: ProviderProps) => {
       setTotalElements(totalElements);
     } catch (error) {
       console.error(error);
+      AuthManager.logout();
     } finally {
       setLoading(false);
     }
