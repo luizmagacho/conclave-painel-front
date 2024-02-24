@@ -6,7 +6,7 @@ import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { MultiSelect, MultiSelectChangeEvent } from "primereact/multiselect";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface UserCreateDialog {
   visible: boolean;
@@ -26,17 +26,28 @@ function UserCreateDialog({
     username: "",
     department: "",
     password: "",
-    profile: {
-      name: "",
-      roles: [],
-    },
+    profile: [],
   });
   const [invalidName, setInvalidName] = useState<boolean>(false);
   const [invalidUsername, setInvalidUsername] = useState<boolean>(false);
   const [invalidDeparment, setInvalidDepartment] = useState<boolean>(false);
   const [invalidPassword, setInvalidPassword] = useState<boolean>(false);
   const [invalidProfile, setInvalidProfile] = useState<boolean>(false);
-  const [updatedProfiles, setUpdatedProfiles] = useState<Profile[]>([]);
+  const [newProfiles, setNewProfiles] = useState<Profile[]>([]);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  useEffect(() => {
+    setNewUser((prevUser) => ({
+      ...prevUser,
+      profile: [],
+    }));
+    if (newProfiles && Array.isArray(newProfiles) && newProfiles.length > 0) {
+      setNewUser((prevUser) => ({
+        ...prevUser,
+        profiles: [...prevUser.profile, ...newProfiles],
+      }));
+    }
+  }, [profiles]);
 
   function validateFields() {
     setInvalidName(!newUser.name || newUser.name === "");
@@ -85,7 +96,7 @@ function UserCreateDialog({
         <div className="field flex flex-column gap-2">
           <LabelTitle
             text="E-mail"
-            htmlFor="username"
+            htmlFor="create_username"
             className="font-semibold"
             required={true}
           />
@@ -95,10 +106,38 @@ function UserCreateDialog({
               setNewUser({ ...newUser, username: e.target.value });
               setInvalidUsername(false);
             }}
-            value={newUser?.username}
+            value={newUser.username}
           />
           {invalidName && (
             <Message severity="error" text="E-mail é obrigatório" />
+          )}
+        </div>
+        <div className="field flex flex-column gap-2">
+          <LabelTitle
+            text="Senha"
+            htmlFor="create_password"
+            className="font-semibold"
+            required={true}
+          />
+          <div className="card">
+            <span className="p-input-icon-right w-full">
+              <i
+                className={showPassword ? "pi pi-eye" : "pi pi-eye-slash"}
+                onClick={() => setShowPassword(!showPassword)}
+              />
+              <InputText
+                className="w-full"
+                type={showPassword ? "text" : "password"}
+                onChange={(e) => {
+                  setNewUser({ ...newUser, password: e.target.value });
+                  setInvalidPassword(false);
+                }}
+                value={newUser.password}
+              />
+            </span>
+          </div>
+          {invalidPassword && (
+            <Message severity="error" text="Senha é obrigatória" />
           )}
         </div>
         <div className="field flex flex-column gap-2">
@@ -107,6 +146,7 @@ function UserCreateDialog({
             htmlFor="department"
             className="font-semibold"
           />
+
           <InputText
             type="text"
             onChange={(e) => {
@@ -119,6 +159,7 @@ function UserCreateDialog({
             <Message severity="error" text="Departamento é obrigatório" />
           )}
         </div>
+
         <div className="field flex flex-column gap-2">
           <LabelTitle
             text="Perfil"
@@ -127,13 +168,13 @@ function UserCreateDialog({
             required={true}
           />
           <MultiSelect
-            value={updatedProfiles}
+            value={newProfiles}
             optionLabel="name"
             placeholder="Escolha"
             display="chip"
             options={profiles}
             onChange={(e: MultiSelectChangeEvent) => {
-              setUpdatedProfiles(e.value);
+              setNewProfiles(e.value);
               setInvalidProfile(false);
             }}
           />

@@ -1,5 +1,6 @@
 import {
   deleteProfile,
+  getAllProfiles,
   getProfiles,
   getRoles,
   postProfile,
@@ -15,6 +16,7 @@ interface ProviderProps {
 
 interface ProfileContextProps {
   profiles: Profile[];
+  allProfiles: Profile[];
   roles: Role[];
   loading: boolean;
   totalElements: number;
@@ -23,6 +25,7 @@ interface ProfileContextProps {
     name?: string,
     type?: string
   ) => Promise<void>;
+  handleGetAllProfiles: () => Promise<void>;
   handlePostProfile: (profile: ProfileDTO) => Promise<void>;
   handleUpdateProfile: (profile: Profile) => Promise<void>;
   handleDeleteProfile: (profileId: string) => Promise<void>;
@@ -33,6 +36,7 @@ export const ProfileContext = createContext({} as ProfileContextProps);
 
 export const ProfileProvider = ({ children }: ProviderProps) => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [allProfiles, setAllProfiles] = useState<Profile[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [bufferedProfiles, setBufferedProfiles] = useState<Profile[]>([]);
 
@@ -59,6 +63,17 @@ export const ProfileProvider = ({ children }: ProviderProps) => {
       setBufferedProfiles(content || []);
       setProfiles(content || []);
       setTotalElements(totalElements);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleGetAllProfiles() {
+    setLoading(true);
+    try {
+      setAllProfiles(await getAllProfiles());
     } catch (error) {
       console.error(error);
     } finally {
@@ -115,6 +130,7 @@ export const ProfileProvider = ({ children }: ProviderProps) => {
 
   useEffect(() => {
     handleGetProfiles();
+    handleGetAllProfiles();
     handleGetRoles();
   }, []);
 
@@ -122,10 +138,12 @@ export const ProfileProvider = ({ children }: ProviderProps) => {
     <ProfileContext.Provider
       value={{
         profiles,
+        allProfiles,
         roles,
         loading,
         totalElements,
         handleGetProfiles,
+        handleGetAllProfiles,
         handlePostProfile,
         handleUpdateProfile,
         handleDeleteProfile,

@@ -20,6 +20,7 @@ export type ProfilePaginationParam = {
 };
 
 export type ProfileDTO = {
+  id: string;
   name: string;
   roles: Role[];
 };

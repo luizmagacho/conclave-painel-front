@@ -17,7 +17,8 @@ interface HttpProps {
 }
 
 const backendBaseUrl = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT_API;
-const token = Cookies.get("portal.token");
+const token = window.sessionStorage.getItem("token");
+console.log(token);
 const authorization = token ? `Bearer ${token}` : null;
 const http: HttpProps = {
   axiosConfig: axios.create({
