@@ -16,8 +16,6 @@ export default function PrivateRoute({
   const { user } = useContext(AuthContext);
   const router = useRouter();
 
-  const { profile } = user;
-
   // useEffect(() => {
   //   if (
   //     !requiredRoles.some((role) => profile.roles.includes(role as UserRole)) ||

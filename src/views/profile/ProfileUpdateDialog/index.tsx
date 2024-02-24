@@ -25,9 +25,9 @@ function ProfileDialog({
   const [editProfile, setEditProfile] = useState<Profile>({
     id: data.id,
     name: data.name,
-    permissions: data.permissions,
+    roles: data.roles,
   });
-  const [newRoles, setNewRoles] = useState<Role[]>(data.permissions || []); // Inicializa com os papéis existentes
+  const [newRoles, setNewRoles] = useState<Role[]>(data.roles || []); // Inicializa com os papéis existentes
   const [invalidName, setInvalidName] = useState<boolean>(false);
   const [invalidRole, setInvalidRole] = useState<boolean>(false);
 
