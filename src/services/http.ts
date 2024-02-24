@@ -17,7 +17,10 @@ interface HttpProps {
 }
 
 const backendBaseUrl = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT_API;
-const token = window.sessionStorage.getItem("token");
+let token = null;
+if (typeof window !== "undefined") {
+  token = sessionStorage.getItem("token") || null;
+}
 console.log(token);
 const authorization = token ? `Bearer ${token}` : null;
 const http: HttpProps = {
