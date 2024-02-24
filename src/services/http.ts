@@ -18,6 +18,7 @@ interface HttpProps {
 
 const backendBaseUrl = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT_API;
 const token = Cookies.get("portal.token");
+console.log("TOken no cookies: ", token);
 const authorization = token ? `Bearer ${token}` : null;
 const http: HttpProps = {
   axiosConfig: axios.create({
@@ -30,9 +31,7 @@ const http: HttpProps = {
   get: function <T>(route: string, body?: any) {
     return this.axiosConfig.get<T>(route, body).catch((error) => {
       let response = error.response;
-      console.log(response.status);
-      if (response?.status === 403) {
-        console.log("Entrou vai deslogar ");
+      if (response?.status === 401) {
         AuthManager.logout();
       }
       return error;
