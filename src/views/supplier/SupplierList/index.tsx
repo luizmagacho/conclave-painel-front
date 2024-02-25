@@ -1,21 +1,20 @@
-import { MaterialContext } from "@/context/MaterialContext";
-import { Material, MaterialDTO } from "@/services/material/type";
+import InputSearch from "@/components/InputSearch";
+import { SupplierContext } from "@/context/SupplierContext";
+import { Supplier } from "@/services/supplier/type";
+import { Router, useRouter } from "next/router";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { Toast } from "primereact/toast";
 import { useContext, useRef, useState } from "react";
-import MaterialCreateDialog from "../MaterialCreateDialog";
-import InputSearch from "@/components/InputSearch";
-import MaterialUpdateDialog from "../MaterialUpdateDialog";
 
 interface Options {
   icon?: string;
   ariaLabel: string;
   tooltip?: string;
   label?: string;
-  onclick: (material: Material) => void;
+  onclick: (supplier: Supplier) => void;
 }
 
 interface OptionType {
@@ -24,84 +23,77 @@ interface OptionType {
 
 const columns = [
   {
-    field: "name",
-    header: "Nome",
+    field: "completeName",
+    header: "Nome Completo",
   },
   {
-    field: "quantity",
-    header: "Quantidade",
+    field: "sellerName",
+    header: "Nome Vendedor",
   },
   {
-    field: "metricUnit",
-    header: "Unidade Métrica",
+    field: "sellerPhone",
+    header: "Telefone Vendedor",
+  },
+  {
+    field: "sellerEmail",
+    header: "E-mail Vendedor",
   },
 ];
 
-function MaterialList() {
-  const [currMaterial, setCurrMaterial] = useState<Material | null>(null);
+function SupplierList() {
+  const router = useRouter();
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [nameSearch, setNameSearch] = useState<string>("");
   const [optionType, setOptionType] = useState<OptionType>({
     type: "Nome",
   });
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
-
   const {
-    materials,
-    loading,
+    suppliers,
     totalElements,
-    handleGetMaterials,
-    handlePostMaterial,
-    handleUpdateMaterial,
-  } = useContext(MaterialContext);
+    loading,
+    setSelectedSupplier,
+    handleGetSuppliers,
+  } = useContext(SupplierContext);
 
   const toast = useRef<Toast>(null);
   const [first, setFirst] = useState<number>(0);
 
   const options: Options[] = [
     {
-      ariaLabel: "Editar",
-      label: "Editar",
-      onclick: openDialog,
+      ariaLabel: "Visualizar",
+      label: "Visualizar",
+      onclick: openDetailsInfo,
+    },
+    {
+      ariaLabel: "Excluir",
+      label: "Excluir",
+      onclick: openDeleteDialog,
     },
   ];
 
   const columnBodyOptions = {
-    options: (materials: Material) => optionsBodyTemplate(options, materials),
+    options: (suppliers: Supplier) => optionsBodyTemplate(options, suppliers),
   };
 
-  function openDialog(material: Material) {
-    setCurrMaterial(material);
-    setShowDialog(true);
+  function openDetailsInfo(supplier: Supplier) {
+    setSelectedSupplier(supplier);
+    router.push(`/fornecedores/${supplier.id}`);
   }
 
-  function closeDialog() {
-    setShowDialog((showDialog) => !showDialog);
-    setCurrMaterial(null);
+  function openCreatePage() {
+    router.push(`/fornecedores/cadastrar`);
   }
-
-  async function onUpdateMaterial(material: Material) {
-    await handleUpdateMaterial(material);
-    handleGetMaterials();
-  }
-
-  async function onCreateMaterial(material: MaterialDTO) {
-    await handlePostMaterial(material);
-    handleGetMaterials();
-  }
-
-  function closeCreateDialog() {
-    setShowCreateDialog((showCreateDialog) => !showCreateDialog);
-  }
+  function openDeleteDialog() {}
 
   function onPageChange(event: PaginatorPageChangeEvent) {
     const { page, first } = event;
-    handleGetMaterials(page);
+    handleGetSuppliers(page);
     setFirst(first);
   }
 
   function onSearch(name: string) {
-    handleGetMaterials(0, name, optionType.type);
+    handleGetSuppliers(0, name, optionType.type);
   }
 
   function onChangeSearch(name: string) {
@@ -112,7 +104,7 @@ function MaterialList() {
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
-          <h1 className="m-0">Materiais</h1>
+          <h1 className="m-0">Fornecedores</h1>
           <InputSearch
             onSearch={onSearch}
             onChange={onChangeSearch}
@@ -124,15 +116,15 @@ function MaterialList() {
               border: "1px solid var(--cor-primaria)",
             }}
             onClick={() => {
-              setShowCreateDialog(true);
+              openCreatePage();
             }}
           >
             Adicionar
           </Button>
         </div>
         <DataTable
-          emptyMessage="Nenhum material encontrado."
-          value={materials}
+          emptyMessage="Nenhum fornecedor encontrado."
+          value={suppliers}
           loading={loading}
           stripedRows
           showGridlines
@@ -159,27 +151,12 @@ function MaterialList() {
           totalRecords={totalElements}
           onPageChange={onPageChange}
         />
-        {showCreateDialog && (
-          <MaterialCreateDialog
-            visible={showCreateDialog}
-            onCreate={onCreateMaterial}
-            onHide={closeCreateDialog}
-          />
-        )}
       </section>
-      {currMaterial && (
-        <MaterialUpdateDialog
-          data={currMaterial}
-          visible={showDialog}
-          onUpdate={onUpdateMaterial}
-          onHide={closeDialog}
-        />
-      )}
     </>
   );
 }
 
-function optionsBodyTemplate(elements: Options[], materials: Material) {
+function optionsBodyTemplate(elements: Options[], suppliers: Supplier) {
   return (
     <div className="flex gap-2">
       {elements.map((el, index) => {
@@ -193,7 +170,7 @@ function optionsBodyTemplate(elements: Options[], materials: Material) {
             tooltipOptions={{ position: "top", className: "text-xs" }}
             size="small"
             severity="danger"
-            onClick={() => el.onclick(materials)}
+            onClick={() => el.onclick(suppliers)}
           />
         );
       })}
@@ -201,4 +178,4 @@ function optionsBodyTemplate(elements: Options[], materials: Material) {
   );
 }
 
-export default MaterialList;
+export default SupplierList;

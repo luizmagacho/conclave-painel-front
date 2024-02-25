@@ -62,7 +62,6 @@ export const UserProvider = ({ children }: ProviderProps) => {
       setTotalElements(totalElements);
     } catch (error) {
       console.error(error);
-      AuthManager.logout();
     } finally {
       setLoading(false);
     }

@@ -25,3 +25,8 @@ export async function postMaterial(material: MaterialDTO) {
   let res = await http.post(baseUrl, material);
   return res.status;
 }
+
+export async function updateMaterial(material: Material) {
+  let res = await http.put(baseUrl, material);
+  return res.status;
+}

@@ -1,14 +1,13 @@
 import { AuthProvider } from "@/context/AuthContext";
 import { MaterialProvider } from "@/context/MaterialContext";
 import { DefaultLayout } from "@/layouts";
-import MaterialList from "@/views/material/MaterialList";
 
-export default function Material(): JSX.Element {
+export default function PostSupplier(): JSX.Element {
   return (
     <DefaultLayout>
       <AuthProvider>
         <MaterialProvider>
-          <MaterialList />
+          <h1>Vou criar</h1>
         </MaterialProvider>
       </AuthProvider>
     </DefaultLayout>

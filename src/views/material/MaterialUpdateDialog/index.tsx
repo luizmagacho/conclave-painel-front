@@ -1,5 +1,6 @@
 import LabelTitle from "@/components/LabelTitle";
 import { Material } from "@/services/material/type";
+import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
@@ -30,6 +31,20 @@ function MaterialUpdateDialog({
   const [invalidName, setInvalidName] = useState<boolean>(false);
   const [invalidQuantity, setInvalidQuantity] = useState<boolean>(false);
   const [invalidMetricUnit, setInvalidMetricUnit] = useState<boolean>(false);
+
+  function validateFields() {
+    setInvalidName(!updatedMaterial.name || updatedMaterial.name === "");
+    setInvalidQuantity(
+      !updatedMaterial.quantity || updatedMaterial.quantity === ""
+    );
+    setInvalidMetricUnit(
+      !updatedMaterial.metricUnit || updatedMaterial.metricUnit === ""
+    );
+    if (!invalidName && !invalidQuantity && !invalidMetricUnit) {
+      onUpdate(updatedMaterial);
+      onHide();
+    }
+  }
 
   return (
     <Dialog
@@ -105,6 +120,17 @@ function MaterialUpdateDialog({
           </div>
         </div>
       </div>
+      <div className="flex gap-2">
+        <Button className="w-full" label="Cancelar" outlined onClick={onHide} />
+        <Button
+          className="w-full"
+          label="Salvar"
+          severity="danger"
+          onClick={() => validateFields()}
+        />
+      </div>
     </Dialog>
   );
 }
+
+export default MaterialUpdateDialog;
