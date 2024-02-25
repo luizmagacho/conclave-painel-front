@@ -7,6 +7,8 @@ import { DataTable } from "primereact/datatable";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { useContext, useEffect, useState } from "react";
 import ProfileCreateDialog from "../ProfileCreateDialog";
+import ProfileDeleteDialog from "../ProfileDeleteDialog";
+import ProfileUpdateDialog from "../ProfileUpdateDialog";
 
 interface Options {
   icon?: string;
@@ -26,14 +28,18 @@ const columns = [
     header: "Nome",
   },
   {
-    field: "permissions",
-    header: "Permissões",
+    field: "roles.role",
+    header: "Papéis",
   },
 ];
 
 function ProfileList() {
   const [currProfile, setCurrProfile] = useState<Profile | null>(null);
+  const [currDeleteProfile, setCurrDeleteProfile] = useState<Profile | null>(
+    null
+  );
   const [showDialog, setShowDialog] = useState<boolean>(false);
+  const [showDialogDelete, setShowDialogDelete] = useState<boolean>(false);
   const [nameSearch, setNameSearch] = useState<string>("");
   const [optionType, setOptionType] = useState<OptionType>({
     type: "Nome",
@@ -64,11 +70,21 @@ function ProfileList() {
       label: "Editar",
       onclick: openDialog,
     },
+    {
+      ariaLabel: "Excluir",
+      label: "Excluir",
+      onclick: openDeleteDialog,
+    },
   ];
 
   const columnBodyOptions = {
     options: (profiles: Profile) => optionsBodyTemplate(options, profiles),
   };
+
+  async function onUpdateProfile(profile: Profile) {
+    await handleUpdateProfile(profile);
+    handleGetProfiles();
+  }
 
   function openDialog(profile: Profile) {
     setCurrProfile(profile);
@@ -105,6 +121,22 @@ function ProfileList() {
 
   function closeCreateDialog() {
     setShowCreateDialog((showCreateDialog) => !showCreateDialog);
+  }
+
+  async function onDeleteProfile(profileId: string) {
+    await handleDeleteProfile(profileId);
+    handleGetProfiles();
+  }
+
+  function openDeleteDialog(profile: Profile) {
+    console.log("Teste");
+    setCurrDeleteProfile(profile);
+    setShowDialogDelete(true);
+  }
+
+  function closeDeleteDialog() {
+    setCurrDeleteProfile(null);
+    setShowDialogDelete((showDeleteDialog) => !showDeleteDialog);
   }
 
   return (
@@ -164,6 +196,23 @@ function ProfileList() {
             onCreate={onCreateProfile}
             onHide={closeCreateDialog}
             roles={roles}
+          />
+        )}
+        {currProfile && (
+          <ProfileUpdateDialog
+            data={currProfile}
+            onHide={closeDialog}
+            visible={showDialog}
+            onUpdate={onUpdateProfile}
+            roles={roles}
+          />
+        )}
+        {currDeleteProfile && (
+          <ProfileDeleteDialog
+            visible={showDialogDelete}
+            onDelete={onDeleteProfile}
+            onHide={closeDeleteDialog}
+            data={currDeleteProfile}
           />
         )}
       </section>

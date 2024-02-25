@@ -8,15 +8,15 @@ import { MultiSelect, MultiSelectChangeEvent } from "primereact/multiselect";
 import { useEffect, useState } from "react";
 
 interface ProfileUpdateDialog {
-  permissions: Role[];
+  roles: Role[];
   visible: boolean;
   onHide: () => void;
   onUpdate: (profile: Profile) => void;
   data: Profile;
 }
 
-function ProfileDialog({
-  permissions,
+function ProfileUpdateDialog({
+  roles,
   visible,
   onHide,
   onUpdate,
@@ -86,7 +86,7 @@ function ProfileDialog({
           <MultiSelect
             value={newRoles}
             optionLabel="name" // Especifica o campo a ser exibido
-            options={permissions}
+            options={roles}
             placeholder="Escolha"
             display="chip"
             onChange={(e: MultiSelectChangeEvent) => {
@@ -112,4 +112,4 @@ function ProfileDialog({
   );
 }
 
-export default ProfileDialog;
+export default ProfileUpdateDialog;
