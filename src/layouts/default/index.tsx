@@ -36,7 +36,7 @@ export default function Layout({ children }: LayoutProps) {
       <LeftPanel>
         <div className="flex flex-column gap-3">
           <UserAvatar name={name} />
-          {role === "ROLE_ADMIN" && (
+          {role === "Administrador" && (
             <PanelMenu
               ref={ref}
               model={itemsAdmin}
