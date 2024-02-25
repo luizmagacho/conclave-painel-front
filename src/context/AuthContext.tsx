@@ -35,19 +35,18 @@ export const AuthProvider = ({ children }: ProviderProps) => {
     setLoading(true);
     try {
       const resp = await login(loginDTO);
-      console.log("Printou ", resp);
       if (resp) {
         Cookies.set("portal.id", resp.id);
         Cookies.set("portal.name", resp.name);
         Cookies.set("portal.username", resp.username);
-        Cookies.set("portal.role", resp.role);
+        Cookies.set("portal.role", resp.highestPriorityRole);
         Cookies.set("portal.token", resp.token);
         window.sessionStorage.setItem("token", resp.token);
         setUser({
           ...user,
           id: resp.id,
           name: resp.name,
-          role: resp.role,
+          highestPriorityRole: resp.highestPriorityRole,
           username: resp.username,
         });
         router.push("/home");
@@ -64,7 +63,6 @@ export const AuthProvider = ({ children }: ProviderProps) => {
 
   function setTempMessage(message: string) {
     setMsg(message);
-    console.log("Message: ", message);
     setTimeout(() => setMsg(""), 3000);
   }
 
