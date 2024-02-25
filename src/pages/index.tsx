@@ -56,7 +56,6 @@ export default function Login(): JSX.Element {
   }, [msg]);
 
   function validateFields() {
-    console.log("Teste");
     setInvalidUsername(!login.username || login.username === "");
     setInvalidPassword(!login.password || login.password === "");
 

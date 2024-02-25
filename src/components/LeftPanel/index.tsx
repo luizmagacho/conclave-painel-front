@@ -26,7 +26,12 @@ const StyledSidebar = styled.aside<LeftPanelProps>`
 
 function LeftPanel({ children }: LeftPanelProps) {
   const [visible, setVisible] = useState(true);
+  const [visibleConfirmation, setVisibleConfirmation] = useState(false);
   const { logout } = useContext(AuthContext);
+
+  function teste() {
+    console.log("teste");
+  }
   return (
     <StyledSidebar
       style={{
@@ -50,13 +55,12 @@ function LeftPanel({ children }: LeftPanelProps) {
         {visible && <>{children}</>}
       </div>
       {visible && (
-        <ConfirmationDialog
-          message="Você tem certeza que deseja sair?"
-          header="Confirmação"
-          icon="pi pi-info-circle"
-          acceptLabel="Sim"
-          rejectLabel="Não"
-          onConfirm={logout}
+        <Button
+          type="submit"
+          severity="danger"
+          icon="pi pi-sign-out"
+          onClick={logout}
+          label="Sair"
         />
       )}
     </StyledSidebar>

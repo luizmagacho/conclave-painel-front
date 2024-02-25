@@ -67,6 +67,7 @@ export const AuthProvider = ({ children }: ProviderProps) => {
   }
 
   function logout() {
+    console.log("Entrou");
     Cookies.remove("portal.token");
     Cookies.remove("portal.username");
     Cookies.remove("portal.role");
