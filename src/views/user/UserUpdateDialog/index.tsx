@@ -31,6 +31,7 @@ function UserUpdateDialog({
     department: data.department,
     role: data.role,
     profiles: data.profiles,
+    highestPriorityRole: data.highestPriorityRole,
     profilesName: data.profilesName,
     createdAt: data.createdAt,
     createdAtFormat: data.createdAtFormat,

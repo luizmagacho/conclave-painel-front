@@ -11,6 +11,7 @@ export type User = {
   role: string;
   profiles: Profile[];
   profilesName: string;
+  highestPriorityRole: string;
   createdAt: string;
   createdAtFormat: string;
   updatedAt: string;
@@ -33,7 +34,7 @@ export type LoginResponseDTO = {
   id: string;
   name: string;
   username: string;
-  role: string;
+  highestPriorityRole: string;
   token: string;
 };
 
