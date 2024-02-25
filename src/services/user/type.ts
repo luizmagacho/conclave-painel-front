@@ -12,6 +12,7 @@ export type User = {
   profiles: Profile[];
   profilesName: string;
   createdAt: string;
+  createdAtFormat: string;
   updatedAt: string;
 };
 
@@ -20,7 +21,7 @@ export type UserRequestDTO = {
   username: string;
   department: string;
   password: string;
-  profile: string[];
+  profiles: Profile[];
 };
 
 export type LoginDTO = {

@@ -15,10 +15,8 @@ interface HttpProps {
   ) => Promise<AxiosResponse<T, any>>;
   delete: <T>(route: string, body?: any) => Promise<AxiosResponse<T, any>>;
 }
-
-const backendBaseUrl = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT_API;
 const token = Cookies.get("portal.token");
-console.log("TOken no cookies: ", token);
+const backendBaseUrl = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT_API;
 const authorization = token ? `Bearer ${token}` : null;
 const http: HttpProps = {
   axiosConfig: axios.create({
@@ -41,7 +39,6 @@ const http: HttpProps = {
   patch: function <T>(route: string, body?: any) {
     return this.axiosConfig.patch<T>(route, body).catch((error) => {
       let response = error.response;
-      console.log(response?.data?.statusCode);
       if (
         response?.data?.statusCode === 401 &&
         response?.data?.message === "Acesso Negado"
@@ -55,7 +52,6 @@ const http: HttpProps = {
   put: function <T>(route: string, body?: any) {
     return this.axiosConfig.put<T>(route, body).catch((error) => {
       let response = error.response;
-      console.log(response);
       if (
         response?.data?.statusCode === 401 &&
         response?.data?.message === "Acesso Negado"
@@ -81,8 +77,6 @@ const http: HttpProps = {
 
   post: function <T>(route: string, body?: any, formData?: FormData) {
     // Se formData estiver presente, use-o para enviar dados
-    console.log("Rota: ", route);
-    console.log("Body: ", body);
     if (formData) {
       return this.axiosConfig
         .post<T>(route, formData, {
@@ -97,7 +91,6 @@ const http: HttpProps = {
     }
 
     // Caso contrário, use o corpo JSON padrão
-    console.log("AQUI");
     return this.axiosConfig.post<T>(route, body).catch((error) => {
       // Trate os erros aqui, se necessário
       let response = error.response;

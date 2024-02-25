@@ -39,7 +39,7 @@ const columns = [
   },
 
   {
-    field: "createdAt",
+    field: "createdAtFormat",
     header: "Criado em",
   },
 ];
@@ -100,8 +100,8 @@ function UserList() {
     setCurrUser(null);
   }
 
-  function onCreateUser(userDTO: UserRequestDTO) {
-    handlePostUser(userDTO);
+  async function onCreateUser(userDTO: UserRequestDTO) {
+    await handlePostUser(userDTO);
     handleGetUsers();
   }
 

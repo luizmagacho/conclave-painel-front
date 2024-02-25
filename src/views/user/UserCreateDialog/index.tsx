@@ -26,7 +26,7 @@ function UserCreateDialog({
     username: "",
     department: "",
     password: "",
-    profile: [],
+    profiles: [],
   });
   const [invalidName, setInvalidName] = useState<boolean>(false);
   const [invalidUsername, setInvalidUsername] = useState<boolean>(false);
@@ -44,10 +44,17 @@ function UserCreateDialog({
     if (newProfiles && Array.isArray(newProfiles) && newProfiles.length > 0) {
       setNewUser((prevUser) => ({
         ...prevUser,
-        profiles: [...prevUser.profile, ...newProfiles],
+        profiles: [...prevUser.profiles, ...newProfiles],
       }));
     }
   }, [profiles]);
+
+  useEffect(() => {
+    setNewUser({
+      ...newUser,
+      profiles: newProfiles,
+    });
+  });
 
   function validateFields() {
     setInvalidName(!newUser.name || newUser.name === "");

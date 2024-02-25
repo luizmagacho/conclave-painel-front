@@ -1,4 +1,8 @@
-import { getMaterials, postMaterial } from "@/services/material";
+import {
+  getMaterials,
+  postMaterial,
+  updateMaterial,
+} from "@/services/material";
 import { Material, MaterialDTO } from "@/services/material/type";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
@@ -18,6 +22,7 @@ interface MaterialContextProps {
     type?: string
   ) => Promise<void>;
   handlePostMaterial: (material: MaterialDTO) => Promise<void>;
+  handleUpdateMaterial: (material: Material) => Promise<void>;
 }
 
 export const MaterialContext = createContext({} as MaterialContextProps);
@@ -68,12 +73,16 @@ export const MaterialProvider = ({ children }: ProviderProps) => {
     }
   }
 
-  function logout() {
-    Cookies.remove("portal.token");
-    Cookies.remove("portal.username");
-    window.localStorage.clear();
-    window.sessionStorage.clear();
-    router.push("/");
+  async function handleUpdateMaterial(material: Material) {
+    setLoading(true);
+
+    try {
+      const resp = await updateMaterial(material);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -88,6 +97,7 @@ export const MaterialProvider = ({ children }: ProviderProps) => {
         totalElements,
         handleGetMaterials,
         handlePostMaterial,
+        handleUpdateMaterial,
       }}
     >
       {children}

@@ -33,6 +33,7 @@ function UserUpdateDialog({
     profiles: data.profiles,
     profilesName: data.profilesName,
     createdAt: data.createdAt,
+    createdAtFormat: data.createdAtFormat,
     updatedAt: data.updatedAt,
   });
   const [updatedProfiles, setUpdatedProfiles] = useState<Profile[]>([]);
@@ -44,8 +45,6 @@ function UserUpdateDialog({
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log("Lista de Profiles: ", profiles);
-    console.log("Profiles do usuário: ", data);
     if (data.profiles) {
       const selectedProfiles = profiles.filter((profile) =>
         data.profiles.some((profileData) => profileData.id === profile.id)
@@ -132,7 +131,6 @@ function UserUpdateDialog({
             text="Senha"
             htmlFor="updated_password"
             className="font-semibold"
-            required={true}
           />
           <div className="card">
             <span className="p-input-icon-right w-full">
@@ -151,9 +149,6 @@ function UserUpdateDialog({
               />
             </span>
           </div>
-          {invalidPassword && (
-            <Message severity="error" text="Senha é obrigatória" />
-          )}
         </div>
         <div className="field flex flex-column gap-2">
           <LabelTitle
