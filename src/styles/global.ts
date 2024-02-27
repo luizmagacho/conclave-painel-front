@@ -36,7 +36,7 @@ const GlobalStyle = createGlobalStyle`
 }
 
 
-  .p-calendar-w-btn-right .p-datepicker-trigger .p-button{
+.p-calendar-w-btn-right .p-datepicker-trigger .p-button{
   background-color: var(--cor-primaria) !important; /* Defina a cor que você deseja para o ícone */
   border-color: var(--cor-primaria) !important;
 }

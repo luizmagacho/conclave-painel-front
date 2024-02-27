@@ -34,3 +34,8 @@ export async function postConstruction(construction: ConstructionDTO) {
   let res = await http.post(baseUrl, construction);
   return res.status;
 }
+
+export async function updateConstruction(construction: Construction) {
+  let res = await http.put(baseUrl, construction);
+  return res.status;
+}

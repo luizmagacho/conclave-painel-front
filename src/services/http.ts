@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import AuthManager from "./auth/functions";
 import { error } from "console";
+import { parseCookies } from "nookies";
 
 interface HttpProps {
   axiosConfig: AxiosInstance;
@@ -15,9 +16,10 @@ interface HttpProps {
   ) => Promise<AxiosResponse<T, any>>;
   delete: <T>(route: string, body?: any) => Promise<AxiosResponse<T, any>>;
 }
-const token = Cookies.get("portal.token");
-const backendBaseUrl = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT_API;
-const authorization = token ? `Bearer ${token}` : null;
+const token = await Cookies.get("portal.token");
+const backendBaseUrl = await process.env.NEXT_PUBLIC_BACKEND_ENDPOINT_API;
+const { "portal.token": token2 } = parseCookies();
+const authorization = token ? `Bearer ${token}` : `Bearer ${token2}`;
 const http: HttpProps = {
   axiosConfig: axios.create({
     baseURL: backendBaseUrl,
@@ -29,7 +31,10 @@ const http: HttpProps = {
   get: function <T>(route: string, body?: any) {
     return this.axiosConfig.get<T>(route, body).catch((error) => {
       let response = error.response;
-      if (response?.status === 401) {
+      if (
+        response?.status === 401 &&
+        response?.data?.message === "Acesso Negado"
+      ) {
         AuthManager.logout();
       }
       return error;

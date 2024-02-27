@@ -165,7 +165,7 @@ function UserList() {
           </Button>
         </div>
         <DataTable
-          emptyMessage="Nenhuma obra encontrada."
+          emptyMessage="Nenhuma usuário encontrado."
           value={users}
           loading={loading}
           stripedRows

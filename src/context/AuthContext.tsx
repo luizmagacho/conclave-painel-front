@@ -6,6 +6,7 @@ import { authenticate, login, statusToken } from "@/services/auth";
 import { getUser } from "@/services/user";
 import { useRouter } from "next/router";
 import { AuthResponse } from "@/services/auth/types";
+import { setCookie } from "nookies";
 
 interface ProviderProps {
   children: ReactNode;
@@ -36,12 +37,14 @@ export const AuthProvider = ({ children }: ProviderProps) => {
     try {
       const resp = await login(loginDTO);
       if (resp) {
+        const cookieParams = {};
         Cookies.set("portal.id", resp.id);
         Cookies.set("portal.name", resp.name);
         Cookies.set("portal.username", resp.username);
         Cookies.set("portal.role", resp.highestPriorityRole);
         Cookies.set("portal.token", resp.token);
         window.sessionStorage.setItem("token", resp.token);
+        setCookie(undefined, "portal.token", resp.token, cookieParams);
         setUser({
           ...user,
           id: resp.id,
