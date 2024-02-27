@@ -106,19 +106,20 @@ export default function Login(): JSX.Element {
                 htmlFor="password"
                 className="font-semibold"
               />
-              <InputText
-                type={showPassword ? "text" : "password"}
-                onChange={(e) => {
-                  setLogin({ ...login, password: e.target.value });
-                  setInvalidUsername(false);
-                  setInvalidUsername(false);
-                }}
-              >
-                <Button onClick={() => setShowPassword(!showPassword)}>
-                  {" "}
-                  {showPassword ? "OCULTAR" : "MOSTRAR"}
-                </Button>
-              </InputText>
+              <span className="p-input-icon-right w-full">
+                <i
+                  className={showPassword ? "pi pi-eye" : "pi pi-eye-slash"}
+                  onClick={() => setShowPassword(!showPassword)}
+                />
+                <InputText
+                  type={showPassword ? "text" : "password"}
+                  onChange={(e) => {
+                    setLogin({ ...login, password: e.target.value });
+                    setInvalidUsername(false);
+                    setInvalidUsername(false);
+                  }}
+                ></InputText>
+              </span>
               {hasError && <Message severity="error" text={msg} />}
               <Button
                 label="Esqueci a senha"

@@ -129,20 +129,6 @@ export const UserProvider = ({ children }: ProviderProps) => {
     }
   }
 
-  function logout() {
-    Cookies.remove("portal.token");
-    window.localStorage.clear();
-    window.sessionStorage.clear();
-    router.push("/");
-  }
-
-  function softLogout() {
-    Cookies.remove("portal.token");
-    Cookies.remove("portal.username");
-    window.localStorage.clear();
-    window.sessionStorage.clear();
-  }
-
   useEffect(() => {
     handleGetUsers();
   }, []);

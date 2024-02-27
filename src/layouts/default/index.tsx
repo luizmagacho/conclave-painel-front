@@ -21,7 +21,7 @@ type LayoutProps = {
 };
 
 export default function Layout({ children }: LayoutProps) {
-  const { user, logout } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const router = useRouter();
 
   const { itemsAdmin, items, ref } = useMenu();

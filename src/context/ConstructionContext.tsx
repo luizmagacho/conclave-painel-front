@@ -1,4 +1,8 @@
-import { getConstructions, postConstruction } from "@/services/construction";
+import {
+  getConstructions,
+  postConstruction,
+  updateConstruction,
+} from "@/services/construction";
 import { Construction, ConstructionDTO } from "@/services/construction/type";
 import { useRouter } from "next/router";
 import { ReactNode, createContext, useEffect, useState } from "react";
@@ -17,6 +21,7 @@ interface ConstructionContextProps {
     type?: string
   ) => Promise<void>;
   handlePostConstruction: (construction: ConstructionDTO) => Promise<void>;
+  handleUpdateConstruction: (construction: Construction) => Promise<void>;
 }
 
 export const ConstructionContext = createContext(
@@ -71,6 +76,18 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
     }
   }
 
+  async function handleUpdateConstruction(construction: Construction) {
+    setLoading(true);
+
+    try {
+      const resp = await updateConstruction(construction);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     handleGetConstructions();
   }, []);
@@ -83,6 +100,7 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
         totalElements,
         handleGetConstructions,
         handlePostConstruction,
+        handleUpdateConstruction,
       }}
     >
       {children}

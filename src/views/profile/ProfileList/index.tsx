@@ -129,7 +129,6 @@ function ProfileList() {
   }
 
   function openDeleteDialog(profile: Profile) {
-    console.log("Teste");
     setCurrDeleteProfile(profile);
     setShowDialogDelete(true);
   }
