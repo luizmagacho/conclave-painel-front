@@ -17,7 +17,10 @@ interface HttpProps {
   delete: <T>(route: string, body?: any) => Promise<AxiosResponse<T, any>>;
 }
 
-const token = window.localStorage.getItem("portal.token");
+let token = null;
+if (typeof window !== "undefined") {
+  token = localStorage.getItem("portal.token");
+}
 
 const { "portal.token": token2 } = parseCookies();
 const authorization =
