@@ -31,7 +31,12 @@ const http: HttpProps = {
   axiosConfig: axios.create({
     baseURL: backendBaseUrl,
     headers: {
-      Authorization: authorization,
+      Authorization:
+        token && token2
+          ? token
+            ? `Bearer ${token}`
+            : `Bearer ${token2}`
+          : null,
     },
   }),
 
