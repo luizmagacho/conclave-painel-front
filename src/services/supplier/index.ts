@@ -1,8 +1,9 @@
 import { Pagination } from "@/types/pagination";
-import http from "../http";
 import { Supplier, SupplierDTO, SupplierPaginationParam } from "./type";
+import { getAPIClient } from "../axios";
 
 const baseUrl = "/supplier";
+const api = getAPIClient();
 
 export async function getSuppliers({
   page,
@@ -10,7 +11,7 @@ export async function getSuppliers({
   completeName,
   type,
 }: SupplierPaginationParam) {
-  let res = await http.get<Pagination<Supplier>>(baseUrl, {
+  let res = await api.get<Pagination<Supplier>>(baseUrl, {
     params: {
       page,
       size,
@@ -23,26 +24,26 @@ export async function getSuppliers({
 }
 
 export async function getSupplierById(supplierId: string) {
-  let res = await http.get<Supplier>(`${baseUrl}/${supplierId}`);
+  let res = await api.get<Supplier>(`${baseUrl}/${supplierId}`);
   return res.data;
 }
 
 export async function postSupplier(supplier: SupplierDTO) {
-  let res = await http.post(baseUrl, supplier);
+  let res = await api.post(baseUrl, supplier);
   return res.status;
 }
 
 export async function updateSupplier(supplier: Supplier) {
-  let res = await http.put(baseUrl, supplier);
+  let res = await api.put(baseUrl, supplier);
   return res.status;
 }
 
 export async function getAllSuppliers() {
-  let res = await http.get<Supplier[]>(`${baseUrl}/all`);
+  let res = await api.get<Supplier[]>(`${baseUrl}/all`);
   return res.data;
 }
 
 export async function deleteSupplier(supplierId: string) {
-  let res = await http.delete(`${baseUrl}/${supplierId}`);
+  let res = await api.delete(`${baseUrl}/${supplierId}`);
   return res.status;
 }
