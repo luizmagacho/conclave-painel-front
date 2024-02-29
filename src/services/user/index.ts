@@ -1,5 +1,4 @@
 import { Pagination } from "@/types/pagination";
-import http from "../http";
 import {
   LoginDTO,
   User,
@@ -8,26 +7,28 @@ import {
   UserRequest,
   UserRequestDTO,
 } from "./type";
+import { getAPIClient } from "../axios";
 
 const baseUrl = "/user";
+const api = getAPIClient();
 
 export async function getUser({ email }: UserRequest) {
-  let res = await http.get<User>(`${baseUrl}/${email}`);
+  let res = await api.get<User>(`${baseUrl}/${email}`);
   return res.data;
 }
 
 export async function getUserById(userId: string) {
-  let res = await http.get<User>(`${baseUrl}/userId/${userId}`);
+  let res = await api.get<User>(`${baseUrl}/userId/${userId}`);
   return res.data;
 }
 
 export async function postUser(user: UserRequestDTO) {
-  let res = await http.post(baseUrl, user);
+  let res = await api.post(baseUrl, user);
   return res.data;
 }
 
 export async function getUsers({ page, size, name = "" }: UserPaginationParam) {
-  let res = await http.get<Pagination<User>>(baseUrl, {
+  let res = await api.get<Pagination<User>>(baseUrl, {
     params: {
       page,
       size,
@@ -38,17 +39,17 @@ export async function getUsers({ page, size, name = "" }: UserPaginationParam) {
 }
 
 export async function updateUser(user: User) {
-  let res = await http.put(baseUrl, user);
+  let res = await api.put(baseUrl, user);
   return res.status;
 }
 
 export async function deleteUser(userId: string) {
-  await http.delete(baseUrl);
+  await api.delete(baseUrl);
 }
 
 export async function changePasswordUser(
   userChangePassword: UserChangePasswordRequest
 ) {
-  let res = await http.post(`${baseUrl}/change-password`, userChangePassword);
+  let res = await api.post(`${baseUrl}/change-password`, userChangePassword);
   return res.status;
 }
