@@ -1,14 +1,15 @@
 import { AuthProvider } from "@/context/AuthContext";
-import { MaterialProvider } from "@/context/MaterialContext";
+import { SupplierProvider } from "@/context/SupplierContext";
 import { DefaultLayout } from "@/layouts";
+import SupplierCompleteInfo from "@/views/supplier/SupplierCompleteInfo";
 
 export default function SelectedSupplier(): JSX.Element {
   return (
     <DefaultLayout>
       <AuthProvider>
-        <MaterialProvider>
-          <h1>Teste</h1>
-        </MaterialProvider>
+        <SupplierProvider>
+          <SupplierCompleteInfo />
+        </SupplierProvider>
       </AuthProvider>
     </DefaultLayout>
   );

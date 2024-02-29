@@ -1,5 +1,6 @@
 import {
   deleteSupplier,
+  getSupplierById,
   getSuppliers,
   postSupplier,
   updateSupplier,
@@ -21,15 +22,15 @@ interface ProviderProps {
 interface SupplierContextProps {
   suppliers: Supplier[];
   selectedSupplier: Supplier | null;
-  setSelectedSupplier: Dispatch<SetStateAction<Supplier | null>>;
   loading: boolean;
   totalElements: number;
   handleGetSuppliers: (
     page?: number,
-    name?: string,
+    completeName?: string,
     type?: string
   ) => Promise<void>;
   handlePostSupplier: (supplier: SupplierDTO) => Promise<void>;
+  handleGetSupplierById: (supplierId: string) => Promise<void>;
   handleUpdateSupplier: (supplier: Supplier) => Promise<void>;
   handleDeleteSupplier: (supplierId: string) => Promise<void>;
 }
@@ -49,7 +50,7 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
 
   async function handleGetSuppliers(
     page: number = 0,
-    name: string = "",
+    completeName: string = "",
     type = "Nome"
   ) {
     setLoading(true);
@@ -57,12 +58,24 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
       const { content, totalElements } = await getSuppliers({
         page,
         size: 10,
-        name,
+        completeName,
         type,
       });
       setBufferedSuppliers(content || []);
       setSuppliers(content || []);
       setTotalElements(totalElements);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleGetSupplierById(supplierId: string) {
+    setLoading(true);
+    try {
+      const supplier = await getSupplierById(supplierId);
+      await setSelectedSupplier(supplier);
     } catch (error) {
       console.error(error);
     } finally {
@@ -115,10 +128,10 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
       value={{
         suppliers,
         selectedSupplier,
-        setSelectedSupplier,
         loading,
         totalElements,
         handleGetSuppliers,
+        handleGetSupplierById,
         handlePostSupplier,
         handleUpdateSupplier,
         handleDeleteSupplier,

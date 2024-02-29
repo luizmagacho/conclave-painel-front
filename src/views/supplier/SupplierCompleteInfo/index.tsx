@@ -5,16 +5,20 @@ import { Divider } from "primereact/divider";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { InputMask } from "primereact/inputmask";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
 import { SupplierContext } from "@/context/SupplierContext";
+import { Skeleton } from "primereact/skeleton";
 
-function SupplierCreate() {
-  const [newSupplier, setNewSupplier] = useState<SupplierDTO>({
-    cnpj: "",
+function SupplierCompleteInfo() {
+  const { selectedSupplier, handleGetSupplierById } =
+    useContext(SupplierContext);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [updatedSupplier, setUpdatedSupplier] = useState<SupplierDTO>({
+    cnpj: selectedSupplier?.cnpj || "",
     cpf: "",
-    completeName: "",
+    completeName: selectedSupplier?.completeName || "",
     shortenedName: "",
     streetAddress: "",
     neighborhood: "",
@@ -55,33 +59,89 @@ function SupplierCreate() {
   const [invalidBank2, setInvalidBank2] = useState<boolean>(false);
   const [invalidBank3, setInvalidBank3] = useState<boolean>(false);
 
-  const { handlePostSupplier } = useContext(SupplierContext);
+  const [showDisabled, setShowDisabled] = useState<boolean>(true);
 
   const router = useRouter();
 
   function validateFields() {
-    console.log("Supplier: ", newSupplier);
-    handlePostSupplier(newSupplier);
+    console.log("Supplier: ", updatedSupplier);
+    //handlePostSupplier(newSupplier);
   }
+
+  useEffect(() => {
+    const { id } = router.query;
+    console.log("ID: ", id);
+    handleGetSupplierById(typeof id === "string" ? id : "");
+  }, []);
+
+  useEffect(() => {
+    setLoading(true);
+    console.log("selectedSupplier: ", selectedSupplier);
+
+    try {
+      setUpdatedSupplier((prevSupplier) => ({
+        ...prevSupplier,
+        cnpj: selectedSupplier?.cnpj || prevSupplier.cnpj,
+        cpf: selectedSupplier?.cpf || prevSupplier.cpf,
+        completeName:
+          selectedSupplier?.completeName || prevSupplier.completeName,
+        shortenedName:
+          selectedSupplier?.shortenedName || prevSupplier.shortenedName,
+        streetAddress:
+          selectedSupplier?.streetAddress || prevSupplier.streetAddress,
+        neighborhood:
+          selectedSupplier?.neighborhood || prevSupplier.neighborhood,
+        city: selectedSupplier?.city || prevSupplier.city,
+        cep: selectedSupplier?.cep || prevSupplier.cep,
+        sellerName: selectedSupplier?.sellerName || prevSupplier.sellerName,
+        sellerEmail: selectedSupplier?.sellerEmail || prevSupplier.sellerEmail,
+        sellerPhone: selectedSupplier?.sellerPhone || prevSupplier.sellerPhone,
+        financialName:
+          selectedSupplier?.financialName || prevSupplier.financialName,
+        financialEmail:
+          selectedSupplier?.financialEmail || prevSupplier.financialEmail,
+        financialPhone:
+          selectedSupplier?.financialPhone || prevSupplier.financialPhone,
+        bank1: selectedSupplier?.bank1 || prevSupplier.bank1,
+        bank2: selectedSupplier?.bank2 || prevSupplier.bank2,
+        bank3: selectedSupplier?.bank3 || prevSupplier.bank3,
+        userId: selectedSupplier?.userId || prevSupplier.userId,
+      }));
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedSupplier]);
 
   return (
     <Card className="m-3">
+      {loading && (
+        <section className="flex flex-column gap-4 p-5 w-full">
+          <h1 className="m-0">Visualizar Fornecedor</h1>
+          <h3>{`Textto: ${loading}`}</h3>
+        </section>
+      )}
       <section className="flex flex-column gap-4 p-5 w-full">
-        <h1 className="m-0">Cadastrar Fornecedores</h1>
+        <h1 className="m-0">Visualizar Fornecedor</h1>
         <div className="card flex flex-column md:flex-row gap-3 w-11/12">
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle text="CNPJ" htmlFor="cnpj" className="font-semibold" />
-            <InputMask
-              mask="999.999.999/9999-99"
-              placeholder="999.999.999/9999-99"
-              onChange={(e) => {
-                setNewSupplier({
-                  ...newSupplier,
-                  cnpj: e.target.value || "",
-                });
-              }}
-              value={newSupplier?.cnpj}
-            />
+            {loading && <Skeleton height="2rem" className="mb-2"></Skeleton>}
+            {!loading && (
+              <InputMask
+                mask="999.999.999/9999-99"
+                placeholder="999.999.999/9999-99"
+                onChange={(e) => {
+                  setUpdatedSupplier({
+                    ...updatedSupplier,
+                    cnpj: e.target.value || "",
+                  });
+                }}
+                value={updatedSupplier?.cnpj}
+                disabled={showDisabled}
+              />
+            )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle text="CPF" htmlFor="cpf" className="font-semibold" />
@@ -89,12 +149,13 @@ function SupplierCreate() {
               mask="999.999.999-99"
               placeholder="999.999.999-99"
               onChange={(e) => {
-                setNewSupplier({
-                  ...newSupplier,
+                setUpdatedSupplier({
+                  ...updatedSupplier,
                   cpf: e.target.value || "",
                 });
               }}
-              value={newSupplier?.cpf}
+              value={updatedSupplier?.cpf}
+              disabled={showDisabled}
             />
           </div>
           <div className="field flex flex-column gap-2 w-full">
@@ -107,13 +168,14 @@ function SupplierCreate() {
             <InputText
               type="text"
               onChange={(e) => {
-                setNewSupplier({
-                  ...newSupplier,
+                setUpdatedSupplier({
+                  ...updatedSupplier,
                   completeName: e.target.value,
                 });
                 setInvalidCompleteName(false);
               }}
-              value={newSupplier?.completeName}
+              value={updatedSupplier?.completeName}
+              disabled={showDisabled}
             />
             {invalidCompleteName && (
               <Message severity="error" text="Nome COmpleto é obrigatório" />
@@ -129,13 +191,14 @@ function SupplierCreate() {
             <InputText
               type="text"
               onChange={(e) => {
-                setNewSupplier({
-                  ...newSupplier,
+                setUpdatedSupplier({
+                  ...updatedSupplier,
                   shortenedName: e.target.value,
                 });
                 setInvalidShortenedName(false);
               }}
-              value={newSupplier?.shortenedName}
+              value={updatedSupplier?.shortenedName}
+              disabled={showDisabled}
             />
             {invalidShortenedName && (
               <Message severity="error" text="Nome Reduzido é obrigatório" />
@@ -153,13 +216,14 @@ function SupplierCreate() {
             <InputText
               type="text"
               onChange={(e) => {
-                setNewSupplier({
-                  ...newSupplier,
+                setUpdatedSupplier({
+                  ...updatedSupplier,
                   streetAddress: e.target.value,
                 });
                 setInvalidStreetAddress(false);
               }}
-              value={newSupplier?.streetAddress}
+              value={updatedSupplier?.streetAddress}
+              disabled={showDisabled}
             />
             {invalidStreetAddress && (
               <Message severity="error" text="Logradouro é obrigatório" />
@@ -175,13 +239,14 @@ function SupplierCreate() {
             <InputText
               type="text"
               onChange={(e) => {
-                setNewSupplier({
-                  ...newSupplier,
+                setUpdatedSupplier({
+                  ...updatedSupplier,
                   neighborhood: e.target.value,
                 });
                 setInvalidNeighborhood(false);
               }}
-              value={newSupplier?.neighborhood}
+              value={updatedSupplier?.neighborhood}
+              disabled={showDisabled}
             />
             {invalidNeighborhood && (
               <Message severity="error" text="Bairro é obrigatório" />
@@ -197,13 +262,14 @@ function SupplierCreate() {
             <InputText
               type="text"
               onChange={(e) => {
-                setNewSupplier({
-                  ...newSupplier,
+                setUpdatedSupplier({
+                  ...updatedSupplier,
                   city: e.target.value,
                 });
                 setInvalidCity(false);
               }}
-              value={newSupplier?.city}
+              value={updatedSupplier?.city}
+              disabled={showDisabled}
             />
             {invalidCity && (
               <Message severity="error" text="Cidade é obrigatório" />
@@ -220,13 +286,14 @@ function SupplierCreate() {
               mask="99.999-999"
               placeholder="99.999-999"
               onChange={(e) => {
-                setNewSupplier({
-                  ...newSupplier,
+                setUpdatedSupplier({
+                  ...updatedSupplier,
                   cep: e.target.value || "",
                 });
                 setInvalidCep(false);
               }}
-              value={newSupplier?.shortenedName}
+              value={updatedSupplier?.shortenedName}
+              disabled={showDisabled}
             />
             {invalidCep && (
               <Message severity="error" text="CEP é obrigatório" />
@@ -245,13 +312,14 @@ function SupplierCreate() {
             <InputText
               type="text"
               onChange={(e) => {
-                setNewSupplier({
-                  ...newSupplier,
+                setUpdatedSupplier({
+                  ...updatedSupplier,
                   sellerName: e.target.value,
                 });
                 setInvalidSellerName(false);
               }}
-              value={newSupplier?.sellerName}
+              value={updatedSupplier?.sellerName}
+              disabled={showDisabled}
             />
             {invalidSellerName && (
               <Message severity="error" text="Nome Vendedor é obrigatório" />
@@ -268,13 +336,14 @@ function SupplierCreate() {
               mask="(99) 99999-9999"
               placeholder="(99) 99999-9999"
               onChange={(e) => {
-                setNewSupplier({
-                  ...newSupplier,
+                setUpdatedSupplier({
+                  ...updatedSupplier,
                   sellerPhone: e.target.value || "",
                 });
                 setInvalidSellerPhone(false);
               }}
-              value={newSupplier?.sellerPhone}
+              value={updatedSupplier?.sellerPhone}
+              disabled={showDisabled}
             />
             {invalidSellerPhone && (
               <Message
@@ -293,13 +362,14 @@ function SupplierCreate() {
             <InputText
               type="text"
               onChange={(e) => {
-                setNewSupplier({
-                  ...newSupplier,
+                setUpdatedSupplier({
+                  ...updatedSupplier,
                   sellerEmail: e.target.value,
                 });
                 setInvalidSellerEmail(false);
               }}
-              value={newSupplier?.sellerEmail}
+              value={updatedSupplier?.sellerEmail}
+              disabled={showDisabled}
             />
             {invalidSellerEmail && (
               <Message severity="error" text="E-mail Vendedor é obrigatório" />
@@ -317,13 +387,14 @@ function SupplierCreate() {
             <InputText
               type="text"
               onChange={(e) => {
-                setNewSupplier({
-                  ...newSupplier,
+                setUpdatedSupplier({
+                  ...updatedSupplier,
                   financialName: e.target.value,
                 });
                 setInvalidFinancialName(false);
               }}
-              value={newSupplier?.financialName}
+              value={updatedSupplier?.financialName}
+              disabled={showDisabled}
             />
             {invalidFinancialName && (
               <Message severity="error" text="Nome Vendedor é obrigatório" />
@@ -340,13 +411,14 @@ function SupplierCreate() {
               mask="(99) 99999-9999"
               placeholder="(99) 99999-9999"
               onChange={(e) => {
-                setNewSupplier({
-                  ...newSupplier,
+                setUpdatedSupplier({
+                  ...updatedSupplier,
                   financialPhone: e.target.value || "",
                 });
                 setInvalidFinancialPhone(false);
               }}
-              value={newSupplier?.financialPhone}
+              value={updatedSupplier?.financialPhone}
+              disabled={showDisabled}
             />
             {invalidFinancialPhone && (
               <Message
@@ -365,13 +437,14 @@ function SupplierCreate() {
             <InputText
               type="text"
               onChange={(e) => {
-                setNewSupplier({
-                  ...newSupplier,
+                setUpdatedSupplier({
+                  ...updatedSupplier,
                   financialEmail: e.target.value,
                 });
                 setInvalidFinancialEmail(false);
               }}
-              value={newSupplier?.financialEmail}
+              value={updatedSupplier?.financialEmail}
+              disabled={showDisabled}
             />
             {invalidFinancialEmail && (
               <Message severity="error" text="E-mail Vendedor é obrigatório" />
@@ -390,13 +463,14 @@ function SupplierCreate() {
             <InputText
               type="text"
               onChange={(e) => {
-                setNewSupplier({
-                  ...newSupplier,
+                setUpdatedSupplier({
+                  ...updatedSupplier,
                   bank1: e.target.value,
                 });
                 setInvalidBank1(false);
               }}
-              value={newSupplier?.bank1}
+              value={updatedSupplier?.bank1}
+              disabled={showDisabled}
             />
             {invalidBank1 && (
               <Message severity="error" text="Banco  é obrigatório" />
@@ -412,13 +486,14 @@ function SupplierCreate() {
             <InputText
               type="text"
               onChange={(e) => {
-                setNewSupplier({
-                  ...newSupplier,
+                setUpdatedSupplier({
+                  ...updatedSupplier,
                   bank2: e.target.value,
                 });
                 setInvalidBank2(false);
               }}
-              value={newSupplier?.bank2}
+              value={updatedSupplier?.bank2}
+              disabled={showDisabled}
             />
             {invalidBank2 && (
               <Message severity="error" text="Banco 2 é obrigatório" />
@@ -434,13 +509,14 @@ function SupplierCreate() {
             <InputText
               type="text"
               onChange={(e) => {
-                setNewSupplier({
-                  ...newSupplier,
+                setUpdatedSupplier({
+                  ...updatedSupplier,
                   bank3: e.target.value,
                 });
                 setInvalidBank3(false);
               }}
-              value={newSupplier?.bank3}
+              value={updatedSupplier?.bank3}
+              disabled={showDisabled}
             />
             {invalidBank3 && (
               <Message severity="error" text="Banco 3 é obrigatório" />
@@ -459,16 +535,19 @@ function SupplierCreate() {
               router.push("/fornecedores");
             }}
           />
-          <Button
-            onClick={() => validateFields()}
-            className="rounded-md px-3"
-            label="Salvar"
-            severity="danger"
-          />
+          {showDisabled && (
+            <Button
+              onClick={() => validateFields()}
+              className="rounded-md px-3"
+              label="Atualizar"
+              severity="danger"
+              disabled={showDisabled}
+            />
+          )}
         </div>
       </section>
     </Card>
   );
 }
 
-export default SupplierCreate;
+export default SupplierCompleteInfo;

@@ -16,10 +16,14 @@ interface HttpProps {
   ) => Promise<AxiosResponse<T, any>>;
   delete: <T>(route: string, body?: any) => Promise<AxiosResponse<T, any>>;
 }
-const token = await Cookies.get("portal.token");
-const backendBaseUrl = await process.env.NEXT_PUBLIC_BACKEND_ENDPOINT_API;
+
+const token = window.localStorage.getItem("portal.token");
+
 const { "portal.token": token2 } = parseCookies();
-const authorization = token ? `Bearer ${token}` : `Bearer ${token2}`;
+const authorization =
+  token && token2 ? (token ? `Bearer ${token}` : `Bearer ${token2}`) : null;
+const backendBaseUrl = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT_API;
+
 const http: HttpProps = {
   axiosConfig: axios.create({
     baseURL: backendBaseUrl,

@@ -7,18 +7,23 @@ const baseUrl = "/supplier";
 export async function getSuppliers({
   page,
   size,
-  name,
+  completeName,
   type,
 }: SupplierPaginationParam) {
   let res = await http.get<Pagination<Supplier>>(baseUrl, {
     params: {
       page,
       size,
-      name,
+      completeName,
       type,
     },
   });
 
+  return res.data;
+}
+
+export async function getSupplierById(supplierId: string) {
+  let res = await http.get<Supplier>(`${baseUrl}/${supplierId}`);
   return res.data;
 }
 

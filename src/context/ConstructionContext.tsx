@@ -1,4 +1,5 @@
 import {
+  deleteConstruction,
   getConstructions,
   postConstruction,
   updateConstruction,
@@ -81,6 +82,18 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
 
     try {
       const resp = await updateConstruction(construction);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleDeleteConstruction(constructionId: string) {
+    setLoading(true);
+
+    try {
+      const resp = await deleteConstruction(constructionId);
     } catch (error) {
       console.error(error);
     } finally {

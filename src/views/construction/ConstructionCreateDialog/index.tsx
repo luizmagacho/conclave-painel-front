@@ -73,7 +73,6 @@ function ConstructionCreateDialog({
     );
     setInvalidOpeningDate(!newConstruction.openingDate);
 
-    console.log("New COnstruction: ", newConstruction);
     if (
       !invalidCode &&
       !invalidClient &&
@@ -229,7 +228,6 @@ function ConstructionCreateDialog({
                 name="Não"
                 onChange={(e) => {
                   setNewConstruction({ ...newConstruction, cad: e.value });
-                  console.log(e.value);
                 }}
                 checked={newConstruction.cad === false}
               />

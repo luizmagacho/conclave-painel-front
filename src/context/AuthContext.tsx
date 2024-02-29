@@ -6,7 +6,7 @@ import { authenticate, login, statusToken } from "@/services/auth";
 import { getUser } from "@/services/user";
 import { useRouter } from "next/router";
 import { AuthResponse } from "@/services/auth/types";
-import { setCookie } from "nookies";
+import { destroyCookie, setCookie } from "nookies";
 
 interface ProviderProps {
   children: ReactNode;
@@ -38,11 +38,11 @@ export const AuthProvider = ({ children }: ProviderProps) => {
       const resp = await login(loginDTO);
       if (resp) {
         const cookieParams = {};
-        Cookies.set("portal.id", resp.id);
-        Cookies.set("portal.name", resp.name);
-        Cookies.set("portal.username", resp.username);
-        Cookies.set("portal.role", resp.highestPriorityRole);
-        Cookies.set("portal.token", resp.token);
+        localStorage.setItem("portal.id", resp.id);
+        localStorage.setItem("portal.name", resp.name);
+        localStorage.setItem("portal.username", resp.username);
+        localStorage.setItem("portal.role", resp.highestPriorityRole);
+        localStorage.setItem("portal.token", resp.token);
         window.sessionStorage.setItem("token", resp.token);
         setCookie(undefined, "portal.token", resp.token, cookieParams);
         setUser({
@@ -70,23 +70,13 @@ export const AuthProvider = ({ children }: ProviderProps) => {
   }
 
   function logout() {
-    console.log("Entrou");
-    Cookies.remove("portal.token");
-    Cookies.remove("portal.username");
-    Cookies.remove("portal.role");
-    Cookies.remove("portal.id");
-    window.localStorage.clear();
-    window.sessionStorage.clear();
+    destroyCookie(null, "portal.token", {});
+    localStorage.clear();
     router.push("/");
   }
 
   function softLogout() {
-    Cookies.remove("portal.token");
-    Cookies.remove("portal.username");
-    Cookies.remove("portal.role");
-    Cookies.remove("portal.id");
-    window.localStorage.clear();
-    window.sessionStorage.clear();
+    localStorage.clear();
   }
 
   return (
