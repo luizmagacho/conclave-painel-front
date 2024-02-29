@@ -39,3 +39,8 @@ export async function updateConstruction(construction: Construction) {
   let res = await http.put(baseUrl, construction);
   return res.status;
 }
+
+export async function deleteConstruction(constructionId: string) {
+  let res = await http.delete(`${baseUrl}/${constructionId}`);
+  return res.status;
+}

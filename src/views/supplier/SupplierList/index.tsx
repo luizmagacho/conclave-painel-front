@@ -52,8 +52,8 @@ function SupplierList() {
     suppliers,
     totalElements,
     loading,
-    setSelectedSupplier,
     handleGetSuppliers,
+    handleGetSupplierById,
   } = useContext(SupplierContext);
 
   const toast = useRef<Toast>(null);
@@ -76,8 +76,8 @@ function SupplierList() {
     options: (suppliers: Supplier) => optionsBodyTemplate(options, suppliers),
   };
 
-  function openDetailsInfo(supplier: Supplier) {
-    setSelectedSupplier(supplier);
+  async function openDetailsInfo(supplier: Supplier) {
+    await handleGetSupplierById(supplier.id);
     router.push(`/fornecedores/${supplier.id}`);
   }
 

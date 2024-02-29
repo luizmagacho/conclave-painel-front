@@ -29,9 +29,6 @@ function LeftPanel({ children }: LeftPanelProps) {
   const [visibleConfirmation, setVisibleConfirmation] = useState(false);
   const { logout } = useContext(AuthContext);
 
-  function teste() {
-    console.log("teste");
-  }
   return (
     <StyledSidebar
       style={{

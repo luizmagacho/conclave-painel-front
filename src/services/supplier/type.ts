@@ -48,6 +48,6 @@ export type SupplierDTO = {
 export type SupplierPaginationParam = {
   size: number;
   page: number;
-  name?: string;
+  completeName?: string;
   type?: string;
 };
