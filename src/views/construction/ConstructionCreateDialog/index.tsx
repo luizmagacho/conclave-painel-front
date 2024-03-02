@@ -26,8 +26,8 @@ function ConstructionCreateDialog({
   onCreate,
 }: ConstructionCreateDialog) {
   const [newConstruction, setNewConstruction] = useState<ConstructionDTO>({
-    code: 0,
-    bankBranch: 0,
+    code: "",
+    bankBranch: "",
     responsible: "",
     cad: false,
     client: "",
@@ -61,9 +61,9 @@ function ConstructionCreateDialog({
   async function validateFields() {
     const userId = await Cookies.get("portal.id");
     setNewConstruction({ ...newConstruction, userId: userId || "" });
-    setInvalidCode(!newConstruction.code || newConstruction.code === 0);
+    setInvalidCode(!newConstruction.code || newConstruction.code === "");
     setInvalidBankBranch(
-      !newConstruction.bankBranch || newConstruction.bankBranch === 0
+      !newConstruction.bankBranch || newConstruction.bankBranch === ""
     );
     setInvalidResponsible(
       !newConstruction.responsible || newConstruction.responsible === ""
@@ -103,17 +103,16 @@ function ConstructionCreateDialog({
             className="font-semibold"
             required={true}
           />
-          <InputNumber
+          <InputText
             type="text"
-            onValueChange={(e: InputNumberValueChangeEvent) => {
+            onChange={(e) => {
               setNewConstruction({
                 ...newConstruction,
-                code: e.value ? Number(e.value) : null,
+                code: e.target.value,
               });
               setInvalidCode(false);
             }}
             value={newConstruction?.code}
-            useGrouping={false}
           />
           {invalidCode && (
             <Message severity="error" text="Nome é obrigatório" />
@@ -284,17 +283,16 @@ function ConstructionCreateDialog({
             className="font-semibold"
             required={true}
           />
-          <InputNumber
+          <InputText
             type="text"
-            onValueChange={(e) => {
+            onChange={(e) => {
               setNewConstruction({
                 ...newConstruction,
-                bankBranch: e.value ? Number(e.value) : null,
+                bankBranch: e.target.value,
               });
               setInvalidBankBranch(false);
             }}
             value={newConstruction?.bankBranch}
-            useGrouping={false}
           />
           {invalidBankBranch && (
             <Message severity="error" text="Agência é obrigatória" />

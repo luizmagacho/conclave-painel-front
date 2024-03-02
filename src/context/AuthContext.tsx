@@ -76,6 +76,7 @@ export const AuthProvider = ({ children }: ProviderProps) => {
   }
 
   function softLogout() {
+    destroyCookie(null, "portal.token", {});
     localStorage.clear();
   }
 
