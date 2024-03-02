@@ -73,9 +73,11 @@ function ConstructionUpdateDialog({
   }, [newOpeningDate, newClosedDate]);
 
   function validateFields() {
-    setInvalidCode(!updatedConstruction.code || updatedConstruction.code === 0);
+    setInvalidCode(
+      !updatedConstruction.code || updatedConstruction.code === ""
+    );
     setInvalidBankBranch(
-      !updatedConstruction.bankBranch || updatedConstruction.bankBranch === 0
+      !updatedConstruction.bankBranch || updatedConstruction.bankBranch === ""
     );
     setInvalidResponsible(
       !updatedConstruction.responsible || updatedConstruction.responsible === ""
@@ -114,16 +116,15 @@ function ConstructionUpdateDialog({
             className="font-semibold"
             required={true}
           />
-          <InputNumber
-            onValueChange={(e) => {
+          <InputText
+            onChange={(e) => {
               setUpdatedConstruction({
                 ...updatedConstruction,
-                code: typeof e.value === "number" ? e.value : null,
+                code: typeof e.target.value,
               });
               setInvalidCode(false);
             }}
             value={updatedConstruction.code}
-            useGrouping={false}
           />
           {invalidCode && (
             <Message severity="error" text="Código é obrigatório" />
@@ -298,16 +299,15 @@ function ConstructionUpdateDialog({
             className="font-semibold"
             required={true}
           />
-          <InputNumber
-            onValueChange={(e) => {
+          <InputText
+            onChange={(e) => {
               setUpdatedConstruction({
                 ...updatedConstruction,
-                bankBranch: typeof e.value === "number" ? e.value : null,
+                bankBranch: e.target.value,
               });
               setInvalidBankBranch(false);
             }}
             value={updatedConstruction?.bankBranch}
-            useGrouping={false}
           />
           {invalidBankBranch && (
             <Message severity="error" text="Agência é obrigatória" />
