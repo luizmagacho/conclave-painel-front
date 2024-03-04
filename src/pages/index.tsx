@@ -7,6 +7,7 @@ import { Button } from "primereact/button";
 import { LoginDTO } from "@/services/user/type";
 import { AuthContext } from "@/context/AuthContext";
 import { Message } from "primereact/message";
+import { Logo } from "@/views/common";
 
 interface LeftPanelProps {
   children: ReactNode;
@@ -28,8 +29,8 @@ const StyledSidebar = styled.aside<LeftPanelProps>`
 const StyledContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
-  justify-content: space-between;
+  height: 90%;
+  justify-content: space-evenly;
 `;
 
 export default function Login(): JSX.Element {
@@ -84,7 +85,10 @@ export default function Login(): JSX.Element {
       <StyledSidebar>
         <StyledContainer>
           <div></div>
-          <div className="flex flex-column items-center justify-center gap-5">
+          <div>
+            <Logo />
+          </div>
+          <div className="flex flex-column items-center justify-center">
             <div className="flex flex-column items-center justify-center gap-2">
               <LabelTitle
                 text="E-mail"

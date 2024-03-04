@@ -34,6 +34,7 @@ function ConstructionUpdateDialog({
     bankBranch: data.bankBranch,
     responsible: data.responsible,
     cad: data.cad,
+    isCad: data.isCad,
     client: data.client,
     openingDate: data.openingDate,
     closedDate: data.closedDate,

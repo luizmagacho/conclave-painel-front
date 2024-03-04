@@ -7,6 +7,7 @@ export type Construction = {
   responsible: string;
   service: string;
   cad: boolean;
+  isCad: string;
   openingDate: string;
   openingDateFormatted?: string;
   closedDate: string;
