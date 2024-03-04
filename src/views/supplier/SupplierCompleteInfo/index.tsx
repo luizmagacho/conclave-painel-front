@@ -70,7 +70,6 @@ function SupplierCompleteInfo() {
 
   useEffect(() => {
     const { id } = router.query;
-    console.log("ID: ", id);
     handleGetSupplierById(typeof id === "string" ? id : "");
   }, []);
 
@@ -119,11 +118,22 @@ function SupplierCompleteInfo() {
       {loading && (
         <section className="flex flex-column gap-4 p-5 w-full">
           <h1 className="m-0">Visualizar Fornecedor</h1>
-          <h3>{`Textto: ${loading}`}</h3>
         </section>
       )}
       <section className="flex flex-column gap-4 p-5 w-full">
-        <h1 className="m-0">Visualizar Fornecedor</h1>
+        <div className="flex align-items-center justify-start w-full gap-2">
+          <h1 className="m-0">Visualizar Fornecedor</h1>
+          <Button
+            style={{
+              backgroundColor: "var(--cor-primaria)",
+              border: "1px solid var(--cor-primaria)",
+            }}
+            onClick={() => setShowDisabled(false)}
+          >
+            {" "}
+            Editar
+          </Button>
+        </div>
         <div className="card flex flex-column md:flex-row gap-3 w-11/12">
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle text="CNPJ" htmlFor="cnpj" className="font-semibold" />

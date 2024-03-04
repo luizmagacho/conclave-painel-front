@@ -29,12 +29,12 @@ export default function Layout({ children }: LayoutProps) {
   if (!user) return;
   const { name } = user;
 
-  const role = Cookies.get("portal.role");
+  const role = localStorage.getItem("portal.role");
 
   return (
     <div className="h-screen flex overflow-y-hidden">
       <LeftPanel>
-        <div className="flex flex-column gap-3">
+        <div className="flex flex-column gap-3 mt-6">
           <UserAvatar name={name} />
           {role === "Administrador" && (
             <PanelMenu

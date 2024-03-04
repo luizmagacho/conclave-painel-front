@@ -44,7 +44,7 @@ const columns = [
     header: "Descrição",
   },
   {
-    field: "cad",
+    field: "isCad",
     header: "CAD",
   },
   {
