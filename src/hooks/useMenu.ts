@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 import { MenuItem } from "primereact/menuitem";
 import { PanelMenu } from "primereact/panelmenu";
 import { useEffect, useRef, useState } from "react";
-import ConstructionIcon from "@mui/icons-material/ConstructionOutlined"; // Ícone do Material Design
 
 const useMenu = () => {
   const [shouldRefresh, setShouldRefresh] = useState(false);

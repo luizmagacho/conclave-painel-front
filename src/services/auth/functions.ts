@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 import { AuthManager } from "./types";
 
-const AuthManager: AuthManager = {
+const gerenciadorAutenticacao: AuthManager = {
   logout: () => {
     Cookies.remove("portal.token");
     Cookies.remove("portal.role");
@@ -12,4 +12,4 @@ const AuthManager: AuthManager = {
   },
 };
 
-export default AuthManager;
+export default gerenciadorAutenticacao;
