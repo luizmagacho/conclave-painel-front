@@ -8,12 +8,12 @@ const baseUrl = "/auth";
 const api = getAPIClient();
 
 export async function authenticate({ email }: AuthRequest) {
-  let res = await http.post<AuthResponse>(`${baseUrl}/login`, email);
+  let res = await api.post<AuthResponse>(`${baseUrl}/login`, email);
   return res.data;
 }
 
 export async function login(login: LoginDTO) {
-  let res = await http.post<LoginResponseDTO>(`${baseUrl}/login`, login);
+  let res = await api.post<LoginResponseDTO>(`${baseUrl}/login`, login);
   return res.data;
 }
 

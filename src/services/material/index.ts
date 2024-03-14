@@ -22,11 +22,6 @@ export async function getMaterials({
   return res.data;
 }
 
-export async function getAllMaterials() {
-  let res = await api.get<Material[]>(`${baseUrl}/all`);
-  return res.data;
-}
-
 export async function postMaterial(material: MaterialDTO) {
   let res = await api.post(baseUrl, material);
   return res.status;
