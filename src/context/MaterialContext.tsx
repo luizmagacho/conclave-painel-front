@@ -1,10 +1,10 @@
 import {
+  getAllMaterials,
   getMaterials,
   postMaterial,
   updateMaterial,
 } from "@/services/material";
 import { Material, MaterialDTO } from "@/services/material/type";
-import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { ReactNode, createContext, useEffect, useState } from "react";
 
@@ -14,6 +14,7 @@ interface ProviderProps {
 
 interface MaterialContextProps {
   materials: Material[];
+  allMaterials: Material[];
   loading: boolean;
   totalElements: number;
   handleGetMaterials: (
@@ -21,6 +22,7 @@ interface MaterialContextProps {
     name?: string,
     type?: string
   ) => Promise<void>;
+  handleGetAllMaterials: () => Promise<void>;
   handlePostMaterial: (material: MaterialDTO) => Promise<void>;
   handleUpdateMaterial: (material: Material) => Promise<void>;
 }
@@ -29,6 +31,7 @@ export const MaterialContext = createContext({} as MaterialContextProps);
 
 export const MaterialProvider = ({ children }: ProviderProps) => {
   const [materials, setMaterials] = useState<Material[]>([]);
+  const [allMaterials, setAllMaterials] = useState<Material[]>([]);
   const [bufferedMaterials, setBufferedMaterials] = useState<Material[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -54,6 +57,18 @@ export const MaterialProvider = ({ children }: ProviderProps) => {
       setBufferedMaterials(content || []);
       setMaterials(content || []);
       setTotalElements(totalElements);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleGetAllMaterials() {
+    setLoading(true);
+
+    try {
+      setAllMaterials(await getAllMaterials());
     } catch (error) {
       console.error(error);
     } finally {
@@ -93,9 +108,11 @@ export const MaterialProvider = ({ children }: ProviderProps) => {
     <MaterialContext.Provider
       value={{
         materials,
+        allMaterials,
         loading,
         totalElements,
         handleGetMaterials,
+        handleGetAllMaterials,
         handlePostMaterial,
         handleUpdateMaterial,
       }}

@@ -45,6 +45,12 @@ export const AuthProvider = ({ children }: ProviderProps) => {
         localStorage.setItem("portal.token", resp.token);
         window.sessionStorage.setItem("token", resp.token);
         setCookie(undefined, "portal.token", resp.token, cookieParams);
+        setCookie(
+          undefined,
+          "portal.role",
+          resp.highestPriorityRole,
+          cookieParams
+        );
         setUser({
           ...user,
           id: resp.id,

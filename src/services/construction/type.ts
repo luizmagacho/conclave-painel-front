@@ -14,8 +14,8 @@ export type Construction = {
   closedDateFormatted?: string;
   userId: number;
   enabled: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | null;
+  updatedAt: Date | null;
 };
 
 export type ConstructionDTO = {
