@@ -59,9 +59,9 @@ function SupplierCreate() {
 
   const router = useRouter();
 
-  async function validateFields() {
-    await handlePostSupplier(newSupplier);
-    router.push("/fornecedores");
+  function validateFields() {
+    console.log("Supplier: ", newSupplier);
+    handlePostSupplier(newSupplier);
   }
 
   return (

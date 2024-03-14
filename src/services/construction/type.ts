@@ -1,7 +1,7 @@
 export type Construction = {
   id: number | null;
-  code: string;
-  bankBranch: string;
+  code: number | null;
+  bankBranch: number | null;
   client: string;
   local: string;
   responsible: string;
@@ -19,8 +19,8 @@ export type Construction = {
 };
 
 export type ConstructionDTO = {
-  code: string;
-  bankBranch: string;
+  code: number | null;
+  bankBranch: number | null;
   client: string;
   local: string;
   responsible: string;
