@@ -1,7 +1,7 @@
 export type Construction = {
   id: number | null;
-  code: string;
-  bankBranch: string;
+  code: number | null;
+  bankBranch: number | null;
   client: string;
   local: string;
   responsible: string;
@@ -14,13 +14,13 @@ export type Construction = {
   closedDateFormatted?: string;
   userId: number;
   enabled: boolean;
-  createdAt: Date | null;
-  updatedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type ConstructionDTO = {
-  code: string;
-  bankBranch: string;
+  code: number | null;
+  bankBranch: number | null;
   client: string;
   local: string;
   responsible: string;

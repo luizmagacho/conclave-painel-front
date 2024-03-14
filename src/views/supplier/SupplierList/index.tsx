@@ -8,7 +8,6 @@ import { DataTable } from "primereact/datatable";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { Toast } from "primereact/toast";
 import { useContext, useRef, useState } from "react";
-import SupplierDeleteDialog from "../SupplierDeleteDialog";
 
 interface Options {
   icon?: string;
@@ -49,18 +48,12 @@ function SupplierList() {
     type: "Nome",
   });
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
-  const [currDeleteSupplier, setCurrDeleteSupplier] = useState<Supplier | null>(
-    null
-  );
-  const [showDialogDelete, setShowDialogDelete] = useState<boolean>(false);
-
   const {
     suppliers,
     totalElements,
     loading,
     handleGetSuppliers,
     handleGetSupplierById,
-    handleDeleteSupplier,
   } = useContext(SupplierContext);
 
   const toast = useRef<Toast>(null);
@@ -91,20 +84,7 @@ function SupplierList() {
   function openCreatePage() {
     router.push(`/fornecedores/cadastrar`);
   }
-  function openDeleteDialog(supplier: Supplier) {
-    setCurrDeleteSupplier(supplier);
-    setShowDialogDelete((showDeleteDialog) => !showDeleteDialog);
-  }
-
-  async function onDeleteSupplier(supplierId: string) {
-    await handleDeleteSupplier(supplierId);
-    handleGetSuppliers();
-  }
-
-  function closeDeleteDialog() {
-    setCurrDeleteSupplier(null);
-    setShowDialogDelete((showDeleteDialog) => !showDeleteDialog);
-  }
+  function openDeleteDialog() {}
 
   function onPageChange(event: PaginatorPageChangeEvent) {
     const { page, first } = event;
@@ -171,14 +151,6 @@ function SupplierList() {
           totalRecords={totalElements}
           onPageChange={onPageChange}
         />
-        {currDeleteSupplier && (
-          <SupplierDeleteDialog
-            visible={showDialogDelete}
-            data={currDeleteSupplier}
-            onDelete={onDeleteSupplier}
-            onHide={closeDeleteDialog}
-          />
-        )}
       </section>
     </>
   );
