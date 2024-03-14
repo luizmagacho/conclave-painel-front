@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { MenuItem } from "primereact/menuitem";
 import { PanelMenu } from "primereact/panelmenu";
 import { useEffect, useRef, useState } from "react";
+import ConstructionIcon from "@mui/icons-material/ConstructionOutlined"; // Ícone do Material Design
 
 const useMenu = () => {
   const [shouldRefresh, setShouldRefresh] = useState(false);
@@ -21,7 +22,7 @@ const useMenu = () => {
         },
         {
           label: "Perfis",
-          icon: "pi pi-id-card",
+          icon: "pi pi-money-bill",
           command: () => router.push("/perfil"),
         },
         {
@@ -35,20 +36,28 @@ const useMenu = () => {
 
   const items: MenuItem[] = [
     {
-      label: "Controle de Material",
-      icon: "pi pi-fw pi-building",
+      label: "Material",
+      icon: "pi pi-fw pi-box",
       command: () => router.push("/material"),
     },
     {
-      label: "Controle de Obras",
-      icon: "pi pi-fw pi-file",
+      label: "Obras",
+      icon: "pi pi-fw pi-book",
       command: () => router.push("/obras"),
     },
     {
-      label: "Controle de Fornecedores",
-      icon: "pi pi-fw pi-file-export",
+      label: "Fornecedor",
+      icon: "pi pi-fw pi-truck",
       command: () => {
         router.push("/fornecedores");
+      },
+    },
+
+    {
+      label: "Pedido",
+      icon: "pi pi-fw pi-shopping-cart",
+      command: () => {
+        router.push("/pedidos");
       },
     },
   ];

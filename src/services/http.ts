@@ -22,22 +22,11 @@ if (typeof window !== "undefined") {
   token = localStorage.getItem("portal.token");
 }
 
-const { "portal.token": token2 } = parseCookies();
-const authorization =
-  token && token2 ? (token ? `Bearer ${token}` : `Bearer ${token2}`) : null;
 const backendBaseUrl = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT_API;
 
 const http: HttpProps = {
   axiosConfig: axios.create({
     baseURL: backendBaseUrl,
-    headers: {
-      Authorization:
-        token && token2
-          ? token
-            ? `Bearer ${token}`
-            : `Bearer ${token2}`
-          : null,
-    },
   }),
 
   get: function <T>(route: string, body?: any) {

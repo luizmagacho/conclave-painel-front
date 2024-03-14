@@ -75,7 +75,6 @@ function SupplierCompleteInfo() {
 
   useEffect(() => {
     setLoading(true);
-    console.log("selectedSupplier: ", selectedSupplier);
 
     try {
       setUpdatedSupplier((prevSupplier) => ({

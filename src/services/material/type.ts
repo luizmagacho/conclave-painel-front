@@ -4,8 +4,8 @@ export type Material = {
   quantity: string;
   metricUnit: string;
   enabled: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export type MaterialDTO = {
