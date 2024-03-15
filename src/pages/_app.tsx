@@ -12,12 +12,14 @@ import { PrimeReactProvider } from "primereact/api";
 import Head from "next/head";
 import GlobalStyle from "@/styles/global";
 import ErrorBoundary from "./ErrorBoundary";
+const Logo = "/Logo_conclave.png";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <div>
       <Head>
         <title>Conclave Engenharia - Portal</title>
+        <link rel="shortcut icon" href={Logo} />
       </Head>
       <AuthProvider>
         <PrimeReactProvider>

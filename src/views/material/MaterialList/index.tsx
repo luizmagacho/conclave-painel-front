@@ -8,6 +8,7 @@ import { Toast } from "primereact/toast";
 import { useContext, useRef, useState } from "react";
 import MaterialCreateDialog from "../MaterialCreateDialog";
 import InputSearch from "@/components/InputSearch";
+import MaterialUpdateDialog from "../MaterialUpdateDialog";
 
 interface Options {
   icon?: string;
@@ -51,6 +52,7 @@ function MaterialList() {
     totalElements,
     handleGetMaterials,
     handlePostMaterial,
+    handleUpdateMaterial,
   } = useContext(MaterialContext);
 
   const toast = useRef<Toast>(null);
@@ -78,8 +80,13 @@ function MaterialList() {
     setCurrMaterial(null);
   }
 
-  function onCreateMaterial(material: MaterialDTO) {
-    handlePostMaterial(material);
+  async function onUpdateMaterial(material: Material) {
+    await handleUpdateMaterial(material);
+    handleGetMaterials();
+  }
+
+  async function onCreateMaterial(material: MaterialDTO) {
+    await handlePostMaterial(material);
     handleGetMaterials();
   }
 
@@ -160,7 +167,14 @@ function MaterialList() {
           />
         )}
       </section>
-      {currMaterial && <h3>Teste</h3>}
+      {currMaterial && (
+        <MaterialUpdateDialog
+          data={currMaterial}
+          visible={showDialog}
+          onUpdate={onUpdateMaterial}
+          onHide={closeDialog}
+        />
+      )}
     </>
   );
 }

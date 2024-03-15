@@ -1,5 +1,4 @@
 import { Html, Head, Main, NextScript } from "next/document";
-const Icon = "@/public/images/logo_neovia.png";
 
 export default function Document() {
   return (

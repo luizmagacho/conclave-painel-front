@@ -5,8 +5,10 @@ import {
   ConstructionDTO,
   ConstructionPaginationParam,
 } from "./type";
+import { getAPIClient } from "../axios";
 
 const baseUrl = "/construction";
+const api = getAPIClient();
 
 export async function getConstructions({
   page,
@@ -14,7 +16,7 @@ export async function getConstructions({
   name,
   type,
 }: ConstructionPaginationParam) {
-  let res = await http.get<Pagination<Construction>>(baseUrl, {
+  let res = await api.get<Pagination<Construction>>(baseUrl, {
     params: {
       page,
       size,
@@ -26,11 +28,21 @@ export async function getConstructions({
 }
 
 export async function getAllConstructions() {
-  let res = await http.get<Construction[]>(`${baseUrl}/all`);
+  let res = await api.get<Construction[]>(`${baseUrl}/all`);
   return res.data;
 }
 
 export async function postConstruction(construction: ConstructionDTO) {
-  let res = await http.post(baseUrl, construction);
+  let res = await api.post(baseUrl, construction);
+  return res.status;
+}
+
+export async function updateConstruction(construction: Construction) {
+  let res = await api.put(baseUrl, construction);
+  return res.status;
+}
+
+export async function deleteConstruction(constructionId: string) {
+  let res = await api.delete(`${baseUrl}/${constructionId}`);
   return res.status;
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { confirmDialog } from "primereact/confirmdialog";
 import { Button } from "primereact/button";
 
@@ -31,25 +31,30 @@ function ConfirmationDialog({
   rejectLabel,
   onConfirm,
 }: ConfirmationDialogProps) {
-  const handleConfirm = () => {
-    confirmDialog({
-      message,
-      header,
-      icon,
-      acceptClassName: "p-button-danger",
-      accept: onConfirm,
-      acceptLabel,
-      rejectLabel,
-    });
-  };
+  const [visible, setVisible] = useState<boolean>(false);
+
+  function teste() {}
 
   return (
-    <Button
-      severity="danger"
-      icon="pi pi-sign-out"
-      onClick={handleConfirm}
-      label="Sair"
-    />
+    <>
+      <Button
+        type="submit"
+        severity="danger"
+        icon="pi pi-sign-out"
+        onClick={() => setVisible(true)}
+        label="Sair"
+      />
+      {visible && (
+        <ConfirmationDialog
+          message="Você tem certeza?"
+          header="Confirmação"
+          icon="pi pi-info-circle"
+          acceptLabel="Sim"
+          rejectLabel="Não"
+          onConfirm={onConfirm}
+        />
+      )}
+    </>
   );
 }
 

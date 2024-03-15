@@ -26,7 +26,9 @@ const StyledSidebar = styled.aside<LeftPanelProps>`
 
 function LeftPanel({ children }: LeftPanelProps) {
   const [visible, setVisible] = useState(true);
+  const [visibleConfirmation, setVisibleConfirmation] = useState(false);
   const { logout } = useContext(AuthContext);
+
   return (
     <StyledSidebar
       style={{
@@ -37,7 +39,7 @@ function LeftPanel({ children }: LeftPanelProps) {
         <div className="flex items-center justify-center">
           {visible && <Logo />}
           <Button
-            icon={visible ? "pi pi-arrow-left" : "pi pi-arrow-right"}
+            className={visible ? "pi pi-arrow-left" : "pi pi-arrow-right"}
             onClick={() => setVisible(!visible)}
             style={{
               color: "black",
@@ -50,13 +52,12 @@ function LeftPanel({ children }: LeftPanelProps) {
         {visible && <>{children}</>}
       </div>
       {visible && (
-        <ConfirmationDialog
-          message="Você tem certeza que deseja sair?"
-          header="Confirmação"
-          icon="pi pi-info-circle"
-          acceptLabel="Sim"
-          rejectLabel="Não"
-          onConfirm={logout}
+        <Button
+          type="submit"
+          severity="danger"
+          icon="pi pi-sign-out"
+          onClick={logout}
+          label="Sair"
         />
       )}
     </StyledSidebar>

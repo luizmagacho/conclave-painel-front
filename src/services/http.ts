@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import AuthManager from "./auth/functions";
 import { error } from "console";
+import { parseCookies } from "nookies";
 
 interface HttpProps {
   axiosConfig: AxiosInstance;
@@ -16,22 +17,23 @@ interface HttpProps {
   delete: <T>(route: string, body?: any) => Promise<AxiosResponse<T, any>>;
 }
 
+let token = null;
+if (typeof window !== "undefined") {
+  token = localStorage.getItem("portal.token");
+}
+
 const backendBaseUrl = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT_API;
-const token = Cookies.get("portal.token");
-const authorization = token ? `Bearer ${token}` : null;
+
 const http: HttpProps = {
   axiosConfig: axios.create({
     baseURL: backendBaseUrl,
-    headers: {
-      Authorization: authorization,
-    },
   }),
 
   get: function <T>(route: string, body?: any) {
     return this.axiosConfig.get<T>(route, body).catch((error) => {
       let response = error.response;
       if (
-        response?.data?.statusCode === 401 &&
+        response?.status === 401 &&
         response?.data?.message === "Acesso Negado"
       ) {
         AuthManager.logout();
@@ -81,8 +83,6 @@ const http: HttpProps = {
 
   post: function <T>(route: string, body?: any, formData?: FormData) {
     // Se formData estiver presente, use-o para enviar dados
-    console.log("Rota: ", route);
-    console.log("Body: ", body);
     if (formData) {
       return this.axiosConfig
         .post<T>(route, formData, {
@@ -97,7 +97,6 @@ const http: HttpProps = {
     }
 
     // Caso contrário, use o corpo JSON padrão
-    console.log("AQUI");
     return this.axiosConfig.post<T>(route, body).catch((error) => {
       // Trate os erros aqui, se necessário
       let response = error.response;

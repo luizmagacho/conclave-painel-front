@@ -1,4 +1,4 @@
-import { ProfileDTO } from "../profile/type";
+import { Profile, ProfileDTO } from "../profile/type";
 
 export type UserRole = "ADMIN" | "USER";
 
@@ -6,16 +6,23 @@ export type User = {
   id: string;
   name: string;
   username: string;
+  department: string;
+  password: string;
   role: string;
+  profiles: Profile[];
+  profilesName: string;
+  highestPriorityRole: string;
   createdAt: string;
+  createdAtFormat: string;
   updatedAt: string;
 };
 
 export type UserRequestDTO = {
   name: string;
-  email: string;
+  username: string;
   department: string;
   password: string;
+  profiles: Profile[];
 };
 
 export type LoginDTO = {
@@ -24,8 +31,10 @@ export type LoginDTO = {
 };
 
 export type LoginResponseDTO = {
+  id: string;
   name: string;
-  role: string;
+  username: string;
+  highestPriorityRole: string;
   token: string;
 };
 
@@ -47,4 +56,9 @@ export type UserPaginationParam = {
   page: number;
   name?: string;
   email?: string;
+};
+
+export type UserChangePasswordRequest = {
+  id: string;
+  password: string;
 };

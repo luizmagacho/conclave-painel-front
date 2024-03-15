@@ -21,24 +21,13 @@ const useMenu = () => {
         },
         {
           label: "Perfis",
-          icon: "pi pi-id-card",
-          command: () => router.push("/perfis"),
+          icon: "pi pi-money-bill",
+          command: () => router.push("/perfil"),
         },
         {
           label: "Financeiro",
           icon: "pi pi-id-card",
-          command: () => router.push("/perfis"),
-        },
-        {
-          label: "Cadastro",
-          icon: "pi pi-desktop",
-          items: [
-            {
-              label: "Departamentos",
-              icon: "pi pi-desktop",
-              command: () => router.push("/departamentos"),
-            },
-          ],
+          command: () => router.push("/perfil"),
         },
       ],
     },
@@ -47,19 +36,27 @@ const useMenu = () => {
   const items: MenuItem[] = [
     {
       label: "Material",
-      icon: "pi pi-fw pi-building",
+      icon: "pi pi-fw pi-box",
       command: () => router.push("/material"),
     },
     {
       label: "Obras",
-      icon: "pi pi-fw pi-file",
-      command: () => router.push("/obra"),
+      icon: "pi pi-fw pi-book",
+      command: () => router.push("/obras"),
     },
     {
-      label: "Fornecedores",
-      icon: "pi pi-fw pi-file-export",
+      label: "Fornecedor",
+      icon: "pi pi-fw pi-truck",
       command: () => {
         router.push("/fornecedores");
+      },
+    },
+
+    {
+      label: "Pedido",
+      icon: "pi pi-fw pi-shopping-cart",
+      command: () => {
+        router.push("/pedidos");
       },
     },
   ];

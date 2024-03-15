@@ -2,9 +2,11 @@ import Cookies from "js-cookie";
 
 import { ReactNode, createContext, useEffect, useState } from "react";
 import { LoginDTO, User } from "@/services/user/type";
-import { authenticate, login } from "@/services/auth";
+import { authenticate, login, statusToken } from "@/services/auth";
 import { getUser } from "@/services/user";
 import { useRouter } from "next/router";
+import { AuthResponse } from "@/services/auth/types";
+import { destroyCookie, setCookie } from "nookies";
 
 interface ProviderProps {
   children: ReactNode;
@@ -23,34 +25,39 @@ export const AuthContext = createContext({} as AuthContextProps);
 
 export const AuthProvider = ({ children }: ProviderProps) => {
   const [user, setUser] = useState<User>({} as User);
+  const [authResponse, setAuthResponse] = useState<AuthResponse>(
+    {} as AuthResponse
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const [msg, setMsg] = useState("");
   const router = useRouter();
 
-  useEffect(() => {
-    const usr = Cookies.get("portal.name");
-    if (usr) {
-      setUser({
-        ...user,
-        name: usr,
-      });
-    }
-  }, []);
-
-  /**
-   * Por enquanto o token está chegando nulo
-   * Quando normalizar, descomentar as linhas abaixo!
-   */
   async function handleLogin(loginDTO: LoginDTO) {
     setLoading(true);
-    console.log("Entrou pra fazer login ");
     try {
       const resp = await login(loginDTO);
-      console.log(resp);
       if (resp) {
-        Cookies.set("portal.name", resp.name);
-        Cookies.set("portal.role", resp.role);
-        Cookies.set("portal.token", resp.token);
+        const cookieParams = {};
+        localStorage.setItem("portal.id", resp.id);
+        localStorage.setItem("portal.name", resp.name);
+        localStorage.setItem("portal.username", resp.username);
+        localStorage.setItem("portal.role", resp.highestPriorityRole);
+        localStorage.setItem("portal.token", resp.token);
+        window.sessionStorage.setItem("token", resp.token);
+        setCookie(undefined, "portal.token", resp.token, cookieParams);
+        setCookie(
+          undefined,
+          "portal.role",
+          resp.highestPriorityRole,
+          cookieParams
+        );
+        setUser({
+          ...user,
+          id: resp.id,
+          name: resp.name,
+          highestPriorityRole: resp.highestPriorityRole,
+          username: resp.username,
+        });
         router.push("/home");
       }
       if (!resp) {
@@ -65,22 +72,18 @@ export const AuthProvider = ({ children }: ProviderProps) => {
 
   function setTempMessage(message: string) {
     setMsg(message);
-    console.log("Message: ", message);
     setTimeout(() => setMsg(""), 3000);
   }
 
   function logout() {
-    Cookies.remove("portal.token");
-    Cookies.remove("portal.username");
-    window.localStorage.clear();
-    window.sessionStorage.clear();
+    destroyCookie(null, "portal.token", {});
+    localStorage.clear();
+    router.push("/");
   }
 
   function softLogout() {
-    Cookies.remove("portal.token");
-    Cookies.remove("portal.username");
-    window.localStorage.clear();
-    window.sessionStorage.clear();
+    destroyCookie(null, "portal.token", {});
+    localStorage.clear();
   }
 
   return (

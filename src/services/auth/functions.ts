@@ -1,13 +1,15 @@
 import Cookies from "js-cookie";
 import { AuthManager } from "./types";
-import { useRouter } from "next/router";
 
-const AuthManager: AuthManager = {
+const gerenciadorAutenticacao: AuthManager = {
   logout: () => {
     Cookies.remove("portal.token");
-    const router = useRouter();
-    router.push("/");
+    Cookies.remove("portal.role");
+    Cookies.remove("portal.name");
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.location.href = "/";
   },
 };
 
-export default AuthManager;
+export default gerenciadorAutenticacao;

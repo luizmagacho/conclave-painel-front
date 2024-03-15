@@ -7,6 +7,7 @@ import { Button } from "primereact/button";
 import { LoginDTO } from "@/services/user/type";
 import { AuthContext } from "@/context/AuthContext";
 import { Message } from "primereact/message";
+import { Logo } from "@/views/common";
 
 interface LeftPanelProps {
   children: ReactNode;
@@ -28,8 +29,8 @@ const StyledSidebar = styled.aside<LeftPanelProps>`
 const StyledContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
-  justify-content: space-between;
+  height: 90%;
+  justify-content: space-evenly;
 `;
 
 export default function Login(): JSX.Element {
@@ -37,6 +38,7 @@ export default function Login(): JSX.Element {
     username: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [invalidUsername, setInvalidUsername] = useState<boolean>(false);
   const [invalidPassword, setInvalidPassword] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -44,7 +46,7 @@ export default function Login(): JSX.Element {
   const [msgError, setMsgError] = useState("");
   const { handleLogin, loading, msg, softLogout } = useContext(AuthContext);
 
-  const ERROR_TIME_AWAIT = 5000;
+  const ERROR_TIME_AWAIT = 3000;
 
   useEffect(() => {
     softLogout();
@@ -55,7 +57,6 @@ export default function Login(): JSX.Element {
   }, [msg]);
 
   function validateFields() {
-    console.log("Teste");
     setInvalidUsername(!login.username || login.username === "");
     setInvalidPassword(!login.password || login.password === "");
 
@@ -84,7 +85,10 @@ export default function Login(): JSX.Element {
       <StyledSidebar>
         <StyledContainer>
           <div></div>
-          <div className="flex flex-column items-center justify-center gap-5">
+          <div>
+            <Logo />
+          </div>
+          <div className="flex flex-column items-center justify-center">
             <div className="flex flex-column items-center justify-center gap-2">
               <LabelTitle
                 text="E-mail"
@@ -106,18 +110,20 @@ export default function Login(): JSX.Element {
                 htmlFor="password"
                 className="font-semibold"
               />
-              <InputText
-                type="password"
-                onChange={(e) => {
-                  setLogin({ ...login, password: e.target.value });
-                  setInvalidUsername(false);
-                  setInvalidUsername(false);
-                }}
-              />
-              {invalidUsername ||
-                (invalidPassword && (
-                  <Message severity="error" text="E-mail ou senha errados" />
-                ))}
+              <span className="p-input-icon-right w-full">
+                <i
+                  className={showPassword ? "pi pi-eye" : "pi pi-eye-slash"}
+                  onClick={() => setShowPassword(!showPassword)}
+                />
+                <InputText
+                  type={showPassword ? "text" : "password"}
+                  onChange={(e) => {
+                    setLogin({ ...login, password: e.target.value });
+                    setInvalidUsername(false);
+                    setInvalidUsername(false);
+                  }}
+                ></InputText>
+              </span>
               {hasError && <Message severity="error" text={msg} />}
               <Button
                 label="Esqueci a senha"

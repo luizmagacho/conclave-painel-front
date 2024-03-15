@@ -1,32 +1,35 @@
 export type Construction = {
-  id: number;
-  code: number;
-  bankBranch: number;
+  id: number | null;
+  code: string;
+  bankBranch: string;
   client: string;
   local: string;
   responsible: string;
   service: string;
   cad: boolean;
-  openingDate: Date;
-  closedDate: Date;
+  isCad: string;
+  openingDate: string;
+  openingDateFormatted?: string;
+  closedDate: string;
+  closedDateFormatted?: string;
   userId: number;
   enabled: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | null;
+  updatedAt: Date | null;
 };
 
 export type ConstructionDTO = {
-  code: number;
-  bankBranch: number;
+  code: string;
+  bankBranch: string;
   client: string;
   local: string;
   responsible: string;
   service: string;
   cad: boolean;
-  openingDate: Date;
-  closedDate: Date;
-  userId: number;
-  enabled: boolean;
+  openingDate: Date | null;
+  closedDate?: Date | null;
+  userId: string | null;
+  enabled?: boolean;
 };
 
 export type ConstructionPaginationParam = {

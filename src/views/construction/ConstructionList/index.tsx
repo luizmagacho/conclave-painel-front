@@ -7,6 +7,8 @@ import { DataTable } from "primereact/datatable";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { Toast } from "primereact/toast";
 import { useContext, useRef, useState } from "react";
+import ConstructionCreateDialog from "../ConstructionCreateDialog";
+import ConstructionUpdateDialog from "../ConstructionUpdateDialog";
 
 interface Options {
   icon?: string;
@@ -30,23 +32,27 @@ const columns = [
     header: "Cliente",
   },
   {
+    field: "local",
+    header: "Local",
+  },
+  {
     field: "responsible",
     header: "Resp.",
   },
   {
-    field: "responsible",
-    header: "Descrição do Serviço",
+    field: "service",
+    header: "Descrição",
   },
   {
-    field: "cad",
+    field: "isCad",
     header: "CAD",
   },
   {
-    field: "openingDate",
-    header: "Aberta em (1º Acesso)",
+    field: "openingDateFormatted",
+    header: "Aberta em",
   },
   {
-    field: "closedDate",
+    field: "closedDateFormatted",
     header: "Encerrada em",
   },
 
@@ -73,6 +79,7 @@ function ConstructionList() {
     totalElements,
     handleGetConstructions,
     handlePostConstruction,
+    handleUpdateConstruction,
   } = useContext(ConstructionContext);
 
   const toast = useRef<Toast>(null);
@@ -91,6 +98,11 @@ function ConstructionList() {
       optionsBodyTemplate(options, constructions),
   };
 
+  async function onUpdateConstruction(construction: Construction) {
+    await handleUpdateConstruction(construction);
+    handleGetConstructions();
+  }
+
   function openDialog(construction: Construction) {
     setCurrConstruction(construction);
     setShowDialog(true);
@@ -101,8 +113,8 @@ function ConstructionList() {
     setCurrConstruction(null);
   }
 
-  function onCreateConstruction(construction: ConstructionDTO) {
-    handlePostConstruction(construction);
+  async function onCreateConstruction(construction: ConstructionDTO) {
+    await handlePostConstruction(construction);
     handleGetConstructions();
   }
 
@@ -128,7 +140,7 @@ function ConstructionList() {
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
-          <h1 className="m-0">Materiais</h1>
+          <h1 className="m-0">Obras</h1>
           <InputSearch
             onSearch={onSearch}
             onChange={onChangeSearch}
@@ -175,15 +187,22 @@ function ConstructionList() {
           totalRecords={totalElements}
           onPageChange={onPageChange}
         />
-        {/* {showCreateDialog && (
-          // <MaterialCreateDialog
-          //   visible={showCreateDialog}
-          //   onCreate={onCreateMaterial}
-          //   onHide={closeCreateDialog}
-          // />
-        )} */}
+        {showCreateDialog && (
+          <ConstructionCreateDialog
+            visible={showCreateDialog}
+            onCreate={onCreateConstruction}
+            onHide={closeCreateDialog}
+          />
+        )}
       </section>
-      {currConstruction && <h3>Teste</h3>}
+      {currConstruction && (
+        <ConstructionUpdateDialog
+          data={currConstruction}
+          onHide={closeDialog}
+          visible={showDialog}
+          onUpdate={onUpdateConstruction}
+        />
+      )}
     </>
   );
 
