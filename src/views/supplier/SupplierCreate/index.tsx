@@ -66,11 +66,15 @@ function SupplierCreate() {
 
   return (
     <Card className="m-3">
-      <section className="flex flex-column gap-4 p-5 w-full">
-        <h1 className="m-0">Cadastrar Fornecedores</h1>
-        <div className="card flex flex-column md:flex-row gap-3 w-11/12">
+      <section className="flex flex-column gap-2 p-5 w-full overflow-y: auto">
+        <h1 className="text-xl m-0">Cadastrar Fornecedores</h1>
+        <div className="card flex flex-column md:flex-row gap-3 w-full">
           <div className="field flex flex-column gap-2 w-full">
-            <LabelTitle text="CNPJ" htmlFor="cnpj" className="font-semibold" />
+            <LabelTitle
+              text="CNPJ"
+              htmlFor="cnpj"
+              className="font-semibold text-sm"
+            />
             <InputMask
               mask="999.999.999/9999-99"
               placeholder="999.999.999/9999-99"
@@ -84,7 +88,11 @@ function SupplierCreate() {
             />
           </div>
           <div className="field flex flex-column gap-2 w-full">
-            <LabelTitle text="CPF" htmlFor="cpf" className="font-semibold" />
+            <LabelTitle
+              text="CPF"
+              htmlFor="cpf"
+              className="font-semibold text-sm"
+            />
             <InputMask
               mask="999.999.999-99"
               placeholder="999.999.999-99"
@@ -123,7 +131,7 @@ function SupplierCreate() {
             <LabelTitle
               text="Nome Reduzido"
               htmlFor="shortenedName"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -147,7 +155,7 @@ function SupplierCreate() {
             <LabelTitle
               text="Logradouro"
               htmlFor="streetAddress"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -169,7 +177,7 @@ function SupplierCreate() {
             <LabelTitle
               text="Bairro"
               htmlFor="neighborhood"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -191,7 +199,7 @@ function SupplierCreate() {
             <LabelTitle
               text="Cidade"
               htmlFor="city"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -213,7 +221,7 @@ function SupplierCreate() {
             <LabelTitle
               text="CEP"
               htmlFor="cep"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputMask
@@ -239,7 +247,7 @@ function SupplierCreate() {
             <LabelTitle
               text="Nome Vendedor"
               htmlFor="sellerName"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -261,7 +269,7 @@ function SupplierCreate() {
             <LabelTitle
               text="Telefone Vendedor"
               htmlFor="sellerPhone"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputMask
@@ -287,7 +295,7 @@ function SupplierCreate() {
             <LabelTitle
               text="E-mail Vendedor"
               htmlFor="sellerEmail"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -311,7 +319,7 @@ function SupplierCreate() {
             <LabelTitle
               text="Nome Financeiro"
               htmlFor="financialName"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -333,7 +341,7 @@ function SupplierCreate() {
             <LabelTitle
               text="Telefone Vendedor"
               htmlFor="FinancialPhone"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputMask
@@ -359,7 +367,7 @@ function SupplierCreate() {
             <LabelTitle
               text="E-mail Vendedor"
               htmlFor="FinancialEmail"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -384,7 +392,7 @@ function SupplierCreate() {
             <LabelTitle
               text="Banco 1"
               htmlFor="bank"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -406,7 +414,7 @@ function SupplierCreate() {
             <LabelTitle
               text="Banco 2"
               htmlFor="bank"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -428,7 +436,7 @@ function SupplierCreate() {
             <LabelTitle
               text="Banco 3"
               htmlFor="bank"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -452,7 +460,7 @@ function SupplierCreate() {
           style={{ justifyContent: "end" }}
         >
           <Button
-            className="font-semibold"
+            className="font-semibold text-sm"
             label="Cancelar"
             outlined
             onClick={() => {
@@ -461,7 +469,7 @@ function SupplierCreate() {
           />
           <Button
             onClick={() => validateFields()}
-            className="rounded-md px-3"
+            className="rounded-md px-3 font-semibold text-sm"
             label="Salvar"
             severity="danger"
           />

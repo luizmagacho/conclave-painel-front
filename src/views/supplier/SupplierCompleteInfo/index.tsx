@@ -113,29 +113,29 @@ function SupplierCompleteInfo() {
   }, [selectedSupplier]);
 
   return (
-    <Card className="m-3">
-      {loading && (
-        <section className="flex flex-column gap-4 p-5 w-full">
-          <h1 className="m-0">Visualizar Fornecedor</h1>
-        </section>
-      )}
-      <section className="flex flex-column gap-4 p-5 w-full">
+    <Card className="m-2">
+      <section className="flex flex-column gap-2 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
-          <h1 className="m-0">Visualizar Fornecedor</h1>
+          <h1 className="text-xl m-0">Visualizar Fornecedor</h1>
           <Button
             style={{
               backgroundColor: "var(--cor-primaria)",
               border: "1px solid var(--cor-primaria)",
             }}
-            onClick={() => setShowDisabled(false)}
+            onClick={() => setShowDisabled(!showDisabled)}
+            className="text-sm"
           >
             {" "}
             Editar
           </Button>
         </div>
-        <div className="card flex flex-column md:flex-row gap-3 w-11/12">
+        <div className="card flex flex-column md:flex-row gap-2 w-11/12">
           <div className="field flex flex-column gap-2 w-full">
-            <LabelTitle text="CNPJ" htmlFor="cnpj" className="font-semibold" />
+            <LabelTitle
+              text="CNPJ"
+              htmlFor="cnpj"
+              className="font-semibold text-sm"
+            />
             {loading && <Skeleton height="2rem" className="mb-2"></Skeleton>}
             {!loading && (
               <InputMask
@@ -153,7 +153,11 @@ function SupplierCompleteInfo() {
             )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
-            <LabelTitle text="CPF" htmlFor="cpf" className="font-semibold" />
+            <LabelTitle
+              text="CPF"
+              htmlFor="cpf"
+              className="font-semibold text-sm"
+            />
             <InputMask
               mask="999.999.999-99"
               placeholder="999.999.999-99"
@@ -171,7 +175,7 @@ function SupplierCompleteInfo() {
             <LabelTitle
               text="Nome Completo"
               htmlFor="completeName"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -194,7 +198,7 @@ function SupplierCompleteInfo() {
             <LabelTitle
               text="Nome Reduzido"
               htmlFor="shortenedName"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -219,7 +223,7 @@ function SupplierCompleteInfo() {
             <LabelTitle
               text="Logradouro"
               htmlFor="streetAddress"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -242,7 +246,7 @@ function SupplierCompleteInfo() {
             <LabelTitle
               text="Bairro"
               htmlFor="neighborhood"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -265,7 +269,7 @@ function SupplierCompleteInfo() {
             <LabelTitle
               text="Cidade"
               htmlFor="city"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -288,7 +292,7 @@ function SupplierCompleteInfo() {
             <LabelTitle
               text="CEP"
               htmlFor="cep"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputMask
@@ -315,7 +319,7 @@ function SupplierCompleteInfo() {
             <LabelTitle
               text="Nome Vendedor"
               htmlFor="sellerName"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -338,7 +342,7 @@ function SupplierCompleteInfo() {
             <LabelTitle
               text="Telefone Vendedor"
               htmlFor="sellerPhone"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputMask
@@ -365,7 +369,7 @@ function SupplierCompleteInfo() {
             <LabelTitle
               text="E-mail Vendedor"
               htmlFor="sellerEmail"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -390,7 +394,7 @@ function SupplierCompleteInfo() {
             <LabelTitle
               text="Nome Financeiro"
               htmlFor="financialName"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -413,7 +417,7 @@ function SupplierCompleteInfo() {
             <LabelTitle
               text="Telefone Vendedor"
               htmlFor="FinancialPhone"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputMask
@@ -440,7 +444,7 @@ function SupplierCompleteInfo() {
             <LabelTitle
               text="E-mail Vendedor"
               htmlFor="FinancialEmail"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -466,7 +470,7 @@ function SupplierCompleteInfo() {
             <LabelTitle
               text="Banco 1"
               htmlFor="bank"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -489,7 +493,7 @@ function SupplierCompleteInfo() {
             <LabelTitle
               text="Banco 2"
               htmlFor="bank"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -512,7 +516,7 @@ function SupplierCompleteInfo() {
             <LabelTitle
               text="Banco 3"
               htmlFor="bank"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -537,20 +541,19 @@ function SupplierCompleteInfo() {
           style={{ justifyContent: "end" }}
         >
           <Button
-            className="font-semibold"
+            className="font-semibold text-sm"
             label="Cancelar"
             outlined
             onClick={() => {
               router.push("/fornecedores");
             }}
           />
-          {showDisabled && (
+          {!showDisabled && (
             <Button
               onClick={() => validateFields()}
-              className="rounded-md px-3"
+              className="rounded-md px-3 text-sm"
               label="Atualizar"
               severity="danger"
-              disabled={showDisabled}
             />
           )}
         </div>
