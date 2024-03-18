@@ -5,10 +5,11 @@ import { Divider } from "primereact/divider";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { InputMask } from "primereact/inputmask";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
 import { SupplierContext } from "@/context/SupplierContext";
+import { Toast } from "primereact/toast";
 
 function SupplierCreate() {
   const [newSupplier, setNewSupplier] = useState<SupplierDTO>({
@@ -55,14 +56,25 @@ function SupplierCreate() {
   const [invalidBank2, setInvalidBank2] = useState<boolean>(false);
   const [invalidBank3, setInvalidBank3] = useState<boolean>(false);
 
-  const { handlePostSupplier } = useContext(SupplierContext);
+  const { handlePostSupplier, postStatus } = useContext(SupplierContext);
 
   const router = useRouter();
 
   async function validateFields() {
-    await handlePostSupplier(newSupplier);
-    router.push("/fornecedores");
+    const resp = await handlePostSupplier(newSupplier);
+    console.log("Code: ", resp);
+    if (postStatus === 201) {
+      toast.current?.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Message Content",
+        life: 5000,
+      });
+    }
+    await router.push("/fornecedores");
   }
+
+  const toast = useRef<Toast>(null);
 
   return (
     <Card className="m-3">
@@ -474,6 +486,7 @@ function SupplierCreate() {
             severity="danger"
           />
         </div>
+        <Toast ref={toast} />
       </section>
     </Card>
   );

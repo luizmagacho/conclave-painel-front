@@ -6,12 +6,14 @@ import {
   updateSupplier,
 } from "@/services/supplier";
 import { Supplier, SupplierDTO } from "@/services/supplier/type";
+import { Toast } from "primereact/toast";
 import {
   Dispatch,
   ReactNode,
   SetStateAction,
   createContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -24,12 +26,13 @@ interface SupplierContextProps {
   selectedSupplier: Supplier | null;
   loading: boolean;
   totalElements: number;
+  postStatus: number;
   handleGetSuppliers: (
     page?: number,
     completeName?: string,
     type?: string
   ) => Promise<void>;
-  handlePostSupplier: (supplier: SupplierDTO) => Promise<void>;
+  handlePostSupplier: (supplier: SupplierDTO) => Promise<number | null>;
   handleGetSupplierById: (supplierId: string) => Promise<void>;
   handleUpdateSupplier: (supplier: Supplier) => Promise<void>;
   handleDeleteSupplier: (supplierId: string) => Promise<void>;
@@ -47,6 +50,8 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const [totalElements, setTotalElements] = useState<number>(0);
+  const [postStatus, setPostStatus] = useState<number>(0);
+  const toast = useRef<Toast>(null);
 
   async function handleGetSuppliers(
     page: number = 0,
@@ -88,8 +93,23 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
 
     try {
       const resp = await postSupplier(supplier);
+      console.log("Dentro do Provider: ", resp);
+      if (resp === 201) {
+        setPostStatus(resp);
+        // ... Processar a resposta de sucesso ...
+
+        toast.current?.show({
+          // <-- Exibir a mensagem Toast
+          severity: "success",
+          summary: "Sucesso",
+          detail: "Fornecedor criado com sucesso!",
+          life: 3000,
+        });
+      }
+      return resp;
     } catch (error) {
       console.error(error);
+      return null;
     } finally {
       setLoading(false);
     }
@@ -130,6 +150,7 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
         selectedSupplier,
         loading,
         totalElements,
+        postStatus,
         handleGetSuppliers,
         handleGetSupplierById,
         handlePostSupplier,
@@ -137,6 +158,7 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
         handleDeleteSupplier,
       }}
     >
+      <Toast ref={toast} />
       {children}
     </SupplierContext.Provider>
   );

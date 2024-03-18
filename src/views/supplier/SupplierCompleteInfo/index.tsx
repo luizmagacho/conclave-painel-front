@@ -1,5 +1,5 @@
 import LabelTitle from "@/components/LabelTitle";
-import { SupplierDTO } from "@/services/supplier/type";
+import { Supplier, SupplierDTO } from "@/services/supplier/type";
 import { Card } from "primereact/card";
 import { Divider } from "primereact/divider";
 import { InputText } from "primereact/inputtext";
@@ -12,10 +12,11 @@ import { SupplierContext } from "@/context/SupplierContext";
 import { Skeleton } from "primereact/skeleton";
 
 function SupplierCompleteInfo() {
-  const { selectedSupplier, handleGetSupplierById } =
+  const { selectedSupplier, handleGetSupplierById, handleUpdateSupplier } =
     useContext(SupplierContext);
   const [loading, setLoading] = useState<boolean>(false);
-  const [updatedSupplier, setUpdatedSupplier] = useState<SupplierDTO>({
+  const [updatedSupplier, setUpdatedSupplier] = useState<Supplier>({
+    id: selectedSupplier?.id || "",
     cnpj: selectedSupplier?.cnpj || "",
     cpf: "",
     completeName: selectedSupplier?.completeName || "",
@@ -35,6 +36,8 @@ function SupplierCompleteInfo() {
     bank3: "",
     userId: "",
     enabled: true,
+    updatedAt: selectedSupplier?.updatedAt || null,
+    createdAt: selectedSupplier?.createdAt || null,
   });
   const [invalidCompleteName, setInvalidCompleteName] =
     useState<boolean>(false);
@@ -63,9 +66,9 @@ function SupplierCompleteInfo() {
 
   const router = useRouter();
 
-  function validateFields() {
-    console.log("Supplier: ", updatedSupplier);
-    //handlePostSupplier(newSupplier);
+  async function validateFields() {
+    await handleUpdateSupplier(updatedSupplier);
+    router.push("/fornecedores");
   }
 
   useEffect(() => {
@@ -79,6 +82,7 @@ function SupplierCompleteInfo() {
     try {
       setUpdatedSupplier((prevSupplier) => ({
         ...prevSupplier,
+        id: selectedSupplier?.id || prevSupplier.id,
         cnpj: selectedSupplier?.cnpj || prevSupplier.cnpj,
         cpf: selectedSupplier?.cpf || prevSupplier.cpf,
         completeName:
