@@ -7,7 +7,7 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { Toast } from "primereact/toast";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import SupplierDeleteDialog from "../SupplierDeleteDialog";
 
 interface Options {
@@ -58,6 +58,7 @@ function SupplierList() {
     suppliers,
     totalElements,
     loading,
+    postStatus,
     handleGetSuppliers,
     handleGetSupplierById,
     handleDeleteSupplier,
@@ -120,9 +121,21 @@ function SupplierList() {
     setNameSearch(name);
   }
 
+  useEffect(() => {
+    console.log("PostStatus: ", postStatus);
+    if (postStatus === 201) {
+      toast.current?.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Message Content",
+        life: 3000,
+      });
+    }
+  }, [suppliers]);
+
   return (
     <>
-      <section className="flex flex-column gap-4 p-5 w-full">
+      <section className="flex flex-column gap-2 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
           <h1 className="m-0">Fornecedores</h1>
           <InputSearch
@@ -179,6 +192,7 @@ function SupplierList() {
             onHide={closeDeleteDialog}
           />
         )}
+        <Toast ref={toast} />
       </section>
     </>
   );
