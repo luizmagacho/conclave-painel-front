@@ -25,6 +25,11 @@ const useMenu = () => {
           command: () => router.push("/perfil"),
         },
         {
+          label: "Contas",
+          icon: "pi pi-wallet",
+          command: () => router.push("/contas"),
+        },
+        {
           label: "Financeiro",
           icon: "pi pi-id-card",
           command: () => router.push("/perfil"),
