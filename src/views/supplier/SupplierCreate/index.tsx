@@ -10,6 +10,7 @@ import { Button } from "primereact/button";
 import { useRouter } from "next/router";
 import { SupplierContext } from "@/context/SupplierContext";
 import { Toast } from "primereact/toast";
+import { ToastContext } from "@/context/ToastContext";
 
 function SupplierCreate() {
   const [newSupplier, setNewSupplier] = useState<SupplierDTO>({
@@ -57,21 +58,17 @@ function SupplierCreate() {
   const [invalidBank3, setInvalidBank3] = useState<boolean>(false);
 
   const { handlePostSupplier, postStatus } = useContext(SupplierContext);
-
+  const { showSuccessToast, setShowToast } = useContext(ToastContext);
   const router = useRouter();
 
   async function validateFields() {
     const resp = await handlePostSupplier(newSupplier);
-    console.log("Code: ", resp);
+    console.log("Código: ", resp);
     if (postStatus === 201) {
-      toast.current?.show({
-        severity: "success",
-        summary: "Success",
-        detail: "Message Content",
-        life: 5000,
-      });
+      await setShowToast(true);
+      await showSuccessToast("Fornecedor criado com sucesso");
     }
-    await router.push("/fornecedores");
+    router.push("/fornecedores");
   }
 
   const toast = useRef<Toast>(null);

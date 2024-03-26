@@ -138,6 +138,7 @@ function OrderCompleteInfo() {
         userRequestId: selectedOrder?.userRequestId || prevOrder.userRequestId,
       }));
       setSelectedConstruction(selectedOrder?.construction);
+      setSelectedMaterials(selectedOrder?.materials || []);
     } catch (error) {
       console.error(error);
     } finally {
@@ -198,7 +199,7 @@ function OrderCompleteInfo() {
   return (
     <>
       <Card className="m-3">
-        <section className="flex flex-column gap-4 p-5 w-full">
+        <section className="flex flex-column gap-2 p-5 w-full">
           <h1 className="m-0">Cadastrar Pedido</h1>
           <div>
             <div className="field flex flex-column gap-2 w-full">
@@ -218,7 +219,7 @@ function OrderCompleteInfo() {
                 }
               />
             </div>
-            <div className="card flex flex-column md:flex-row gap-3 w-full">
+            <div className="card flex flex-column md:flex-row gap-2 w-full">
               <div className="field flex flex-column gap-2 w-full">
                 <LabelTitle
                   text="Cliente"
@@ -270,7 +271,7 @@ function OrderCompleteInfo() {
             </div>
             <Card>
               <h3>Cadastrar Materiais</h3>
-              <Toolbar className="mb-4" end={rightToolbarTemplate}></Toolbar>
+              <Toolbar className="mb-2" end={rightToolbarTemplate}></Toolbar>
               <DataTable
                 emptyMessage="Nenhum material adicionado"
                 value={selectedMaterials}
@@ -424,3 +425,5 @@ function OrderCompleteInfo() {
     </>
   );
 }
+
+export default OrderCompleteInfo;

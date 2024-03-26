@@ -72,7 +72,7 @@ function OrderCreate() {
   const [constructionsItems, setConstructionsItems] =
     useState<Construction[]>(constructions);
 
-  const { allMaterials } = useContext(MaterialContext);
+  const { allMaterials, handleGetAllMaterials } = useContext(MaterialContext);
   const [materialsItems, setMaterialsItems] =
     useState<Material[]>(allMaterials);
 
@@ -85,8 +85,13 @@ function OrderCreate() {
   }, [constructions]);
 
   useEffect(() => {
+    console.log("Teste: ", allMaterials);
     setMaterialsItems(allMaterials);
   }, [allMaterials]);
+
+  useEffect(() => {
+    handleGetAllMaterials();
+  }, []);
 
   const rightToolbarTemplate = () => {
     return (
@@ -123,16 +128,19 @@ function OrderCreate() {
   };
 
   const materialSearch = (event: AutoCompleteCompleteEvent) => {
+    console.log(allMaterials);
     setTimeout(() => {
       let _filteredMaterials;
       if (!event.query.trim().length) {
         _filteredMaterials = [...allMaterials];
       } else {
+        console.log(event.query);
         _filteredMaterials = materialsItems.filter((material) => {
           return material.name.startsWith(event.query);
         });
       }
-    });
+      setMaterialsItems(_filteredMaterials);
+    }, 150);
   };
 
   const hideAddDialog = () => {
@@ -177,7 +185,7 @@ function OrderCreate() {
   return (
     <>
       <Card className="m-3">
-        <section className="flex flex-column gap-4 p-5 w-full">
+        <section className="flex flex-column gap-2 w-full">
           <h1 className="m-0">Cadastrar Pedido</h1>
           <div>
             <div className="field flex flex-column gap-2 w-full">
@@ -197,7 +205,7 @@ function OrderCreate() {
                 }
               />
             </div>
-            <div className="card flex flex-column md:flex-row gap-3 w-full">
+            <div className="card flex flex-column md:flex-row gap-2 w-full">
               <div className="field flex flex-column gap-2 w-full">
                 <LabelTitle
                   text="Cliente"
@@ -287,7 +295,7 @@ function OrderCreate() {
             </Card>
           </div>
           <div
-            className="flex justify-end gap-6 w-full"
+            className="flex justify-end gap-2 w-full"
             style={{ justifyContent: "end" }}
           >
             <Button
@@ -327,24 +335,15 @@ function OrderCreate() {
             <AutoComplete
               type="text"
               field="name"
-              value={selectedMaterials}
+              value={newMaterial.name}
               suggestions={materialsItems}
               completeMethod={materialSearch}
               onChange={(e: AutoCompleteChangeEvent) => {
-                const selectedMaterial = e.value;
-                setSelectedMaterials([...selectedMaterials, selectedMaterial]);
+                setNewMaterial({ ...newMaterial, name: e.value });
               }}
-            />
-            <InputText
-              type="text"
-              onChange={(e) => {
-                setNewMaterial({ ...newMaterial, name: e.target.value });
-                setInvalidName(false);
-              }}
-              value={newMaterial?.name}
             />
           </div>
-          <div className="field gap-10">
+          <div className="field gap-2">
             <div className="field flex flex-column gap-2">
               <LabelTitle
                 text="Quantidade"

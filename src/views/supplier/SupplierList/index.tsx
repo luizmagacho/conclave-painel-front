@@ -9,6 +9,7 @@ import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { Toast } from "primereact/toast";
 import { useContext, useEffect, useRef, useState } from "react";
 import SupplierDeleteDialog from "../SupplierDeleteDialog";
+import { ToastContext } from "@/context/ToastContext";
 
 interface Options {
   icon?: string;
@@ -63,6 +64,8 @@ function SupplierList() {
     handleGetSupplierById,
     handleDeleteSupplier,
   } = useContext(SupplierContext);
+
+  const { showToast, toastMessage } = useContext(ToastContext);
 
   const toast = useRef<Toast>(null);
   const [first, setFirst] = useState<number>(0);
@@ -122,8 +125,9 @@ function SupplierList() {
   }
 
   useEffect(() => {
-    console.log("PostStatus: ", postStatus);
-    if (postStatus === 201) {
+    console.log("Mostrar Toast", showToast);
+    console.log("Mostrar Toast", postStatus);
+    if (showToast) {
       toast.current?.show({
         severity: "success",
         summary: "Success",
@@ -131,7 +135,7 @@ function SupplierList() {
         life: 3000,
       });
     }
-  }, [suppliers]);
+  }, [showToast]);
 
   return (
     <>
@@ -192,7 +196,6 @@ function SupplierList() {
             onHide={closeDeleteDialog}
           />
         )}
-        <Toast ref={toast} />
       </section>
     </>
   );
