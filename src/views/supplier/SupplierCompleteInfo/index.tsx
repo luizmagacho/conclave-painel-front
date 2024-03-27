@@ -352,7 +352,6 @@ function SupplierCompleteInfo() {
               className="font-semibold text-sm"
               required={true}
             />
-            {updatedSupplier?.sellerPhone.length}
             <InputMask
               mask="(99) 99999999?9"
               placeholder="(99) 99999-9999 ou (99) 9999-9999"
