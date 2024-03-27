@@ -14,6 +14,18 @@ export type Payment = {
   updatedAt?: Date;
 };
 
+export type PaymentDTO = {
+  numberCheckTransfer: string;
+  paymentDate: Date;
+  beneficiary: string;
+  cleared: boolean;
+  withdraw: number;
+  deposit: number;
+  balance: number;
+  accountId: number;
+  enabled: boolean;
+};
+
 export type PaymentPaginationParam = {
   size: number;
   page: number;
