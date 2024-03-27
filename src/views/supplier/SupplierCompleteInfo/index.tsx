@@ -5,11 +5,12 @@ import { Divider } from "primereact/divider";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { InputMask } from "primereact/inputmask";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
 import { SupplierContext } from "@/context/SupplierContext";
 import { Skeleton } from "primereact/skeleton";
+import PhoneInput from "@/components/PhoneInput";
 
 function SupplierCompleteInfo() {
   const { selectedSupplier, handleGetSupplierById, handleUpdateSupplier } =
@@ -63,6 +64,8 @@ function SupplierCompleteInfo() {
   const [invalidBank3, setInvalidBank3] = useState<boolean>(false);
 
   const [showDisabled, setShowDisabled] = useState<boolean>(true);
+
+  const inputMaskComponent = useRef(null);
 
   const router = useRouter();
 
@@ -143,8 +146,8 @@ function SupplierCompleteInfo() {
             {loading && <Skeleton height="2rem" className="mb-2"></Skeleton>}
             {!loading && (
               <InputMask
-                mask="999.999.999/9999-99"
-                placeholder="999.999.999/9999-99"
+                mask="99.999.999/9999-99"
+                placeholder="99.999.999/9999-99"
                 onChange={(e) => {
                   setUpdatedSupplier({
                     ...updatedSupplier,
@@ -350,8 +353,8 @@ function SupplierCompleteInfo() {
               required={true}
             />
             <InputMask
-              mask="(99) 99999-9999"
-              placeholder="(99) 99999-9999"
+              mask="(99) 99999999?9"
+              placeholder="(99) 99999-9999 ou (99) 9999-9999"
               onChange={(e) => {
                 setUpdatedSupplier({
                   ...updatedSupplier,
@@ -425,7 +428,7 @@ function SupplierCompleteInfo() {
               required={true}
             />
             <InputMask
-              mask="(99) 99999-9999"
+              mask="(99) 99999999?9"
               placeholder="(99) 99999-9999"
               onChange={(e) => {
                 setUpdatedSupplier({

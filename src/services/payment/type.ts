@@ -13,3 +13,10 @@ export type Payment = {
   createdAt?: Date;
   updatedAt?: Date;
 };
+
+export type PaymentPaginationParam = {
+  size: number;
+  page: number;
+  beneficiary?: string;
+  paymentDate?: Date;
+};
