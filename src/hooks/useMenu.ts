@@ -30,9 +30,9 @@ const useMenu = () => {
           command: () => router.push("/contas"),
         },
         {
-          label: "Financeiro",
-          icon: "pi pi-id-card",
-          command: () => router.push("/perfil"),
+          label: "Pagamentos",
+          icon: "pi pi-money-bill",
+          command: () => router.push("/pagamentos"),
         },
       ],
     },

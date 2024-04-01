@@ -25,7 +25,7 @@ export async function getPayments({
 
 export async function getPaymentsByAccountId(
   { page, size, beneficiary, paymentDate }: PaymentPaginationParam,
-  accountId: string
+  accountId: number
 ) {
   let res = await api.get<Pagination<Payment>>(`${baseUrl}/${accountId}`, {
     params: {
