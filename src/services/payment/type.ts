@@ -9,6 +9,7 @@ export type Payment = {
   deposit: number;
   balance: number;
   accountId: number;
+  description: string;
   enabled: boolean;
   createdAt?: Date;
   updatedAt?: Date;
@@ -19,9 +20,10 @@ export type PaymentDTO = {
   paymentDate: Date;
   beneficiary: string;
   cleared: boolean;
-  withdraw: number;
-  deposit: number;
-  balance: number;
+  withdraw: number | null;
+  deposit: number | null;
+  balance: number | null;
+  description: string;
   accountId: number;
   enabled: boolean;
 };

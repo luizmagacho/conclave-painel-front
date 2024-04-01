@@ -1,5 +1,6 @@
 import {
   deleteSupplier,
+  getAllSuppliers,
   getSupplierById,
   getSuppliers,
   postSupplier,
@@ -16,6 +17,7 @@ interface ProviderProps {
 interface SupplierContextProps {
   suppliers: Supplier[];
   selectedSupplier: Supplier | null;
+  allSuppliers: Supplier[];
   loading: boolean;
   totalElements: number;
   postStatus: number;
@@ -24,6 +26,7 @@ interface SupplierContextProps {
     completeName?: string,
     type?: string
   ) => Promise<void>;
+  handleGetAllSuppliers: () => Promise<void>;
   handlePostSupplier: (supplier: SupplierDTO) => Promise<number | null>;
   handleGetSupplierById: (supplierId: string) => Promise<void>;
   handleUpdateSupplier: (supplier: Supplier) => Promise<void>;
@@ -34,6 +37,7 @@ export const SupplierContext = createContext({} as SupplierContextProps);
 
 export const SupplierProvider = ({ children }: ProviderProps) => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [allSuppliers, setAllSuplliers] = useState<Supplier[]>([]);
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
     null
   );
@@ -61,6 +65,17 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
       setBufferedSuppliers(content || []);
       setSuppliers(content || []);
       setTotalElements(totalElements);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleGetAllSuppliers() {
+    setLoading(true);
+    try {
+      setAllSuplliers(await getAllSuppliers());
     } catch (error) {
       console.error(error);
     } finally {
@@ -139,11 +154,13 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
     <SupplierContext.Provider
       value={{
         suppliers,
+        allSuppliers,
         selectedSupplier,
         loading,
         totalElements,
         postStatus,
         handleGetSuppliers,
+        handleGetAllSuppliers,
         handleGetSupplierById,
         handlePostSupplier,
         handleUpdateSupplier,

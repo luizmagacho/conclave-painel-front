@@ -22,7 +22,7 @@ interface PaymentContextProps {
     paymentDate?: Date
   ) => Promise<void>;
   handleGetPaymentsByAccountId: (
-    accountId: string,
+    accountId: number,
     page?: number,
     beneficiary?: string,
     paymentDate?: Date
@@ -67,7 +67,7 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
   }
 
   async function handleGetPaymentsByAccountId(
-    accountId: string,
+    accountId: number,
     page: number = 0,
     beneficiary: string = "",
     paymentDate: Date = new Date()

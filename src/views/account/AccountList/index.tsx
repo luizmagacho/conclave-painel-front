@@ -134,6 +134,13 @@ function AccountList() {
           size="small"
         >
           <Column field="name" header="Nome" />
+          <Column field="financialInstitute" header="Instituição Financeira" />
+          <Column field="accountNumber" header="Número da Conta" />
+          <Column field="currency" header="Unidade Monetária" />
+          <Column field="startBalance" header="Saldo de" />
+          <Column field="accountNumber" header="Número da Conta" />
+          <Column field="currency" header="Unidade Monetária" />
+
           <Column
             field="favorite"
             header="Favorito ?"
