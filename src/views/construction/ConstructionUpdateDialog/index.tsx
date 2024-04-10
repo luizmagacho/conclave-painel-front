@@ -103,7 +103,7 @@ function ConstructionUpdateDialog({
 
   return (
     <Dialog
-      header="Atualizar Obra"
+      header="Atualizar Centro de Custo"
       visible={visible}
       onHide={onHide}
       className="w-50rem"

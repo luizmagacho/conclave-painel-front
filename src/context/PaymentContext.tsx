@@ -5,7 +5,7 @@ import {
   postPayment,
   updatePayment,
 } from "@/services/payment";
-import { Payment, PaymentDTO } from "@/services/payment/type";
+import { Payment, PaymentDTO, SearchType } from "@/services/payment/type";
 import { ReactNode, createContext, useState } from "react";
 
 interface ProviderProps {
@@ -16,16 +16,15 @@ interface PaymentContextProps {
   paymentsByAccountId: Payment[];
   loading: boolean;
   totalElements: number;
-  handleGetPayments: (
-    page?: number,
-    beneficiary?: string,
-    paymentDate?: Date
-  ) => Promise<void>;
+  handleGetPayments: (page?: number) => Promise<void>;
   handleGetPaymentsByAccountId: (
     accountId: number,
     page?: number,
+    searchType?: SearchType,
+    centerCost?: number | null,
     beneficiary?: string,
-    paymentDate?: Date
+    paymentDate?: Date,
+    week?: number | null
   ) => Promise<void>;
   handlePostPayment: (payment: PaymentDTO) => Promise<void>;
   handleUpdatePayment: (payment: Payment) => Promise<void>;
@@ -43,21 +42,16 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
 
   const [totalElements, setTotalElements] = useState<number>(0);
 
-  async function handleGetPayments(
-    page: number = 0,
-    beneficiary: string = "",
-    paymentDate: Date = new Date()
-  ) {
+  async function handleGetPayments(page: number = 0) {
     setLoading(true);
     try {
       const { content, totalElements } = await getPayments({
         page,
         size: 5,
-        beneficiary,
-        paymentDate,
       });
       setBufferedPaymentByAccountId(content || []);
       setPaymentByAccountId(content || []);
+      console.log(content);
       setTotalElements(totalElements);
     } catch (error) {
       console.error(error);
@@ -69,8 +63,11 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
   async function handleGetPaymentsByAccountId(
     accountId: number,
     page: number = 0,
+    searchType: SearchType = SearchType.CENTERCOST,
+    centerCost: number | null = null,
     beneficiary: string = "",
-    paymentDate: Date = new Date()
+    paymentDate: Date = new Date(),
+    week: number | null = null
   ) {
     setLoading(true);
     try {
@@ -78,13 +75,17 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
         {
           page,
           size: 5,
+          searchType,
+          centerCost,
           beneficiary,
           paymentDate,
+          week,
         },
         accountId
       );
       setBufferedPaymentByAccountId(content || []);
       setPaymentByAccountId(content || []);
+      console.log(content);
       setTotalElements(totalElements);
     } catch (error) {
       console.error(error);

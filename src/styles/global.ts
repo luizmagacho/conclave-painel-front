@@ -41,6 +41,10 @@ const GlobalStyle = createGlobalStyle`
   border-color: var(--cor-primaria) !important;
 }
 
+.smaller-text {
+  font-size: 0.8rem; /* Adjust the value for desired size */
+}
+
 `;
 
 export default GlobalStyle;

@@ -24,7 +24,6 @@ function AccountCreateDialog({
     name: "",
     financialInstitute: "",
     accountNumber: "",
-    currency: "",
     balance: 0,
     startBalance: 0,
     minBalance: 0,
@@ -39,7 +38,6 @@ function AccountCreateDialog({
     useState<boolean>(false);
   const [invalidAccountNumber, setInvalidAccountNumber] =
     useState<boolean>(false);
-  const [invalidCurrency, setInvalidCurrency] = useState<boolean>(false);
   const [invalidStartBalance, setInvalidStartBalance] =
     useState<boolean>(false);
   const [invalidMinBalance, setInvalidMinBalance] = useState<boolean>(false);
@@ -123,25 +121,6 @@ function AccountCreateDialog({
           />
           {invalidAccountNumber && (
             <Message severity="error" text="Número da Conta é obrigatório" />
-          )}
-        </div>
-        <div className="field flex flex-column gap-2">
-          <LabelTitle
-            text="Unidade Monetária"
-            htmlFor="currency"
-            className="font-semibold"
-            required={true}
-          />
-          <InputText
-            type="text"
-            onChange={(e) => {
-              setNewAccount({ ...newAccount, currency: e.target.value });
-              setInvalidCurrency(false);
-            }}
-            value={newAccount?.currency}
-          />
-          {invalidCurrency && (
-            <Message severity="error" text="Unidade Monetaria é obrigatória" />
           )}
         </div>
         <div className="card flex flex-column md:flex-row gap-3 w-11/12">

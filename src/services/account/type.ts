@@ -5,7 +5,6 @@ export type AccountSimpleList = {
   name: string;
   financialInstitute: string;
   accountNumber: string;
-  currency: string;
   balance: number;
   startBalance: number | null;
   minBalance: number | null;
@@ -22,7 +21,6 @@ export type AccountDetails = {
   name: string;
   financialInstitute: string;
   accountNumber: string;
-  currency: string;
   balance: number;
   startBalance: number;
   minBalance: number;
@@ -36,7 +34,6 @@ export type AccountDTO = {
   name: string;
   financialInstitute: string;
   accountNumber: string;
-  currency: string;
   balance: number;
   startBalance: number | null;
   minBalance: number | null;
@@ -51,4 +48,5 @@ export type AccountPaginationParam = {
   size: number;
   page: number;
   name: string;
+  favorite?: boolean;
 };

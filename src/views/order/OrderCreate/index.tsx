@@ -190,7 +190,7 @@ function OrderCreate() {
           <div>
             <div className="field flex flex-column gap-2 w-full">
               <LabelTitle
-                text="Código da Obra"
+                text="Código do Centro de Custo"
                 htmlFor="constructionCode"
                 className="font-semibold"
               />

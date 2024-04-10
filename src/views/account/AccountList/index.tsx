@@ -13,6 +13,7 @@ import { useContext, useState } from "react";
 import AccountCreateDialog from "../AccountCreateDialog";
 import { classNames } from "primereact/utils";
 import AccountUpdateDialog from "../AccountUpdateDialog";
+import AccountDeleteDialog from "../AccountDeleteDialog";
 
 interface Options {
   icon?: string;
@@ -26,9 +27,12 @@ function AccountList() {
   const [currAccount, setCurrAccount] = useState<AccountSimpleList | null>(
     null
   );
+  const [currDeleteAccount, setCurrDeleteAccount] =
+    useState<AccountSimpleList | null>(null);
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [accountNameSearch, setAccountNameSearch] = useState<string>("");
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
 
   const [first, setFirst] = useState<number>(0);
   const {
@@ -49,6 +53,11 @@ function AccountList() {
       label: "Editar",
       onClick: openDialog,
     },
+    {
+      ariaLabel: "Excluir",
+      label: "Excluir",
+      onClick: openDeleteDialog,
+    },
   ];
 
   const columnBodyOptions = {
@@ -68,6 +77,21 @@ function AccountList() {
 
   async function onUpdateAccount(account: AccountSimpleList) {
     await handleUpdateAccount(account);
+    handleGetAccounts();
+  }
+
+  function openDeleteDialog(account: AccountSimpleList) {
+    setCurrDeleteAccount(account);
+    setShowDeleteDialog(true);
+  }
+
+  function closeDeleteDialog() {
+    setCurrDeleteAccount(null);
+    setShowDeleteDialog((showDeleteDialog) => !showDeleteDialog);
+  }
+
+  async function onDeleteAccount(accountId: number) {
+    await handleDeleteAccount(accountId);
     handleGetAccounts();
   }
 
@@ -136,10 +160,6 @@ function AccountList() {
           <Column field="name" header="Nome" />
           <Column field="financialInstitute" header="Instituição Financeira" />
           <Column field="accountNumber" header="Número da Conta" />
-          <Column field="currency" header="Unidade Monetária" />
-          <Column field="startBalance" header="Saldo de" />
-          <Column field="accountNumber" header="Número da Conta" />
-          <Column field="currency" header="Unidade Monetária" />
 
           <Column
             field="favorite"
@@ -169,6 +189,14 @@ function AccountList() {
             onUpdate={onUpdateAccount}
             onHide={closeUpdateDialog}
             data={currAccount}
+          />
+        )}
+        {currDeleteAccount && (
+          <AccountDeleteDialog
+            visible={showDeleteDialog}
+            data={currDeleteAccount}
+            onDelete={onDeleteAccount}
+            onHide={closeDeleteDialog}
           />
         )}
       </section>
