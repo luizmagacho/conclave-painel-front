@@ -28,9 +28,9 @@ interface SupplierContextProps {
   ) => Promise<void>;
   handleGetAllSuppliers: () => Promise<void>;
   handlePostSupplier: (supplier: SupplierDTO) => Promise<number | null>;
-  handleGetSupplierById: (supplierId: string) => Promise<void>;
+  handleGetSupplierById: (supplierId: number) => Promise<void>;
   handleUpdateSupplier: (supplier: Supplier) => Promise<void>;
-  handleDeleteSupplier: (supplierId: string) => Promise<void>;
+  handleDeleteSupplier: (supplierId: number) => Promise<void>;
 }
 
 export const SupplierContext = createContext({} as SupplierContextProps);
@@ -83,7 +83,7 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
     }
   }
 
-  async function handleGetSupplierById(supplierId: string) {
+  async function handleGetSupplierById(supplierId: number) {
     setLoading(true);
     try {
       const supplier = await getSupplierById(supplierId);
@@ -134,7 +134,7 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
     }
   }
 
-  async function handleDeleteSupplier(supplierId: string) {
+  async function handleDeleteSupplier(supplierId: number) {
     setLoading(true);
 
     try {

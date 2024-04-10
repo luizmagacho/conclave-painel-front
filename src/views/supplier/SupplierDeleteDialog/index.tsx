@@ -5,7 +5,7 @@ import { Dialog } from "primereact/dialog";
 interface SupplierDeleteDialog {
   visible: boolean;
   onHide: () => void;
-  onDelete: (userId: string) => void;
+  onDelete: (supplierId: number) => void;
   data: Supplier;
 }
 
