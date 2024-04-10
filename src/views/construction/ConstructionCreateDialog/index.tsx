@@ -89,7 +89,7 @@ function ConstructionCreateDialog({
 
   return (
     <Dialog
-      header="Adicionar Nova Obra"
+      header="Adicionar Novo Centro de Custo"
       visible={visible}
       onHide={onHide}
       className="w-50rem"
@@ -98,7 +98,7 @@ function ConstructionCreateDialog({
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Código da Obra"
+            text="Código do Centro de Custo"
             htmlFor="code"
             className="font-semibold"
             required={true}

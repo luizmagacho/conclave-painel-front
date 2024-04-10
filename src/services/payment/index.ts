@@ -1,22 +1,20 @@
 import { Pagination } from "@/types/pagination";
 import { getAPIClient } from "../axios";
-import { Payment, PaymentDTO, PaymentPaginationParam } from "./type";
+import {
+  Payment,
+  PaymentByAccountIdPaginationParam,
+  PaymentDTO,
+  PaymentPaginationParam,
+} from "./type";
 
 const baseUrl = "/payment";
 const api = getAPIClient();
 
-export async function getPayments({
-  page,
-  size,
-  beneficiary,
-  paymentDate,
-}: PaymentPaginationParam) {
+export async function getPayments({ page, size }: PaymentPaginationParam) {
   let res = await api.get<Pagination<Payment>>(baseUrl, {
     params: {
       page,
       size,
-      beneficiary,
-      paymentDate,
     },
   });
 
@@ -24,17 +22,31 @@ export async function getPayments({
 }
 
 export async function getPaymentsByAccountId(
-  { page, size, beneficiary, paymentDate }: PaymentPaginationParam,
+  {
+    page,
+    size,
+    searchType,
+    centerCost,
+    beneficiary,
+    paymentDate,
+    week,
+  }: PaymentByAccountIdPaginationParam,
   accountId: number
 ) {
-  let res = await api.get<Pagination<Payment>>(`${baseUrl}/${accountId}`, {
-    params: {
-      page,
-      size,
-      beneficiary,
-      paymentDate,
-    },
-  });
+  let res = await api.get<Pagination<Payment>>(
+    `${baseUrl}/account/${accountId}`,
+    {
+      params: {
+        page,
+        size,
+        searchType,
+        centerCost,
+        beneficiary,
+        paymentDate,
+        week,
+      },
+    }
+  );
 
   return res.data;
 }

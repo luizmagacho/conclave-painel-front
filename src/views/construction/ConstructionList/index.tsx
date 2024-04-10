@@ -25,7 +25,7 @@ interface OptionType {
 const columns = [
   {
     field: "code",
-    header: "Obra",
+    header: "Centro de Custo",
   },
   {
     field: "client",
@@ -140,7 +140,7 @@ function ConstructionList() {
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
-          <h1 className="m-0">Obras</h1>
+          <h1 className="m-0">Centros de Custos</h1>
           <InputSearch
             onSearch={onSearch}
             onChange={onChangeSearch}
@@ -159,7 +159,7 @@ function ConstructionList() {
           </Button>
         </div>
         <DataTable
-          emptyMessage="Nenhuma obra encontrada."
+          emptyMessage="Nenhuma centro de custo encontrado."
           value={constructions}
           loading={loading}
           stripedRows

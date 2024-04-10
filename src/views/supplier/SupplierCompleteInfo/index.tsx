@@ -17,7 +17,7 @@ function SupplierCompleteInfo() {
     useContext(SupplierContext);
   const [loading, setLoading] = useState<boolean>(false);
   const [updatedSupplier, setUpdatedSupplier] = useState<Supplier>({
-    id: selectedSupplier?.id || "",
+    id: selectedSupplier?.id || 0,
     cnpj: selectedSupplier?.cnpj || "",
     cpf: "",
     completeName: selectedSupplier?.completeName || "",

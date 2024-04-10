@@ -163,6 +163,12 @@ function OrderList() {
                 filterPlaceholder="Buscar por Data"
               />
               <Column
+                field="construction.code"
+                header="Centro de Custo"
+                filter
+                filterPlaceholder="Buscar por Centro de Custo"
+              />
+              <Column
                 field="construction.bankBranch"
                 header="Código da Agência"
                 filter

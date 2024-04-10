@@ -149,3 +149,11 @@ export function formatarData(dataString: string): string {
   )}:${adicionarZero(dataOriginal.getMinutes())}:00.000Z`;
   return dataFormatada;
 }
+
+export function formatarDataBR(data: Date): string {
+  const dia = data.getDate().toString().padStart(2, "0");
+  const mes = (data.getMonth() + 1).toString().padStart(2, "0");
+  const ano = data.getFullYear();
+
+  return `${dia}/${mes}/${ano}`;
+}

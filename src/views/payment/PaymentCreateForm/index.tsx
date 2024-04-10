@@ -2,7 +2,7 @@ import LabelTitle from "@/components/LabelTitle";
 import { SupplierContext } from "@/context/SupplierContext";
 import { PaymentDTO } from "@/services/payment/type";
 import { Supplier } from "@/services/supplier/type";
-import { convertStringToDate } from "@/util/date";
+import { convertStringToDate, formatDateToYYYYMMDD } from "@/util/date";
 import {
   AutoComplete,
   AutoCompleteChangeEvent,
@@ -14,6 +14,7 @@ import { Divider } from "primereact/divider";
 import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
+import { Message } from "primereact/message";
 import { useContext, useEffect, useState } from "react";
 
 interface PaymentCreateForm {
@@ -34,6 +35,7 @@ function PaymentCreateForm({
     balance: null,
     cleared: false,
     beneficiary: "",
+    beneficiaryId: null,
     deposit: null,
     withdraw: null,
     enabled: true,
@@ -41,6 +43,7 @@ function PaymentCreateForm({
     description: "",
     paymentDate: new Date(),
   });
+  const [invalidBeneficiary, setInvalidBeneficiary] = useState<boolean>(false);
   const [selectedBeneficiary, setSelectedBeneficiary] =
     useState<Supplier | null>(null);
   const [newPaymentDate, setNewPaymentDate] = useState<Date | null>();
@@ -77,35 +80,83 @@ function PaymentCreateForm({
     handleGetAllSuppliers();
   }, []);
 
+  useEffect(() => {
+    console.log("Favorecido: ", selectedBeneficiary?.shortenedName);
+
+    setNewPayment((prevPayment) => ({
+      ...prevPayment,
+      beneficiaryId: selectedBeneficiary?.id || prevPayment.beneficiaryId,
+    }));
+    setNewPayment((prevPayment) => ({
+      ...prevPayment,
+      beneficiary:
+        selectedBeneficiary?.shortenedName || prevPayment.beneficiary,
+    }));
+  }, [selectedBeneficiary]);
+
+  async function validateFields() {
+    console.log(newPayment.beneficiary);
+    setInvalidBeneficiary(
+      !newPayment.beneficiary || newPayment.beneficiary === ""
+    );
+    if (!invalidBeneficiary) {
+      await onCreate(newPayment);
+      setSelectedBeneficiary(null);
+      setNewPayment({
+        accountId: accountId,
+        balance: null,
+        cleared: false,
+        beneficiary: "",
+        beneficiaryId: null,
+        deposit: null,
+        withdraw: null,
+        enabled: true,
+        numberCheckTransfer: "",
+        description: "",
+        paymentDate: null,
+      });
+    }
+  }
+
   return (
     <div>
       <div className="card flex flex-column md:flex-row gap-2 w-11/12">
-        <div className="field flex flex-column gap-2 w-full">
+        <div className="field flex flex-column gap-1 w-full">
           <LabelTitle
             text="Pagar a:"
             htmlFor="payTo"
-            className="font-semibold text-sm"
+            className="font-semibold smaller-text"
           />
           <AutoComplete
             suggestions={allSupplierItems}
             field="shortenedName"
             dropdown
+            style={{ height: "30px", fontSize: "0.8rem" }}
             value={selectedBeneficiary}
             completeMethod={suppliersSearch}
             onChange={(e: AutoCompleteChangeEvent) => {
               setSelectedBeneficiary(e.value);
-              setNewPayment({ ...newPayment, beneficiary: e.value });
+
+              setInvalidBeneficiary(false);
             }}
           />
+          {invalidBeneficiary && (
+            <Message
+              severity="error"
+              text="Favorecido é obrigatório"
+              className="smaller-text"
+            />
+          )}
         </div>
-        <div className="field flex flex-column gap-2 w-full">
+        <div className="flex flex-column gap-1 w-full">
           <LabelTitle
             text="Número"
             htmlFor="number"
-            className="font-semibold text-sm"
+            className="font-semibold smaller-text"
           />
           <InputText
             type="number"
+            style={{ height: "30px", fontSize: "0.8rem" }}
             onChange={(e) => {
               setNewPayment({
                 ...newPayment,
@@ -115,69 +166,84 @@ function PaymentCreateForm({
           />
         </div>
       </div>
-      <div className="card flex flex-column md:flex-row gap-2 w-11/12">
-        <div className="field flex flex-column gap-2 w-full">
+      <div className="flex flex-column md:flex-row gap-2 w-11/12">
+        <div className="field flex flex-column gap-1 w-full">
           <LabelTitle
             text="Categoria:"
             htmlFor="payTo"
-            className="font-semibold text-sm"
+            className="font-semibold smaller-text"
           />
-          <div className="card flex flex-column md:flex-row gap-2 w-11/12">
-            <div className="field flex flex-column gap-2 w-full">
-              <Dropdown className="flex-grow" />
+          <div className="flex flex-column md:flex-row gap-2 w-11/12">
+            <div className="field flex flex-column gap-1 w-full">
+              <Dropdown
+                className="flex-grow"
+                style={{ height: "30px", fontSize: "0.8rem" }}
+              />
             </div>
-            <div className="field flex flex-column gap-2 w-full">
-              <Dropdown className="flex-grow" />
+            <div className="field flex flex-column gap-1 w-full">
+              <Dropdown
+                className="flex-grow"
+                style={{ height: "30px", fontSize: "0.8rem" }}
+              />
             </div>
           </div>
-          <div className="field flex flex-column gap-2 w-full">
+          <div className="field flex flex-column gap-1 w-full">
             <LabelTitle
               text=" "
               htmlFor="payTo"
-              className="font-semibold text-sm"
+              className="font-semibold smaller-text"
             />
-            <Button severity="danger" className="flex-grow" />
+            <Button
+              severity="danger"
+              className="flex-grow"
+              style={{ height: "30px", fontSize: "0.8rem" }}
+            />
           </div>
         </div>
-        <div className="field flex flex-column gap-2 w-full">
+        <div className="field flex flex-column gap-1 w-full">
           <LabelTitle
             text="Data"
             htmlFor="paymentDate"
-            className="font-semibold text-sm"
+            className="font-semibold smaller-text"
           />
           <Calendar
             locale="pt"
             className="ui-state-default"
             dateFormat="dd/mm/yy"
+            style={{ height: "30px", fontSize: "0.8rem" }}
             showIcon
             onChange={(e) => {
               setNewPaymentDate(e.value || null);
             }}
           />
-          <div className="field flex flex-column gap-2 w-full">
+          <div className="field flex flex-column gap-1 w-full">
             <LabelTitle
               text="Montante"
               htmlFor="withdraw"
-              className="font-semibold text-sm"
+              className="font-semibold smaller-text"
             />
-            {paymentType === "WITHDRAW" && (
-              <InputNumber
-                inputId="currency-br"
-                mode="currency"
-                locale="pt-BR"
-                currency="BRL"
-                value={newPayment?.withdraw}
-                onChange={(e) => {
-                  setNewPayment({ ...newPayment, withdraw: e.value });
-                }}
-              />
-            )}
+            {paymentType === "WITHDRAW" ||
+              (paymentType === "MONEYWITHDRAW" && (
+                <InputNumber
+                  inputId="currency-br"
+                  mode="currency"
+                  locale="pt-BR"
+                  currency="BRL"
+                  style={{ height: "30px", fontSize: "0.8rem" }}
+                  value={newPayment?.withdraw}
+                  onChange={(e) => {
+                    setNewPayment({ ...newPayment, withdraw: e.value });
+                  }}
+                />
+              ))}
             {paymentType === "DEPOSIT" && (
               <InputNumber
                 inputId="currency-br"
                 mode="currency"
                 locale="pt-BR"
                 currency="BRL"
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                className="smaller-text"
                 value={newPayment?.deposit}
                 onChange={(e) => {
                   setNewPayment({ ...newPayment, deposit: e.value });
@@ -187,32 +253,38 @@ function PaymentCreateForm({
           </div>
         </div>
       </div>
-      <div className="card flex flex-column md:flex-row gap-2 w-11/12">
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Memo: "
-            htmlFor="memo"
-            className="font-semibold text-sm"
-          />
-          <InputText
-            type="text"
-            className="flex-grow"
-            value={newPayment.description}
-            onChange={(e) => {
-              setNewPayment({ ...newPayment, description: e.target.value });
-            }}
-          />
-        </div>
+      <div className="field flex flex-column gap-2 w-full">
+        <LabelTitle
+          text="Memo: "
+          htmlFor="memo"
+          className="font-semibold smaller-text"
+        />
+        <InputText
+          type="text"
+          className="flex-grow smaller-text"
+          value={newPayment.description}
+          onChange={(e) => {
+            setNewPayment({ ...newPayment, description: e.target.value });
+          }}
+        />
       </div>
-      <Divider />
       <div
         className="flex justify-end gap-6 w-full"
         style={{ justifyContent: "end" }}
       >
         <Button
-          className="rounded-md px-3 text-sm"
-          label={paymentType === "WITHDRAW" ? "Retirar" : "Depositar"}
+          className="rounded-md px-3 smaller-text"
+          label={
+            paymentType === "WITHDRAW"
+              ? "Retirar"
+              : paymentType === "DEPOSIT"
+              ? "Depositar"
+              : paymentType === "MONEYWITHDRAW"
+              ? "Retirada em Dinheiro"
+              : "Transferência"
+          }
           severity="danger"
+          onClick={() => validateFields()}
         />
       </div>
     </div>
