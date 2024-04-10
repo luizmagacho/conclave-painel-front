@@ -23,7 +23,7 @@ export async function getSuppliers({
   return res.data;
 }
 
-export async function getSupplierById(supplierId: string) {
+export async function getSupplierById(supplierId: number) {
   let res = await api.get<Supplier>(`${baseUrl}/${supplierId}`);
   return res.data;
 }
@@ -43,7 +43,7 @@ export async function getAllSuppliers() {
   return res.data;
 }
 
-export async function deleteSupplier(supplierId: string) {
+export async function deleteSupplier(supplierId: number) {
   let res = await api.delete(`${baseUrl}/${supplierId}`);
   return res.status;
 }

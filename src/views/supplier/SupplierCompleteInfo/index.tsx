@@ -76,7 +76,7 @@ function SupplierCompleteInfo() {
 
   useEffect(() => {
     const { id } = router.query;
-    handleGetSupplierById(typeof id === "string" ? id : "");
+    handleGetSupplierById(typeof id === "number" ? id : 0);
   }, []);
 
   useEffect(() => {
