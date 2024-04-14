@@ -1,11 +1,23 @@
 import {
   deletePayment,
+  getAllCategories,
+  getAllSubCategories,
   getPayments,
   getPaymentsByAccountId,
+  postCategory,
   postPayment,
+  postSubCategory,
   updatePayment,
 } from "@/services/payment";
-import { Payment, PaymentDTO, SearchType } from "@/services/payment/type";
+import {
+  Category,
+  CategoryDTO,
+  Payment,
+  PaymentDTO,
+  SearchType,
+  SubCategory,
+  SubCategoryDTO,
+} from "@/services/payment/type";
 import { ReactNode, createContext, useState } from "react";
 
 interface ProviderProps {
@@ -14,9 +26,13 @@ interface ProviderProps {
 
 interface PaymentContextProps {
   paymentsByAccountId: Payment[];
+  allCategories: Category[];
+  allSubCategories: SubCategory[];
   loading: boolean;
   totalElements: number;
   handleGetPayments: (page?: number) => Promise<void>;
+  handleGetCategories: () => Promise<void>;
+  handleGetSubCategories: () => Promise<void>;
   handleGetPaymentsByAccountId: (
     accountId: number,
     page?: number,
@@ -27,6 +43,8 @@ interface PaymentContextProps {
     week?: number | null
   ) => Promise<void>;
   handlePostPayment: (payment: PaymentDTO) => Promise<void>;
+  handlePostCategory: (category: CategoryDTO) => Promise<void>;
+  handlePostSubCategory: (subCategory: SubCategoryDTO) => Promise<void>;
   handleUpdatePayment: (payment: Payment) => Promise<void>;
   handleDeletePayment: (paymentId: string) => Promise<void>;
 }
@@ -35,6 +53,8 @@ export const PaymentContext = createContext({} as PaymentContextProps);
 
 export const PaymentProvider = ({ children }: ProviderProps) => {
   const [paymentsByAccountId, setPaymentByAccountId] = useState<Payment[]>([]);
+  const [allCategories, setAllCategories] = useState<Category[]>([]);
+  const [allSubCategories, setAllSubCategories] = useState<Category[]>([]);
   const [bufferedPaymentsByAccountId, setBufferedPaymentByAccountId] = useState<
     Payment[]
   >([]);
@@ -53,6 +73,29 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
       setPaymentByAccountId(content || []);
       console.log(content);
       setTotalElements(totalElements);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleGetCategories() {
+    setLoading(true);
+    try {
+      setAllCategories(await getAllCategories());
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+      console.log(allCategories);
+    }
+  }
+
+  async function handleGetSubCategories() {
+    setLoading(true);
+    try {
+      setAllSubCategories(await getAllSubCategories());
     } catch (error) {
       console.error(error);
     } finally {
@@ -105,6 +148,28 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
     }
   }
 
+  async function handlePostCategory(category: CategoryDTO) {
+    setLoading(true);
+    try {
+      const resp = await postCategory(category);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handlePostSubCategory(subCategory: SubCategoryDTO) {
+    setLoading(true);
+    try {
+      const resp = await postSubCategory(subCategory);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function handleUpdatePayment(payment: Payment) {
     setLoading(true);
     try {
@@ -131,11 +196,17 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
     <PaymentContext.Provider
       value={{
         paymentsByAccountId,
+        allCategories,
+        allSubCategories,
         loading,
         totalElements,
         handleGetPayments,
+        handleGetCategories,
+        handleGetSubCategories,
         handleGetPaymentsByAccountId,
         handlePostPayment,
+        handlePostCategory,
+        handlePostSubCategory,
         handleUpdatePayment,
         handleDeletePayment,
       }}

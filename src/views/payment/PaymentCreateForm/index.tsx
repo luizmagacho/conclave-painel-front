@@ -1,6 +1,13 @@
 import LabelTitle from "@/components/LabelTitle";
+import { PaymentContext } from "@/context/PaymentContext";
 import { SupplierContext } from "@/context/SupplierContext";
-import { PaymentDTO } from "@/services/payment/type";
+import {
+  Category,
+  CategoryDTO,
+  PaymentDTO,
+  SubCategory,
+  SubCategoryDTO,
+} from "@/services/payment/type";
 import { Supplier } from "@/services/supplier/type";
 import { convertStringToDate, formatDateToYYYYMMDD } from "@/util/date";
 import {
@@ -16,6 +23,7 @@ import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useContext, useEffect, useState } from "react";
+import CategoryCreateDialog from "../CategoryCreateDialog";
 
 interface PaymentCreateForm {
   accountId: number;
@@ -36,6 +44,10 @@ function PaymentCreateForm({
     cleared: false,
     beneficiary: "",
     beneficiaryId: null,
+    category: "",
+    categoryId: null,
+    subCategory: "",
+    subCategoryId: null,
     deposit: null,
     withdraw: null,
     enabled: true,
@@ -44,14 +56,66 @@ function PaymentCreateForm({
     paymentDate: new Date(),
   });
   const [invalidBeneficiary, setInvalidBeneficiary] = useState<boolean>(false);
+  const [invalidCategory, setInvalidCategory] = useState<boolean>(false);
+  const [invalidSubCategory, setInvalidSubCategory] = useState<boolean>(false);
   const [selectedBeneficiary, setSelectedBeneficiary] =
     useState<Supplier | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
+  const [selectedSubCategory, setSelectedSubCategory] =
+    useState<SubCategory | null>(null);
   const [newPaymentDate, setNewPaymentDate] = useState<Date | null>();
 
   const { allSuppliers, handleGetAllSuppliers } = useContext(SupplierContext);
+  const [showCategoryCreateDialog, setShowCategoryCreateDialog] =
+    useState<boolean>(false);
+  const [showSubCategoryCreateDialog, setShowSubCategoryCreateDialog] =
+    useState<boolean>(false);
+
+  const {
+    allCategories,
+    allSubCategories,
+    handleGetCategories,
+    handlePostCategory,
+    handleGetSubCategories,
+    handlePostSubCategory,
+  } = useContext(PaymentContext);
 
   const [allSupplierItems, setAllSupplierItems] =
     useState<Supplier[]>(allSuppliers);
+
+  const [allCategoriesItems, setAllCategoriesItems] =
+    useState<Category[]>(allCategories);
+
+  const [allSubCategoriesItems, setAllSubCategoriesItems] =
+    useState<SubCategory[]>(allSubCategories);
+
+  function openCreateCategory() {
+    setShowCategoryCreateDialog(true);
+  }
+
+  async function onCreateCategory(categoryDTO: CategoryDTO) {
+    await handlePostCategory(categoryDTO);
+    handleGetCategories();
+  }
+
+  function closeCreateCategoryDialog() {
+    setShowCategoryCreateDialog((showCreateDialog) => !showCreateDialog);
+  }
+
+  function openCreateSubCategory() {
+    setShowSubCategoryCreateDialog(true);
+  }
+
+  async function onCreateSubCategory(subCategoryDTO: SubCategoryDTO) {
+    await handlePostSubCategory(subCategoryDTO);
+    handleGetSubCategories();
+  }
+
+  function closeCreateSubCategoryDialog() {
+    setShowSubCategoryCreateDialog((showCreateDialog) => !showCreateDialog);
+  }
 
   useEffect(() => {
     setNewPayment((prevPayment) => ({
@@ -76,46 +140,86 @@ function PaymentCreateForm({
     }, 150);
   };
 
+  const categoriesSearch = (event: AutoCompleteCompleteEvent) => {
+    setTimeout(() => {
+      let _filteredCategories;
+      if (!event.query.trim().length) {
+        _filteredCategories = [...allCategories];
+      } else {
+        _filteredCategories = allCategories.filter((category) => {
+          return category.name.startsWith(event.query.toLocaleUpperCase());
+        });
+      }
+      setAllCategoriesItems(_filteredCategories || []);
+    }, 150);
+  };
+
+  const subCategoriesSearch = (event: AutoCompleteCompleteEvent) => {
+    setTimeout(() => {
+      let _filteredSubCategories;
+      if (!event.query.trim().length) {
+        _filteredSubCategories = [...allSubCategories];
+      } else {
+        _filteredSubCategories = allSubCategories.filter((subCategory) => {
+          return subCategory.name.startsWith(event.query.toLocaleUpperCase());
+        });
+      }
+      setAllSubCategoriesItems(_filteredSubCategories || []);
+    }, 150);
+  };
+
   useEffect(() => {
     handleGetAllSuppliers();
+    handleGetCategories();
   }, []);
 
   useEffect(() => {
-    console.log("Favorecido: ", selectedBeneficiary?.shortenedName);
-
     setNewPayment((prevPayment) => ({
       ...prevPayment,
       beneficiaryId: selectedBeneficiary?.id || prevPayment.beneficiaryId,
-    }));
-    setNewPayment((prevPayment) => ({
-      ...prevPayment,
       beneficiary:
         selectedBeneficiary?.shortenedName || prevPayment.beneficiary,
+      categoryId: selectedCategory?.id || prevPayment.categoryId,
+      category: selectedCategory?.name || prevPayment.category,
+      subCategory: selectedSubCategory?.name || prevPayment.subCategory,
+      subCategoryId: selectedSubCategory?.id || prevPayment.subCategoryId,
     }));
-  }, [selectedBeneficiary]);
+  }, [selectedBeneficiary, selectedCategory, selectedSubCategory]);
 
   async function validateFields() {
-    console.log(newPayment.beneficiary);
+    console.log(newPayment);
     setInvalidBeneficiary(
       !newPayment.beneficiary || newPayment.beneficiary === ""
     );
-    if (!invalidBeneficiary) {
-      await onCreate(newPayment);
-      setSelectedBeneficiary(null);
-      setNewPayment({
-        accountId: accountId,
-        balance: null,
-        cleared: false,
-        beneficiary: "",
-        beneficiaryId: null,
-        deposit: null,
-        withdraw: null,
-        enabled: true,
-        numberCheckTransfer: "",
-        description: "",
-        paymentDate: null,
-      });
-    }
+    setInvalidCategory(!newPayment.category || newPayment.category === "");
+    setInvalidSubCategory(
+      !newPayment.subCategory || newPayment.subCategory === ""
+    );
+    // if (!invalidBeneficiary) {
+    //   await onCreate(newPayment);
+    //   setSelectedBeneficiary(null);
+    //   setSelectedCategory(null);
+    //   setSelectedSubCategory(null);
+    //   setNewPaymentDate(null);
+    //   setNewPayment({
+    //     accountId: accountId,
+    //     balance: null,
+    //     cleared: false,
+    //     beneficiary: "",
+    //     beneficiaryId: null,
+    //     category: {
+    //       id: 0,
+    //       name: "",
+    //     },
+    //     subCategory: null,
+    //     deposit: null,
+    //     withdraw: null,
+    //     enabled: true,
+    //     numberCheckTransfer: "",
+    //     description: "",
+    //     paymentDate: null,
+    //   });
+    // }
   }
 
   return (
@@ -175,19 +279,62 @@ function PaymentCreateForm({
           />
           <div className="flex flex-column md:flex-row gap-2 w-11/12">
             <div className="field flex flex-column gap-1 w-full">
-              <Dropdown
-                className="flex-grow"
+              <AutoComplete
+                suggestions={allCategoriesItems}
+                field="name"
+                dropdown
                 style={{ height: "30px", fontSize: "0.8rem" }}
+                value={selectedCategory}
+                completeMethod={categoriesSearch}
+                onChange={(e: AutoCompleteChangeEvent) => {
+                  setSelectedCategory(e.value);
+
+                  setInvalidCategory(false);
+                }}
               />
             </div>
-            <div className="field flex flex-column gap-1 w-full">
-              <Dropdown
-                className="flex-grow"
+            <div className="field flex flex-column gap-1">
+              <Button
+                severity="danger"
                 style={{ height: "30px", fontSize: "0.8rem" }}
+                icon="pi pi-plus" // PrimeReact's "+" icon class
+                className="rounded-md px-3 smaller-text" // Optional styling
               />
             </div>
           </div>
           <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="SubCategoria:"
+              htmlFor="payTo"
+              className="font-semibold smaller-text"
+            />
+            <div className="flex flex-column md:flex-row gap-2 w-11/12">
+              <div className="field flex flex-column gap-1 w-full">
+                <AutoComplete
+                  suggestions={allSubCategoriesItems}
+                  field="name"
+                  dropdown
+                  style={{ height: "30px", fontSize: "0.8rem" }}
+                  value={selectedSubCategory}
+                  completeMethod={subCategoriesSearch}
+                  onChange={(e: AutoCompleteChangeEvent) => {
+                    setSelectedSubCategory(e.value);
+
+                    setInvalidSubCategory(false);
+                  }}
+                />
+              </div>
+              <div className="field flex flex-column gap-1">
+                <Button
+                  severity="danger"
+                  style={{ height: "30px", fontSize: "0.8rem" }}
+                  icon="pi pi-plus" // PrimeReact's "+" icon class
+                  className="rounded-md px-3 smaller-text" // Optional styling
+                />
+              </div>
+            </div>
+          </div>
+          {/* <div className="field flex flex-column gap-1 w-full">
             <LabelTitle
               text=" "
               htmlFor="payTo"
@@ -198,7 +345,7 @@ function PaymentCreateForm({
               className="flex-grow"
               style={{ height: "30px", fontSize: "0.8rem" }}
             />
-          </div>
+          </div> */}
         </div>
         <div className="field flex flex-column gap-1 w-full">
           <LabelTitle
@@ -287,6 +434,20 @@ function PaymentCreateForm({
           onClick={() => validateFields()}
         />
       </div>
+      {showCategoryCreateDialog && (
+        <CategoryCreateDialog
+          visible={showCategoryCreateDialog}
+          onCreate={onCreateCategory}
+          onHide={closeCreateCategoryDialog}
+        />
+      )}
+      {showSubCategoryCreateDialog && (
+        <CategoryCreateDialog
+          visible={showSubCategoryCreateDialog}
+          onCreate={onCreateSubCategory}
+          onHide={closeCreateSubCategoryDialog}
+        />
+      )}
     </div>
   );
 }
