@@ -60,6 +60,7 @@ function PaymentList() {
 
   const {
     paymentsByAccountId,
+    allCategories,
     loading,
     totalElements,
     handleGetPaymentsByAccountId,

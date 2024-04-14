@@ -6,6 +6,8 @@ export type Payment = {
   weekOfTheYear: number;
   beneficiary: string;
   beneficiaryId: number;
+  category: Category;
+  subCategory: SubCategory;
   cleared: boolean;
   withdraw: number;
   deposit: number;
@@ -22,6 +24,10 @@ export type PaymentDTO = {
   paymentDate: Date | null;
   beneficiary: string;
   beneficiaryId: number | null;
+  category: string;
+  categoryId: number | null;
+  subCategory: string;
+  subCategoryId: number | null;
   cleared: boolean;
   withdraw: number | null;
   deposit: number | null;
@@ -44,6 +50,24 @@ export type PaymentByAccountIdPaginationParam = {
   beneficiary?: string;
   paymentDate?: Date;
   week?: number | null;
+};
+
+export type Category = {
+  id: number;
+  name: string;
+};
+
+export type CategoryDTO = {
+  name: string;
+};
+
+export type SubCategory = {
+  id: number;
+  name: string;
+};
+
+export type SubCategoryDTO = {
+  name: string;
 };
 
 export enum SearchType {

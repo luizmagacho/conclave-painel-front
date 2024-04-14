@@ -1,10 +1,14 @@
 import { Pagination } from "@/types/pagination";
 import { getAPIClient } from "../axios";
 import {
+  Category,
+  CategoryDTO,
   Payment,
   PaymentByAccountIdPaginationParam,
   PaymentDTO,
   PaymentPaginationParam,
+  SubCategory,
+  SubCategoryDTO,
 } from "./type";
 
 const baseUrl = "/payment";
@@ -51,8 +55,28 @@ export async function getPaymentsByAccountId(
   return res.data;
 }
 
+export async function getAllCategories() {
+  let res = await api.get<Category[]>(`${baseUrl}/category`);
+  return res.data;
+}
+
+export async function getAllSubCategories() {
+  let res = await api.get<SubCategory[]>(`${baseUrl}/subcategory`);
+  return res.data;
+}
+
 export async function postPayment(payment: PaymentDTO) {
   let res = await api.post(baseUrl, payment);
+  return res.status;
+}
+
+export async function postCategory(category: CategoryDTO) {
+  let res = await api.post(`${baseUrl}/category`, category);
+  return res.status;
+}
+
+export async function postSubCategory(subCategory: SubCategoryDTO) {
+  let res = await api.post(`${baseUrl}/subcategory`, subCategory);
   return res.status;
 }
 
