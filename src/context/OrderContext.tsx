@@ -72,6 +72,7 @@ export const OrderProvider = ({ children }: ProviderProps) => {
       console.error(error);
     } finally {
       setLoading(false);
+      console.log(ordersNotFinished);
     }
   }
 

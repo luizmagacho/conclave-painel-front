@@ -67,6 +67,16 @@ function PaymentList() {
     handlePostPayment,
   } = useContext(PaymentContext);
 
+  const formatCurrency = (value: number | null) => {
+    if (!value) {
+      return "-";
+    }
+    return value.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+  };
+
   useEffect(() => {
     const account = accountsFavoriteList[activeIndex];
     if (activeIndex === accountsFavoriteList.length) {
@@ -111,6 +121,18 @@ function PaymentList() {
     localeBR;
     handleGetAccountsByFavorite();
   }, []);
+
+  const priceDepositBodyTemplate = (payment: PaymentDTO) => {
+    return formatCurrency(payment.deposit || null);
+  };
+
+  const priceWithdrawBodyTemplate = (payment: PaymentDTO) => {
+    return formatCurrency(payment.withdraw || null);
+  };
+
+  const priceBalanceBodyTemplate = (payment: PaymentDTO) => {
+    return formatCurrency(payment.balance || null);
+  };
 
   async function onCreatePayment(payment: PaymentDTO) {
     await handlePostPayment(payment);
@@ -208,21 +230,26 @@ function PaymentList() {
           className="smaller-text"
           body={clearedBodyTemplate}
         />
-        <Column field="withdraw" header="Pagamento" className="smaller-text" />
-        <Column field="deposit" header="Depósito" className="smaller-text" />
-        <Column field="balance" header="Saldo" className="smaller-text" />
+        <Column
+          field="withdraw"
+          header="Pagamento"
+          body={priceWithdrawBodyTemplate}
+          className="smaller-text"
+        />
+        <Column
+          field="deposit"
+          header="Depósito"
+          body={priceDepositBodyTemplate}
+          className="smaller-text"
+        />
+        <Column
+          field="balance"
+          header="Saldo"
+          body={priceBalanceBodyTemplate}
+          className="smaller-text"
+        />
       </DataTable>
       <TabView className="w-full smaller-text">
-        <TabPanel header="Cheque">
-          {account && (
-            <PaymentCreateForm
-              accountId={account.id}
-              accountName={account.name}
-              onCreate={onCreatePayment}
-              paymentType="CHECK"
-            />
-          )}
-        </TabPanel>
         <TabPanel header="Depósito">
           {account && (
             <PaymentCreateForm

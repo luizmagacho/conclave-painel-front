@@ -81,25 +81,20 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
   }
 
   async function handleGetCategories() {
-    setLoading(true);
     try {
       setAllCategories(await getAllCategories());
     } catch (error) {
       console.error(error);
     } finally {
-      setLoading(false);
-      console.log(allCategories);
     }
   }
 
   async function handleGetSubCategories() {
-    setLoading(true);
     try {
       setAllSubCategories(await getAllSubCategories());
     } catch (error) {
       console.error(error);
     } finally {
-      setLoading(false);
     }
   }
 
@@ -149,24 +144,20 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
   }
 
   async function handlePostCategory(category: CategoryDTO) {
-    setLoading(true);
     try {
       const resp = await postCategory(category);
     } catch (error) {
       console.error(error);
     } finally {
-      setLoading(false);
     }
   }
 
   async function handlePostSubCategory(subCategory: SubCategoryDTO) {
-    setLoading(true);
     try {
       const resp = await postSubCategory(subCategory);
     } catch (error) {
       console.error(error);
     } finally {
-      setLoading(false);
     }
   }
 
