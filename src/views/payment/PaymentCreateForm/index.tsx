@@ -98,6 +98,7 @@ function PaymentCreateForm({
   async function onCreateCategory(categoryDTO: CategoryDTO) {
     await handlePostCategory(categoryDTO);
     handleGetCategories();
+    setAllCategoriesItems(allCategories);
   }
 
   function closeCreateCategoryDialog() {
@@ -111,6 +112,7 @@ function PaymentCreateForm({
   async function onCreateSubCategory(subCategoryDTO: SubCategoryDTO) {
     await handlePostSubCategory(subCategoryDTO);
     handleGetSubCategories();
+    setAllSubCategoriesItems(allSubCategories);
   }
 
   function closeCreateSubCategoryDialog() {
@@ -127,15 +129,17 @@ function PaymentCreateForm({
   const suppliersSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
       let _filteredSuppliers;
+      console.log(!event.query.trim().length);
       if (!event.query.trim().length) {
         _filteredSuppliers = [...allSuppliers];
       } else {
         _filteredSuppliers = allSuppliers.filter((supplier) => {
-          return supplier.shortenedName.startsWith(
-            event.query.toLocaleUpperCase()
-          );
+          return supplier.shortenedName
+            .toLocaleUpperCase()
+            .startsWith(event.query.toLocaleUpperCase());
         });
       }
+      console.log(_filteredSuppliers);
       setAllSupplierItems(_filteredSuppliers);
     }, 150);
   };
@@ -147,7 +151,9 @@ function PaymentCreateForm({
         _filteredCategories = [...allCategories];
       } else {
         _filteredCategories = allCategories.filter((category) => {
-          return category.name.startsWith(event.query.toLocaleUpperCase());
+          return category.name
+            .toLocaleUpperCase()
+            .startsWith(event.query.toLocaleUpperCase());
         });
       }
       setAllCategoriesItems(_filteredCategories || []);
@@ -161,9 +167,12 @@ function PaymentCreateForm({
         _filteredSubCategories = [...allSubCategories];
       } else {
         _filteredSubCategories = allSubCategories.filter((subCategory) => {
-          return subCategory.name.startsWith(event.query.toLocaleUpperCase());
+          return subCategory.name
+            .toLocaleUpperCase()
+            .startsWith(event.query.toLocaleUpperCase());
         });
       }
+      console.log(_filteredSubCategories);
       setAllSubCategoriesItems(_filteredSubCategories || []);
     }, 150);
   };
@@ -171,6 +180,7 @@ function PaymentCreateForm({
   useEffect(() => {
     handleGetAllSuppliers();
     handleGetCategories();
+    handleGetSubCategories();
   }, []);
 
   useEffect(() => {
@@ -195,31 +205,30 @@ function PaymentCreateForm({
     setInvalidSubCategory(
       !newPayment.subCategory || newPayment.subCategory === ""
     );
-    // if (!invalidBeneficiary) {
-    //   await onCreate(newPayment);
-    //   setSelectedBeneficiary(null);
-    //   setSelectedCategory(null);
-    //   setSelectedSubCategory(null);
-    //   setNewPaymentDate(null);
-    //   setNewPayment({
-    //     accountId: accountId,
-    //     balance: null,
-    //     cleared: false,
-    //     beneficiary: "",
-    //     beneficiaryId: null,
-    //     category: {
-    //       id: 0,
-    //       name: "",
-    //     },
-    //     subCategory: null,
-    //     deposit: null,
-    //     withdraw: null,
-    //     enabled: true,
-    //     numberCheckTransfer: "",
-    //     description: "",
-    //     paymentDate: null,
-    //   });
-    // }
+    if (!invalidBeneficiary) {
+      await onCreate(newPayment);
+      setSelectedBeneficiary(null);
+      setSelectedCategory(null);
+      setSelectedSubCategory(null);
+      setNewPaymentDate(null);
+      setNewPayment({
+        accountId: accountId,
+        balance: null,
+        cleared: false,
+        beneficiary: "",
+        beneficiaryId: null,
+        category: "",
+        categoryId: null,
+        subCategory: "",
+        subCategoryId: null,
+        deposit: null,
+        withdraw: null,
+        enabled: true,
+        numberCheckTransfer: "",
+        description: "",
+        paymentDate: null,
+      });
+    }
   }
 
   return (
@@ -299,6 +308,7 @@ function PaymentCreateForm({
                 style={{ height: "30px", fontSize: "0.8rem" }}
                 icon="pi pi-plus" // PrimeReact's "+" icon class
                 className="rounded-md px-3 smaller-text" // Optional styling
+                onClick={openCreateCategory}
               />
             </div>
           </div>
@@ -330,6 +340,7 @@ function PaymentCreateForm({
                   style={{ height: "30px", fontSize: "0.8rem" }}
                   icon="pi pi-plus" // PrimeReact's "+" icon class
                   className="rounded-md px-3 smaller-text" // Optional styling
+                  onClick={openCreateSubCategory}
                 />
               </div>
             </div>
@@ -347,42 +358,56 @@ function PaymentCreateForm({
             />
           </div> */}
         </div>
-        <div className="field flex flex-column gap-1 w-full">
-          <LabelTitle
-            text="Data"
-            htmlFor="paymentDate"
-            className="font-semibold smaller-text"
-          />
-          <Calendar
-            locale="pt"
-            className="ui-state-default"
-            dateFormat="dd/mm/yy"
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            showIcon
-            onChange={(e) => {
-              setNewPaymentDate(e.value || null);
-            }}
-          />
+        <div className="flex-column gap-1 w-full">
           <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="Data"
+              htmlFor="paymentDate"
+              className="font-semibold smaller-text"
+            />
+            <Calendar
+              locale="pt"
+              className="ui-state-default"
+              dateFormat="dd/mm/yy"
+              style={{ height: "30px", fontSize: "0.8rem" }}
+              showIcon
+              onChange={(e) => {
+                setNewPaymentDate(e.value || null);
+              }}
+            />
+          </div>
+          <div className="flex flex-column gap-2 w-full">
             <LabelTitle
               text="Montante"
               htmlFor="withdraw"
               className="font-semibold smaller-text"
             />
-            {paymentType === "WITHDRAW" ||
-              (paymentType === "MONEYWITHDRAW" && (
-                <InputNumber
-                  inputId="currency-br"
-                  mode="currency"
-                  locale="pt-BR"
-                  currency="BRL"
-                  style={{ height: "30px", fontSize: "0.8rem" }}
-                  value={newPayment?.withdraw}
-                  onChange={(e) => {
-                    setNewPayment({ ...newPayment, withdraw: e.value });
-                  }}
-                />
-              ))}
+            {paymentType === "WITHDRAW" && (
+              <InputNumber
+                inputId="currency-br"
+                mode="currency"
+                locale="pt-BR"
+                currency="BRL"
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={newPayment?.withdraw}
+                onChange={(e) => {
+                  setNewPayment({ ...newPayment, withdraw: e.value });
+                }}
+              />
+            )}
+            {paymentType === "MONEYWITHDRAW" && (
+              <InputNumber
+                inputId="currency-br"
+                mode="currency"
+                locale="pt-BR"
+                currency="BRL"
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={newPayment?.withdraw}
+                onChange={(e) => {
+                  setNewPayment({ ...newPayment, withdraw: e.value });
+                }}
+              />
+            )}
             {paymentType === "DEPOSIT" && (
               <InputNumber
                 inputId="currency-br"

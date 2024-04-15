@@ -42,7 +42,7 @@ function SubCategoryCreateDialog({
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Código do Centro de Custo"
+            text="Cadastro Sub-Categoria"
             htmlFor="code"
             className="font-semibold"
             required={true}
