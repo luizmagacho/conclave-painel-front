@@ -62,11 +62,15 @@ function OrderCompleteInfo() {
     name = window.localStorage.getItem("portal.name");
     id = window.localStorage.getItem("portal.id");
   }
+  const [listMaterials, setListMaterials] = useState<Material[]>([]);
   const [selectedMaterials, setSelectedMaterials] = useState<Material[]>([]);
   const [showAddMaterial, setShowAddMaterial] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedConstruction, setSelectedConstruction] =
     useState<Construction>();
+  const [invalidName, setInvalidName] = useState<boolean>(false);
+  const [invalidQuantity, setInvalidQuantity] = useState<boolean>(false);
+  const [invalidMetricUnit, setInvalidMetricUnit] = useState<boolean>(false);
   const { constructions } = useContext(ConstructionContext);
 
   const [constructionsItems, setConstructionsItems] =
@@ -138,7 +142,7 @@ function OrderCompleteInfo() {
         userRequestId: selectedOrder?.userRequestId || prevOrder.userRequestId,
       }));
       setSelectedConstruction(selectedOrder?.construction);
-      setSelectedMaterials(selectedOrder?.materials || []);
+      setListMaterials(selectedOrder?.materials || []);
     } catch (error) {
       console.error(error);
     } finally {
@@ -174,17 +178,36 @@ function OrderCompleteInfo() {
   };
 
   function validateFieldsMaterial() {
-    // setInvalidName(!newMaterial.name || newMaterial.name === "");
-    // setInvalidQuantity(!newMaterial.quantity || newMaterial.quantity === "");
-    // setInvalidMetricUnit(
-    //   !newMaterial.metricUnit || newMaterial.metricUnit === ""
-    // );
-    // if (!invalidName && !invalidQuantity && !invalidMetricUnit) {
-    //   const updatedMaterials = [...allMaterials, newMaterial];
-    //   setSelectedMaterials(updatedMaterials);
-    //   hideAddDialog();
-    // }
+    setInvalidName(!updatedMaterial.name || updatedMaterial.name === "");
+    setInvalidQuantity(
+      !updatedMaterial.quantity || updatedMaterial.quantity === ""
+    );
+    setInvalidMetricUnit(
+      !updatedMaterial.metricUnit || updatedMaterial.metricUnit === ""
+    );
+    if (!invalidName && !invalidQuantity && !invalidMetricUnit) {
+      const updatedMaterials = [...allMaterials, updatedMaterial];
+      setListMaterials([
+        ...listMaterials,
+        {
+          id: updatedMaterial.id,
+          name: updatedMaterial.name,
+          metricUnit: updatedMaterial.metricUnit,
+          quantity: updatedMaterial.quantity,
+          enabled: updatedMaterial.enabled,
+        },
+      ]);
+      hideAddDialog();
+    }
   }
+
+  // const updateReviewOrder = () => {
+  //   setUpdatedOrder((prevOrder) => ({
+  //     ...prevOrder,
+  //     construction: selectedConstruction,
+  //     materials: listMaterials,
+  //   }));
+  // };
 
   async function validateFields() {
     // setInvalidConstructionCode(
@@ -200,7 +223,7 @@ function OrderCompleteInfo() {
     <>
       <Card className="m-3">
         <section className="flex flex-column gap-2 p-5 w-full">
-          <h1 className="m-0">Cadastrar Pedido</h1>
+          <h1 className="m-0">Visualizar Pedido</h1>
           <div>
             <div className="field flex flex-column gap-2 w-full">
               <LabelTitle
@@ -274,7 +297,7 @@ function OrderCompleteInfo() {
               <Toolbar className="mb-2" end={rightToolbarTemplate}></Toolbar>
               <DataTable
                 emptyMessage="Nenhum material adicionado"
-                value={selectedMaterials}
+                value={listMaterials}
                 rows={10}
                 selection={selectedMaterials}
                 onSelectionChange={(e) => {

@@ -28,6 +28,7 @@ function OrderCreate() {
     name = window.localStorage.getItem("portal.name");
     id = window.localStorage.getItem("portal.id");
   }
+  const [listMaterials, setListMaterials] = useState<MaterialDTO[]>([]);
   const [selectedMaterials, setSelectedMaterials] = useState<MaterialDTO[]>([]);
   const [showAddMaterial, setShowAddMaterial] = useState<boolean>(false);
   const [invalidConstructionCode, setInvalidConstructionCode] =
@@ -123,8 +124,9 @@ function OrderCreate() {
           return construction.code.startsWith(event.query);
         });
       }
+      console.log(_filteredConstructions);
       setConstructionsItems(_filteredConstructions);
-    }, 250);
+    }, 150);
   };
 
   const materialSearch = (event: AutoCompleteCompleteEvent) => {
@@ -136,7 +138,9 @@ function OrderCreate() {
       } else {
         console.log(event.query);
         _filteredMaterials = materialsItems.filter((material) => {
-          return material.name.startsWith(event.query);
+          return material.name
+            .toLocaleUpperCase()
+            .startsWith(event.query.toLocaleUpperCase());
         });
       }
       setMaterialsItems(_filteredMaterials);
@@ -154,8 +158,16 @@ function OrderCreate() {
       !newMaterial.metricUnit || newMaterial.metricUnit === ""
     );
     if (!invalidName && !invalidQuantity && !invalidMetricUnit) {
-      const updatedMaterials = [...allMaterials, newMaterial];
-      setSelectedMaterials(updatedMaterials);
+      console.log("selectedMaterials: ", selectedMaterials);
+      console.log("Materiais: ", newMaterial);
+      setListMaterials([
+        ...listMaterials,
+        {
+          name: newMaterial.name,
+          metricUnit: newMaterial.metricUnit,
+          quantity: newMaterial.quantity,
+        },
+      ]);
       hideAddDialog();
     }
   }
@@ -164,13 +176,13 @@ function OrderCreate() {
     setNewOrder((prevOrder) => ({
       ...prevOrder,
       construction: selectedConstruction,
-      materials: selectedMaterials,
+      materials: listMaterials,
     }));
   };
 
   useEffect(() => {
     updateNewOrder();
-  }, [selectedConstruction, selectedMaterials]);
+  }, [selectedConstruction, listMaterials]);
 
   async function validateFields() {
     setInvalidConstructionCode(
@@ -260,7 +272,7 @@ function OrderCreate() {
               <Toolbar className="mb-4" end={rightToolbarTemplate}></Toolbar>
               <DataTable
                 emptyMessage="Nenhum material adicionado"
-                value={selectedMaterials}
+                value={listMaterials}
                 rows={10}
                 selection={selectedMaterials}
                 onSelectionChange={(e) => {
@@ -335,11 +347,11 @@ function OrderCreate() {
             <AutoComplete
               type="text"
               field="name"
-              value={newMaterial.name}
+              value={newMaterial}
               suggestions={materialsItems}
               completeMethod={materialSearch}
               onChange={(e: AutoCompleteChangeEvent) => {
-                setNewMaterial({ ...newMaterial, name: e.value });
+                setNewMaterial(e.value);
               }}
             />
           </div>
