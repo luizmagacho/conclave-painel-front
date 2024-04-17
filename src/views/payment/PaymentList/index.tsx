@@ -19,6 +19,7 @@ import { TabPanel, TabView, TabViewTabChangeEvent } from "primereact/tabview";
 import { useContext, useEffect, useState } from "react";
 import PaymentCreateForm from "../PaymentCreateForm";
 import { classNames } from "primereact/utils";
+import PaymentTransferCreateForm from "../PaymentTransferCreateForm";
 
 interface Options {
   icon?: string;
@@ -46,7 +47,9 @@ function PaymentList() {
   const {
     accountsFavoriteList,
     accountsListNotFavorites,
+    accountDetails,
     handleGetAccountsByFavorite,
+    handleGetAccountById,
   } = useContext(AccountContext);
 
   const { suppliers } = useContext(SupplierContext);
@@ -87,6 +90,7 @@ function PaymentList() {
     }
 
     if (account) {
+      handleGetAccountById(account.id);
       setAccount({ ...account, id: account.id });
       setAccount({ ...account, name: account.name });
       setAccount({ ...account, balance: account.balance });
@@ -104,6 +108,7 @@ function PaymentList() {
     const account = accountsFavoriteList[0];
     setIsOthersAccounts(false);
     if (account) {
+      handleGetAccountById(account.id);
       setAccount({ ...account, id: account.id });
       setAccount({ ...account, name: account.name });
       setAccount({ ...account, balance: account.balance });
@@ -137,6 +142,7 @@ function PaymentList() {
   async function onCreatePayment(payment: PaymentDTO) {
     await handlePostPayment(payment);
     handleGetPaymentsByAccountId(account.id);
+    handleGetAccountById(account.id);
   }
 
   const footerTemplate = () => {
@@ -151,7 +157,7 @@ function PaymentList() {
         </div>
         <div className="flex-shrink-0">
           <LabelTitle
-            text={`Saldo de final: R$ ${finalBalance}`}
+            text={`Saldo de final: R$ ${accountDetails?.balance}`}
             htmlFor="finalBalance"
             className="font-semibold smaller-text"
           />
@@ -262,7 +268,7 @@ function PaymentList() {
         </TabPanel>
         <TabPanel header="Transferência">
           {account && (
-            <PaymentCreateForm
+            <PaymentTransferCreateForm
               accountId={account.id}
               accountName={account.name}
               onCreate={onCreatePayment}

@@ -34,6 +34,7 @@ export type PaymentDTO = {
   balance: number | null;
   description: string;
   accountId: number;
+  accountIdTo: number | null;
   enabled: boolean;
 };
 

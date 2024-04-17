@@ -45,7 +45,7 @@ export async function getAccountsByFavorite({
   return res.data;
 }
 
-export async function getAccountById(accountId: string) {
+export async function getAccountById(accountId: number) {
   let res = await api.get<AccountDetails>(`${baseUrl}/${accountId}`);
   return res.data;
 }

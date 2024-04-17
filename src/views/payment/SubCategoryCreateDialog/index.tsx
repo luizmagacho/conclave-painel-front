@@ -33,7 +33,7 @@ function SubCategoryCreateDialog({
 
   return (
     <Dialog
-      header="Adicionar Nova Categoria"
+      header="Adicionar Nova Sub-Categoria"
       visible={visible}
       onHide={onHide}
       className="w-50rem"
