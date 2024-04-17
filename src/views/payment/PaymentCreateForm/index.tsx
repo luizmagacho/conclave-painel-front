@@ -9,7 +9,6 @@ import {
   SubCategoryDTO,
 } from "@/services/payment/type";
 import { Supplier } from "@/services/supplier/type";
-import { convertStringToDate, formatDateToYYYYMMDD } from "@/util/date";
 import {
   AutoComplete,
   AutoCompleteChangeEvent,
@@ -17,13 +16,12 @@ import {
 } from "primereact/autocomplete";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
-import { Divider } from "primereact/divider";
-import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useContext, useEffect, useState } from "react";
 import CategoryCreateDialog from "../CategoryCreateDialog";
+import SubCategoryCreateDialog from "../SubCategoryCreateDialog";
 
 interface PaymentCreateForm {
   accountId: number;
@@ -40,6 +38,7 @@ function PaymentCreateForm({
 }: PaymentCreateForm) {
   const [newPayment, setNewPayment] = useState<PaymentDTO>({
     accountId: accountId,
+    accountIdTo: null,
     balance: null,
     cleared: false,
     beneficiary: "",
@@ -213,6 +212,7 @@ function PaymentCreateForm({
       setNewPaymentDate(null);
       setNewPayment({
         accountId: accountId,
+        accountIdTo: null,
         balance: null,
         cleared: false,
         beneficiary: "",
@@ -467,7 +467,7 @@ function PaymentCreateForm({
         />
       )}
       {showSubCategoryCreateDialog && (
-        <CategoryCreateDialog
+        <SubCategoryCreateDialog
           visible={showSubCategoryCreateDialog}
           onCreate={onCreateSubCategory}
           onHide={closeCreateSubCategoryDialog}

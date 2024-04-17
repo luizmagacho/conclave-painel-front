@@ -36,7 +36,7 @@ interface AccountContextProps {
     type?: string
   ) => Promise<void>;
   handlePostAccount: (account: AccountDTO) => Promise<void>;
-  handleGetAccountById: (accountId: string) => Promise<void>;
+  handleGetAccountById: (accountId: number) => Promise<void>;
   handleUpdateAccount: (account: AccountSimpleList) => Promise<void>;
   handleDeleteAccount: (accountId: number) => Promise<void>;
 }
@@ -111,7 +111,7 @@ export const AccountProvider = ({ children }: ProviderProps) => {
     }
   }
 
-  async function handleGetAccountById(accountId: string) {
+  async function handleGetAccountById(accountId: number) {
     setLoading(true);
     try {
       const accountDetails = await getAccountById(accountId);
