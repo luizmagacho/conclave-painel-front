@@ -158,8 +158,6 @@ function OrderCreate() {
       !newMaterial.metricUnit || newMaterial.metricUnit === ""
     );
     if (!invalidName && !invalidQuantity && !invalidMetricUnit) {
-      console.log("selectedMaterials: ", selectedMaterials);
-      console.log("Materiais: ", newMaterial);
       setListMaterials([
         ...listMaterials,
         {

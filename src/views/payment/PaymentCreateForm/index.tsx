@@ -22,6 +22,7 @@ import { Message } from "primereact/message";
 import { useContext, useEffect, useState } from "react";
 import CategoryCreateDialog from "../CategoryCreateDialog";
 import SubCategoryCreateDialog from "../SubCategoryCreateDialog";
+import CurrencyInput from "@/components/InputCurrency";
 
 interface PaymentCreateForm {
   accountId: number;
@@ -49,6 +50,7 @@ function PaymentCreateForm({
     subCategoryId: null,
     deposit: null,
     withdraw: null,
+    transactionType: paymentType,
     enabled: true,
     numberCheckTransfer: "",
     description: "",
@@ -223,6 +225,7 @@ function PaymentCreateForm({
         subCategoryId: null,
         deposit: null,
         withdraw: null,
+        transactionType: paymentType,
         enabled: true,
         numberCheckTransfer: "",
         description: "",
@@ -409,18 +412,25 @@ function PaymentCreateForm({
               />
             )}
             {paymentType === "DEPOSIT" && (
-              <InputNumber
-                inputId="currency-br"
-                mode="currency"
-                locale="pt-BR"
-                currency="BRL"
-                style={{ height: "30px", fontSize: "0.8rem" }}
-                className="smaller-text"
-                value={newPayment?.deposit}
-                onChange={(e) => {
-                  setNewPayment({ ...newPayment, deposit: e.value });
-                }}
-              />
+              <>
+                {/* <CurrencyInput
+                  onChange={(e) => {
+                    setNewPayment({ ...newPayment, deposit: e });
+                  }}
+                /> */}
+                <InputNumber
+                  inputId="currency-br"
+                  mode="currency"
+                  locale="pt-BR"
+                  currency="BRL"
+                  style={{ height: "30px", fontSize: "0.8rem" }}
+                  className="smaller-text"
+                  value={newPayment?.deposit}
+                  onChange={(e) => {
+                    setNewPayment({ ...newPayment, deposit: e.value });
+                  }}
+                />
+              </>
             )}
           </div>
         </div>

@@ -116,6 +116,18 @@ export function getMonthsNames(): string[] {
   ];
 }
 
+export function getPreviousYears(): number[] {
+  const currentYear = new Date().getFullYear();
+  const previousYears = new Date().getFullYear() - 50;
+  const years: number[] = [];
+
+  for (let year = currentYear; year >= previousYears; year--) {
+    years.push(year);
+  }
+
+  return years;
+}
+
 export function getMonthInPortuguese(
   dateString: string | null | undefined
 ): string {

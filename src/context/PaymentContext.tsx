@@ -1,7 +1,10 @@
 import {
   deletePayment,
   getAllCategories,
+  getAllFrequency,
   getAllSubCategories,
+  getAllTransactions,
+  getAllWeekOfTheYear,
   getPayments,
   getPaymentsByAccountId,
   postCategory,
@@ -12,11 +15,14 @@ import {
 import {
   Category,
   CategoryDTO,
+  FrequencyType,
   Payment,
   PaymentDTO,
   SearchType,
   SubCategory,
   SubCategoryDTO,
+  TransactionType,
+  Week,
 } from "@/services/payment/type";
 import { ReactNode, createContext, useState } from "react";
 
@@ -28,11 +34,17 @@ interface PaymentContextProps {
   paymentsByAccountId: Payment[];
   allCategories: Category[];
   allSubCategories: SubCategory[];
+  transactionsTypes: TransactionType[];
+  frequencyTypes: FrequencyType[];
+  weeksOfTheYear: Week[];
   loading: boolean;
   totalElements: number;
   handleGetPayments: (page?: number) => Promise<void>;
   handleGetCategories: () => Promise<void>;
   handleGetSubCategories: () => Promise<void>;
+  handleGetTransactionTypes: () => Promise<void>;
+  handleGetFrequencyTypes: () => Promise<void>;
+  handleGetWeeksOfTheYear: (year: number) => Promise<void>;
   handleGetPaymentsByAccountId: (
     accountId: number,
     page?: number,
@@ -55,6 +67,11 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
   const [paymentsByAccountId, setPaymentByAccountId] = useState<Payment[]>([]);
   const [allCategories, setAllCategories] = useState<Category[]>([]);
   const [allSubCategories, setAllSubCategories] = useState<Category[]>([]);
+  const [transactionsTypes, setTransactionsTypes] = useState<TransactionType[]>(
+    []
+  );
+  const [weeksOfTheYear, setWeeksOfTheYear] = useState<Week[]>([]);
+  const [frequencyTypes, setFrequencyTypes] = useState<FrequencyType[]>([]);
   const [bufferedPaymentsByAccountId, setBufferedPaymentByAccountId] = useState<
     Payment[]
   >([]);
@@ -92,6 +109,33 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
   async function handleGetSubCategories() {
     try {
       setAllSubCategories(await getAllSubCategories());
+    } catch (error) {
+      console.error(error);
+    } finally {
+    }
+  }
+
+  async function handleGetTransactionTypes() {
+    try {
+      setTransactionsTypes(await getAllTransactions());
+    } catch (error) {
+      console.error(error);
+    } finally {
+    }
+  }
+
+  async function handleGetWeeksOfTheYear(year: number) {
+    try {
+      setWeeksOfTheYear(await getAllWeekOfTheYear(year));
+    } catch (error) {
+      console.error(error);
+    } finally {
+    }
+  }
+
+  async function handleGetFrequencyTypes() {
+    try {
+      setFrequencyTypes(await getAllFrequency());
     } catch (error) {
       console.error(error);
     } finally {
@@ -189,11 +233,17 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
         paymentsByAccountId,
         allCategories,
         allSubCategories,
+        transactionsTypes,
+        frequencyTypes,
+        weeksOfTheYear,
         loading,
         totalElements,
         handleGetPayments,
         handleGetCategories,
         handleGetSubCategories,
+        handleGetTransactionTypes,
+        handleGetFrequencyTypes,
+        handleGetWeeksOfTheYear,
         handleGetPaymentsByAccountId,
         handlePostPayment,
         handlePostCategory,
