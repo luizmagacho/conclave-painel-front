@@ -55,6 +55,14 @@ function AccountUpdateDialog({
     }
   }
 
+  const formatCurrency = (value: number | null) => {
+    if (value) {
+      return value / 100;
+    }
+
+    return null;
+  };
+
   return (
     <Dialog
       header="Adicionar Nova Conta"
@@ -143,13 +151,15 @@ function AccountUpdateDialog({
               locale="pt-BR"
               currency="BRL"
               onChange={(e) => {
-                setUpdatedAccount({
-                  ...updatedAccount,
-                  startBalance: e.value,
-                });
+                if (e.value) {
+                  setUpdatedAccount({
+                    ...updatedAccount,
+                    startBalance: e.value * 100,
+                  });
+                }
                 setInvalidStartBalance(false);
               }}
-              value={updatedAccount?.startBalance}
+              value={formatCurrency(updatedAccount?.startBalance)}
             />
             {invalidStartBalance && (
               <Message severity="error" text="Logradouro é obrigatório" />
@@ -167,13 +177,15 @@ function AccountUpdateDialog({
               locale="pt-BR"
               currency="BRL"
               onChange={(e) => {
-                setUpdatedAccount({
-                  ...updatedAccount,
-                  minBalance: e.value,
-                });
+                if (e.value) {
+                  setUpdatedAccount({
+                    ...updatedAccount,
+                    minBalance: e.value * 100,
+                  });
+                }
                 setInvalidMinBalance(false);
               }}
-              value={updatedAccount?.minBalance}
+              value={formatCurrency(updatedAccount?.minBalance)}
             />
             {invalidMinBalance && (
               <Message severity="error" text="Saldo Mínimo é obrigatório" />

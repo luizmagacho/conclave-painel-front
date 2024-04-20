@@ -52,6 +52,14 @@ function AccountCreateDialog({
     }
   }
 
+  const formatCurrency = (value: number | null) => {
+    if (value) {
+      return value / 100;
+    }
+
+    return null;
+  };
+
   return (
     <Dialog
       header="Adicionar Nova Conta"
@@ -137,13 +145,15 @@ function AccountCreateDialog({
               locale="pt-BR"
               currency="BRL"
               onChange={(e) => {
-                setNewAccount({
-                  ...newAccount,
-                  startBalance: e.value,
-                });
+                if (e.value) {
+                  setNewAccount({
+                    ...newAccount,
+                    startBalance: e.value * 100,
+                  });
+                }
                 setInvalidStartBalance(false);
               }}
-              value={newAccount?.startBalance}
+              value={formatCurrency(newAccount?.startBalance)}
             />
             {invalidStartBalance && (
               <Message severity="error" text="Logradouro é obrigatório" />
@@ -161,13 +171,16 @@ function AccountCreateDialog({
               locale="pt-BR"
               currency="BRL"
               onChange={(e) => {
-                setNewAccount({
-                  ...newAccount,
-                  minBalance: e.value,
-                });
+                if (e.value) {
+                  setNewAccount({
+                    ...newAccount,
+                    minBalance: e.value * 100,
+                  });
+                }
+
                 setInvalidMinBalance(false);
               }}
-              value={newAccount?.minBalance}
+              value={formatCurrency(newAccount?.minBalance)}
             />
             {invalidMinBalance && (
               <Message severity="error" text="Saldo Mínimo é obrigatório" />

@@ -234,6 +234,14 @@ function PaymentCreateForm({
     }
   }
 
+  const formatCurrency = (value: number | null) => {
+    if (value) {
+      return value / 100;
+    }
+
+    return null;
+  };
+
   return (
     <div>
       <div className="card flex flex-column md:flex-row gap-2 w-11/12">
@@ -392,9 +400,11 @@ function PaymentCreateForm({
                 locale="pt-BR"
                 currency="BRL"
                 style={{ height: "30px", fontSize: "0.8rem" }}
-                value={newPayment?.withdraw}
+                value={formatCurrency(newPayment?.withdraw)}
                 onChange={(e) => {
-                  setNewPayment({ ...newPayment, withdraw: e.value });
+                  if (e.value) {
+                    setNewPayment({ ...newPayment, withdraw: e.value * 100 });
+                  }
                 }}
               />
             )}
@@ -405,9 +415,11 @@ function PaymentCreateForm({
                 locale="pt-BR"
                 currency="BRL"
                 style={{ height: "30px", fontSize: "0.8rem" }}
-                value={newPayment?.withdraw}
+                value={formatCurrency(newPayment?.withdraw)}
                 onChange={(e) => {
-                  setNewPayment({ ...newPayment, withdraw: e.value });
+                  if (e.value) {
+                    setNewPayment({ ...newPayment, withdraw: e.value * 100 });
+                  }
                 }}
               />
             )}
@@ -425,9 +437,11 @@ function PaymentCreateForm({
                   currency="BRL"
                   style={{ height: "30px", fontSize: "0.8rem" }}
                   className="smaller-text"
-                  value={newPayment?.deposit}
+                  value={formatCurrency(newPayment?.deposit)}
                   onChange={(e) => {
-                    setNewPayment({ ...newPayment, deposit: e.value });
+                    if (e.value) {
+                      setNewPayment({ ...newPayment, deposit: e.value * 100 });
+                    }
                   }}
                 />
               </>
