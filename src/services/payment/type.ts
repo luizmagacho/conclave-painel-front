@@ -12,6 +12,7 @@ export type Payment = {
   withdraw: number;
   deposit: number;
   balance: number;
+  transactionType: string;
   accountId: number;
   description: string;
   enabled: boolean;
@@ -32,6 +33,7 @@ export type PaymentDTO = {
   withdraw: number | null;
   deposit: number | null;
   balance: number | null;
+  transactionType: string;
   description: string;
   accountId: number;
   accountIdTo: number | null;
@@ -73,10 +75,25 @@ export type SubCategoryDTO = {
 
 export enum SearchType {
   CENTERCOST = "CENTERCOST",
-  BENEFICIARY = "FavoBENEFICIARYrecido",
+  BENEFICIARY = "BENEFICIARY",
   PERIODOFTIME = "PERIODOFTIME",
   DATE = "DATE",
   WEEK = "WEEK",
   WITHDRAW = "WITHDRAW",
   DEPOSIT = "DEPOSIT",
 }
+
+export type TransactionType = {
+  name: string;
+  transaction: string;
+};
+
+export type FrequencyType = {
+  name: string;
+  frequency: string;
+};
+
+export type Week = {
+  weekName: string;
+  number: number;
+};

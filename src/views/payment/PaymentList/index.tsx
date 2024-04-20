@@ -4,16 +4,27 @@ import { AccountContext } from "@/context/AccountContext";
 import { PaymentContext } from "@/context/PaymentContext";
 import { SupplierContext } from "@/context/SupplierContext";
 import { AccountSimpleList } from "@/services/account/type";
-import { Payment, PaymentDTO } from "@/services/payment/type";
+import {
+  FrequencyType,
+  Payment,
+  PaymentDTO,
+  TransactionType,
+  Week,
+} from "@/services/payment/type";
 import { Supplier } from "@/services/supplier/type";
-import { formatarData, formatarDataBR, localeBR } from "@/util/date";
+import {
+  formatarData,
+  formatarDataBR,
+  getPreviousYears,
+  localeBR,
+} from "@/util/date";
 import { AutoComplete, AutoCompleteChangeEvent } from "primereact/autocomplete";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Divider } from "primereact/divider";
-import { Dropdown } from "primereact/dropdown";
+import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { TabPanel, TabView, TabViewTabChangeEvent } from "primereact/tabview";
 import { useContext, useEffect, useState } from "react";
@@ -39,10 +50,16 @@ function PaymentList() {
   const [optionType, setOptionType] = useState<OptionType>({
     type: ["Data", "Favorecido"],
   });
+
   const [activeIndex, setActiveIndex] = useState<number>(0);
+
+  const [todayBalance, setTodayBalance] = useState<number>(0);
 
   const [selectedBeneficiary, setSelectedBeneficiary] =
     useState<Supplier | null>(null);
+
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number>(2024);
 
   const {
     accountsFavoriteList,
@@ -64,17 +81,31 @@ function PaymentList() {
   const {
     paymentsByAccountId,
     allCategories,
+    transactionsTypes,
+    frequencyTypes,
+    weeksOfTheYear,
     loading,
     totalElements,
     handleGetPaymentsByAccountId,
     handlePostPayment,
+    handleGetTransactionTypes,
+    handleGetFrequencyTypes,
+    handleGetWeeksOfTheYear,
   } = useContext(PaymentContext);
+
+  const [selectedTransactionSearch, setSelectedTransactionSearch] =
+    useState<TransactionType | null>(transactionsTypes[0]);
+
+  const [selectedFrequencySearch, setSelectedFrequencySearch] =
+    useState<FrequencyType | null>(frequencyTypes[0]);
+
+  const [selectedWeekSearch, setSelectedWeekSearch] = useState<Week | null>();
 
   const formatCurrency = (value: number | null) => {
     if (!value) {
       return "-";
     }
-    return value.toLocaleString("pt-BR", {
+    return (value / 100).toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL",
     });
@@ -123,9 +154,35 @@ function PaymentList() {
   }, [accountsFavoriteList]);
 
   useEffect(() => {
+    if (paymentsByAccountId) {
+      const todayBalance = paymentsByAccountId.reduce((acc, payment) => {
+        return acc + payment.deposit - payment.withdraw;
+      }, 0);
+      setTodayBalance(todayBalance);
+    }
+  }, [paymentsByAccountId]);
+
+  useEffect(() => {
     localeBR;
     handleGetAccountsByFavorite();
+    handleGetTransactionTypes();
+    handleGetFrequencyTypes();
   }, []);
+
+  useEffect(() => {
+    setSelectedTransactionSearch(transactionsTypes[0]);
+    setSelectedFrequencySearch(frequencyTypes[0]);
+  }, [transactionsTypes, frequencyTypes]);
+
+  useEffect(() => {
+    if (selectedFrequencySearch?.name === "Semanal") {
+      handleGetWeeksOfTheYear(selectedYear);
+    }
+  }, [selectedFrequencySearch]);
+
+  useEffect(() => {
+    handleGetWeeksOfTheYear(selectedYear);
+  }, [selectedYear]);
 
   const priceDepositBodyTemplate = (payment: PaymentDTO) => {
     return formatCurrency(payment.deposit || null);
@@ -150,14 +207,16 @@ function PaymentList() {
       <div className="flex gap-2 w-full">
         <div className="flex-grow-1">
           <LabelTitle
-            text="Saldo de hoje: R$123,45"
+            text={`Saldo de hoje: ${formatCurrency(todayBalance)}`}
             htmlFor="todayBalance"
             className="font-semibold smaller-text"
           />
         </div>
         <div className="flex-shrink-0">
           <LabelTitle
-            text={`Saldo de final: R$ ${accountDetails?.balance}`}
+            text={`Saldo de final: ${formatCurrency(
+              accountDetails?.balance || null
+            )}`}
             htmlFor="finalBalance"
             className="font-semibold smaller-text"
           />
@@ -199,6 +258,94 @@ function PaymentList() {
           emptyMessage="Sem Contas"
         />
       )}
+      <div className="card flex flex-column md:flex-row gap-2 w-11/12">
+        <div className="field flex flex-column gap-1 w-full">
+          <LabelTitle
+            text="Tipo de Transação"
+            htmlFor="transactionType"
+            className="font-semibold smaller-text"
+          />
+          <Dropdown
+            options={transactionsTypes}
+            emptyMessage="Sem tipos de transação"
+            optionLabel="name"
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={selectedTransactionSearch}
+            onChange={(e: DropdownChangeEvent) =>
+              setSelectedTransactionSearch(e.value)
+            }
+          />
+        </div>
+        <div className="field flex flex-column gap-1 w-full">
+          <LabelTitle
+            text="Periocidade"
+            htmlFor="periocity"
+            className="font-semibold smaller-text"
+          />
+          <Dropdown
+            options={frequencyTypes}
+            optionLabel="name"
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={selectedFrequencySearch}
+            onChange={(e: DropdownChangeEvent) =>
+              setSelectedFrequencySearch(e.value)
+            }
+          />
+        </div>
+        {selectedFrequencySearch?.name === "Diário" && (
+          <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="Data"
+              htmlFor="periocity"
+              className="font-semibold smaller-text"
+            />
+            <Calendar
+              locale="pt"
+              className="ui-state-default"
+              dateFormat="dd/mm/yy"
+              style={{ height: "30px", fontSize: "0.8rem" }}
+              showIcon
+              value={selectedDate}
+              onChange={(e) => {
+                setSelectedDate(e.value || null);
+              }}
+            />
+          </div>
+        )}
+        {selectedFrequencySearch?.name === "Semanal" && (
+          <>
+            <div className="field flex flex-column gap-1 w-full">
+              <LabelTitle
+                text="Semana"
+                htmlFor="periocity"
+                className="font-semibold smaller-text"
+              />
+              <Dropdown
+                options={weeksOfTheYear}
+                optionLabel="weekName"
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={selectedWeekSearch}
+                onChange={(e: DropdownChangeEvent) =>
+                  setSelectedWeekSearch(e.value)
+                }
+              />
+            </div>
+            <div className="field flex flex-column gap-1 w-full">
+              <LabelTitle
+                text="Ano"
+                htmlFor="yearFrequency"
+                className="font-semibold smaller-text"
+              />
+              <Dropdown
+                options={getPreviousYears()}
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={selectedYear}
+                onChange={(e: DropdownChangeEvent) => setSelectedYear(e.value)}
+              />
+            </div>
+          </>
+        )}
+      </div>
 
       <DataTable
         emptyMessage="Nenhum pagamento para a conta encontrado"

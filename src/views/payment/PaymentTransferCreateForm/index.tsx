@@ -43,6 +43,7 @@ function PaymentTransferCreateForm({
     subCategoryId: null,
     deposit: null,
     withdraw: null,
+    transactionType: paymentType,
     enabled: true,
     numberCheckTransfer: "",
     description: "",
@@ -136,6 +137,12 @@ function PaymentTransferCreateForm({
     setInvalidBeneficiary(
       !newPayment.beneficiary || newPayment.beneficiary === ""
     );
+    if (newPayment.withdraw) {
+      setNewPayment({ ...newPayment, withdraw: newPayment.withdraw * 100 });
+    }
+    if (newPayment.deposit) {
+      setNewPayment({ ...newPayment, deposit: newPayment.deposit * 100 });
+    }
     if (!invalidBeneficiary) {
       await onCreate(newPayment);
       setSelectedBeneficiary(null);
@@ -154,6 +161,7 @@ function PaymentTransferCreateForm({
         subCategoryId: null,
         deposit: null,
         withdraw: null,
+        transactionType: paymentType,
         enabled: true,
         numberCheckTransfer: "",
         description: "",

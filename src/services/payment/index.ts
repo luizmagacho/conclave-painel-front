@@ -3,12 +3,15 @@ import { getAPIClient } from "../axios";
 import {
   Category,
   CategoryDTO,
+  FrequencyType,
   Payment,
   PaymentByAccountIdPaginationParam,
   PaymentDTO,
   PaymentPaginationParam,
   SubCategory,
   SubCategoryDTO,
+  TransactionType,
+  Week,
 } from "./type";
 
 const baseUrl = "/payment";
@@ -62,6 +65,21 @@ export async function getAllCategories() {
 
 export async function getAllSubCategories() {
   let res = await api.get<SubCategory[]>(`${baseUrl}/subcategory`);
+  return res.data;
+}
+
+export async function getAllTransactions() {
+  let res = await api.get<TransactionType[]>(`${baseUrl}/transaction-types`);
+  return res.data;
+}
+
+export async function getAllWeekOfTheYear(year: number) {
+  let res = await api.get<Week[]>(`${baseUrl}/weeks/${year}`);
+  return res.data;
+}
+
+export async function getAllFrequency() {
+  let res = await api.get<FrequencyType[]>(`${baseUrl}/frequency-types`);
   return res.data;
 }
 
