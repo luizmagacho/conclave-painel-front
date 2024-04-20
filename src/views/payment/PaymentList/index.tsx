@@ -31,6 +31,7 @@ import { useContext, useEffect, useState } from "react";
 import PaymentCreateForm from "../PaymentCreateForm";
 import { classNames } from "primereact/utils";
 import PaymentTransferCreateForm from "../PaymentTransferCreateForm";
+import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 
 interface Options {
   icon?: string;
@@ -92,6 +93,14 @@ function PaymentList() {
     handleGetFrequencyTypes,
     handleGetWeeksOfTheYear,
   } = useContext(PaymentContext);
+
+  const [first, setFirst] = useState<number>(0);
+
+  function onPageChange(event: PaginatorPageChangeEvent) {
+    const { page, first } = event;
+    handleGetPaymentsByAccountId(account.id, page);
+    setFirst(first);
+  }
 
   const [selectedTransactionSearch, setSelectedTransactionSearch] =
     useState<TransactionType | null>(transactionsTypes[0]);
@@ -402,6 +411,12 @@ function PaymentList() {
           className="smaller-text"
         />
       </DataTable>
+      <Paginator
+        first={first}
+        rows={5}
+        totalRecords={totalElements}
+        onPageChange={onPageChange}
+      />
       <TabView className="w-full smaller-text">
         <TabPanel header="Depósito">
           {account && (

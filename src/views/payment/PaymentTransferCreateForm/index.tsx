@@ -99,7 +99,6 @@ function PaymentTransferCreateForm({
             .startsWith(event.query.toLocaleUpperCase());
         });
       }
-      console.log(_filteredSuppliers);
       setAllSupplierItems(_filteredSuppliers);
     }, 150);
   };
@@ -117,7 +116,6 @@ function PaymentTransferCreateForm({
             .startsWith(event.query.toLocaleUpperCase());
         });
       }
-      console.log(_filteredAccounts);
       setAllAccountsItems(_filteredAccounts);
     }, 150);
   };
@@ -133,15 +131,14 @@ function PaymentTransferCreateForm({
   }, [selectedBeneficiary, selectedAccount]);
 
   async function validateFields() {
-    console.log(newPayment);
     setInvalidBeneficiary(
       !newPayment.beneficiary || newPayment.beneficiary === ""
     );
     if (newPayment.withdraw) {
-      setNewPayment({ ...newPayment, withdraw: newPayment.withdraw * 100 });
+      setNewPayment({ ...newPayment, withdraw: newPayment.withdraw });
     }
     if (newPayment.deposit) {
-      setNewPayment({ ...newPayment, deposit: newPayment.deposit * 100 });
+      setNewPayment({ ...newPayment, deposit: newPayment.deposit });
     }
     if (!invalidBeneficiary) {
       await onCreate(newPayment);
@@ -169,6 +166,14 @@ function PaymentTransferCreateForm({
       });
     }
   }
+
+  const formatCurrency = (value: number | null) => {
+    if (value) {
+      return value / 100;
+    }
+
+    return null;
+  };
 
   return (
     <div>
@@ -274,9 +279,11 @@ function PaymentTransferCreateForm({
               locale="pt-BR"
               currency="BRL"
               style={{ height: "30px", fontSize: "0.8rem" }}
-              value={newPayment?.withdraw}
+              value={formatCurrency(newPayment?.withdraw)}
               onChange={(e) => {
-                setNewPayment({ ...newPayment, withdraw: e.value });
+                if (e.value) {
+                  setNewPayment({ ...newPayment, withdraw: e.value * 100 });
+                }
               }}
             />
           )}
