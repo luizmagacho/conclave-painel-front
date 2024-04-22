@@ -22,6 +22,7 @@ import {
   SubCategory,
   SubCategoryDTO,
   TransactionType,
+  TransactionTypeEnum,
   Week,
 } from "@/services/payment/type";
 import { ReactNode, createContext, useState } from "react";
@@ -49,6 +50,7 @@ interface PaymentContextProps {
     accountId: number,
     page?: number,
     searchType?: SearchType,
+    transactionType?: TransactionTypeEnum,
     centerCost?: number | null,
     beneficiary?: string,
     paymentDate?: Date,
@@ -146,18 +148,21 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
     accountId: number,
     page: number = 0,
     searchType: SearchType = SearchType.CENTERCOST,
+    transactionType: TransactionTypeEnum = TransactionTypeEnum.ALLOPTIONS,
     centerCost: number | null = null,
     beneficiary: string = "",
     paymentDate: Date = new Date(),
     week: number | null = null
   ) {
     setLoading(true);
+    console.log(transactionType);
     try {
       const { content, totalElements } = await getPaymentsByAccountId(
         {
           page,
           size: 5,
           searchType,
+          transactionType,
           centerCost,
           beneficiary,
           paymentDate,

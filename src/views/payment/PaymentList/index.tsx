@@ -8,7 +8,9 @@ import {
   FrequencyType,
   Payment,
   PaymentDTO,
+  SearchType,
   TransactionType,
+  TransactionTypeEnum,
   Week,
 } from "@/services/payment/type";
 import { Supplier } from "@/services/supplier/type";
@@ -82,7 +84,6 @@ function PaymentList() {
   const {
     paymentsByAccountId,
     allCategories,
-    transactionsTypes,
     frequencyTypes,
     weeksOfTheYear,
     loading,
@@ -101,9 +102,22 @@ function PaymentList() {
     handleGetPaymentsByAccountId(account.id, page);
     setFirst(first);
   }
+  type TransactionOption = {
+    name: string; // Display name for the dropdown option
+    value: TransactionTypeEnum; // Corresponding enum value
+  };
 
-  const [selectedTransactionSearch, setSelectedTransactionSearch] =
-    useState<TransactionType | null>(transactionsTypes[0]);
+  const transactionsTypes: TransactionOption[] = [
+    { name: "Todos Tipos de Transição", value: TransactionTypeEnum.ALLOPTIONS },
+    { name: "Depósito", value: TransactionTypeEnum.DEPOSIT },
+    { name: "Transferência", value: TransactionTypeEnum.TRANSFER },
+    { name: "Retirada", value: TransactionTypeEnum.WITHDRAW },
+    { name: "Ret. em Dinheiro", value: TransactionTypeEnum.MONEYWITHDRAW },
+  ];
+
+  const [selectedTransactionSearch, setSelectedTransactionSearch] = useState<
+    string | null
+  >(transactionsTypes[0].value);
 
   const [selectedFrequencySearch, setSelectedFrequencySearch] =
     useState<FrequencyType | null>(frequencyTypes[0]);
@@ -179,9 +193,8 @@ function PaymentList() {
   }, []);
 
   useEffect(() => {
-    setSelectedTransactionSearch(transactionsTypes[0]);
     setSelectedFrequencySearch(frequencyTypes[0]);
-  }, [transactionsTypes, frequencyTypes]);
+  }, [frequencyTypes]);
 
   useEffect(() => {
     if (selectedFrequencySearch?.name === "Semanal") {
@@ -207,8 +220,31 @@ function PaymentList() {
 
   async function onCreatePayment(payment: PaymentDTO) {
     await handlePostPayment(payment);
-    handleGetPaymentsByAccountId(account.id);
+    const selectedOption = transactionsTypes.find(
+      (option) => option.value === selectedTransactionSearch
+    );
+    const enumValue = selectedOption?.value;
+    handleGetPaymentsByAccountId(
+      account.id,
+      0,
+      SearchType.CENTERCOST,
+      enumValue
+    );
     handleGetAccountById(account.id);
+  }
+
+  async function onChangeTransactionType(transactionType: string) {
+    console.log("Transaction Type: ", transactionType);
+    const selectedOption = transactionsTypes.find(
+      (option) => option.value === transactionType
+    );
+    const enumValue = selectedOption?.value;
+    await handleGetPaymentsByAccountId(
+      account.id,
+      0,
+      SearchType.CENTERCOST,
+      enumValue
+    );
   }
 
   const footerTemplate = () => {
@@ -280,9 +316,10 @@ function PaymentList() {
             optionLabel="name"
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={selectedTransactionSearch}
-            onChange={(e: DropdownChangeEvent) =>
-              setSelectedTransactionSearch(e.value)
-            }
+            onChange={(e: DropdownChangeEvent) => {
+              setSelectedTransactionSearch(e.value);
+              onChangeTransactionType(e.value);
+            }}
           />
         </div>
         <div className="field flex flex-column gap-1 w-full">
