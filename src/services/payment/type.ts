@@ -49,6 +49,7 @@ export type PaymentByAccountIdPaginationParam = {
   size: number;
   page: number;
   searchType: SearchType;
+  transactionType: TransactionTypeEnum;
   centerCost?: number | null;
   beneficiary?: string;
   paymentDate?: Date;
@@ -81,6 +82,14 @@ export enum SearchType {
   WEEK = "WEEK",
   WITHDRAW = "WITHDRAW",
   DEPOSIT = "DEPOSIT",
+}
+
+export enum TransactionTypeEnum {
+  ALLOPTIONS = "ALLOPTIONS",
+  WITHDRAW = "WITHDRAW",
+  DEPOSIT = "DEPOSIT",
+  TRANSFER = "TRANSFER",
+  MONEYWITHDRAW = "MONEYWITHDRAW",
 }
 
 export type TransactionType = {
