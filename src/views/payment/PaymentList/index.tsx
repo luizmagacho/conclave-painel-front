@@ -15,6 +15,7 @@ import {
 } from "@/services/payment/type";
 import { Supplier } from "@/services/supplier/type";
 import {
+  formatDateToYYYYMMDD,
   formatarData,
   formatarDataBR,
   getPreviousYears,
@@ -61,7 +62,7 @@ function PaymentList() {
   const [selectedBeneficiary, setSelectedBeneficiary] =
     useState<Supplier | null>(null);
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedYear, setSelectedYear] = useState<number>(2024);
 
   const {
@@ -234,16 +235,54 @@ function PaymentList() {
   }
 
   async function onChangeTransactionType(transactionType: string) {
-    console.log("Transaction Type: ", transactionType);
     const selectedOption = transactionsTypes.find(
       (option) => option.value === transactionType
+    );
+    const enumValue = selectedOption?.value;
+    setSelectedTransactionSearch(transactionType);
+    await handleGetPaymentsByAccountId(
+      account.id,
+      0,
+      SearchType.CENTERCOST,
+      enumValue,
+      null,
+      "",
+      "",
+      selectedWeekSearch?.number
+    );
+  }
+
+  async function onChangeFrequency(newDate: Date) {
+    const selectedOption = transactionsTypes.find(
+      (option) => option.value === selectedTransactionSearch
+    );
+    const enumValue = selectedOption?.value;
+    console.log(newDate);
+    await handleGetPaymentsByAccountId(
+      account.id,
+      0,
+      SearchType.CENTERCOST,
+      enumValue,
+      null,
+      "",
+      formatDateToYYYYMMDD(newDate) || ""
+    );
+  }
+
+  async function onChangeWeekAndYear(week: Week) {
+    const selectedOption = transactionsTypes.find(
+      (option) => option.value === selectedTransactionSearch
     );
     const enumValue = selectedOption?.value;
     await handleGetPaymentsByAccountId(
       account.id,
       0,
       SearchType.CENTERCOST,
-      enumValue
+      enumValue,
+      null,
+      "",
+      "",
+      week.number
     );
   }
 
@@ -353,7 +392,8 @@ function PaymentList() {
               showIcon
               value={selectedDate}
               onChange={(e) => {
-                setSelectedDate(e.value || null);
+                setSelectedDate(e.value || new Date());
+                onChangeFrequency(e.value || new Date());
               }}
             />
           </div>
@@ -371,9 +411,10 @@ function PaymentList() {
                 optionLabel="weekName"
                 style={{ height: "30px", fontSize: "0.8rem" }}
                 value={selectedWeekSearch}
-                onChange={(e: DropdownChangeEvent) =>
-                  setSelectedWeekSearch(e.value)
-                }
+                onChange={(e: DropdownChangeEvent) => {
+                  setSelectedWeekSearch(e.value);
+                  onChangeWeekAndYear(e.value || null);
+                }}
               />
             </div>
             <div className="field flex flex-column gap-1 w-full">

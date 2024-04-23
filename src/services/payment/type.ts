@@ -52,8 +52,8 @@ export type PaymentByAccountIdPaginationParam = {
   transactionType: TransactionTypeEnum;
   centerCost?: number | null;
   beneficiary?: string;
-  paymentDate?: Date;
-  week?: number | null;
+  paymentDate?: string;
+  weekOfTheYear?: number | null;
 };
 
 export type Category = {

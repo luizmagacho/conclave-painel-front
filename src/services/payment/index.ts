@@ -37,7 +37,7 @@ export async function getPaymentsByAccountId(
     centerCost,
     beneficiary,
     paymentDate,
-    week,
+    weekOfTheYear,
   }: PaymentByAccountIdPaginationParam,
   accountId: number
 ) {
@@ -52,7 +52,7 @@ export async function getPaymentsByAccountId(
         centerCost,
         beneficiary,
         paymentDate,
-        week,
+        weekOfTheYear,
       },
     }
   );

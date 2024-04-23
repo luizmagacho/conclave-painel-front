@@ -53,8 +53,8 @@ interface PaymentContextProps {
     transactionType?: TransactionTypeEnum,
     centerCost?: number | null,
     beneficiary?: string,
-    paymentDate?: Date,
-    week?: number | null
+    paymentDate?: string,
+    weekOfTheYear?: number | null
   ) => Promise<void>;
   handlePostPayment: (payment: PaymentDTO) => Promise<void>;
   handlePostCategory: (category: CategoryDTO) => Promise<void>;
@@ -151,8 +151,8 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
     transactionType: TransactionTypeEnum = TransactionTypeEnum.ALLOPTIONS,
     centerCost: number | null = null,
     beneficiary: string = "",
-    paymentDate: Date = new Date(),
-    week: number | null = null
+    paymentDate: string = "",
+    weekOfTheYear: number | null = null
   ) {
     setLoading(true);
     console.log(transactionType);
@@ -166,7 +166,7 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
           centerCost,
           beneficiary,
           paymentDate,
-          week,
+          weekOfTheYear,
         },
         accountId
       );
