@@ -54,7 +54,9 @@ interface PaymentContextProps {
     centerCost?: number | null,
     beneficiary?: string,
     paymentDate?: string,
-    weekOfTheYear?: number | null
+    weekOfTheYear?: number | null,
+    paymentDateStart?: string,
+    paymentDateEnd?: string
   ) => Promise<void>;
   handlePostPayment: (payment: PaymentDTO) => Promise<void>;
   handlePostCategory: (category: CategoryDTO) => Promise<void>;
@@ -90,7 +92,6 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
       });
       setBufferedPaymentByAccountId(content || []);
       setPaymentByAccountId(content || []);
-      console.log(content);
       setTotalElements(totalElements);
     } catch (error) {
       console.error(error);
@@ -152,10 +153,11 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
     centerCost: number | null = null,
     beneficiary: string = "",
     paymentDate: string = "",
-    weekOfTheYear: number | null = null
+    weekOfTheYear: number | null = null,
+    paymentDateStart: string = "",
+    paymentDateEnd: string = ""
   ) {
     setLoading(true);
-    console.log(transactionType);
     try {
       const { content, totalElements } = await getPaymentsByAccountId(
         {
@@ -167,12 +169,13 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
           beneficiary,
           paymentDate,
           weekOfTheYear,
+          paymentDateStart,
+          paymentDateEnd,
         },
         accountId
       );
       setBufferedPaymentByAccountId(content || []);
       setPaymentByAccountId(content || []);
-      console.log(content);
       setTotalElements(totalElements);
     } catch (error) {
       console.error(error);

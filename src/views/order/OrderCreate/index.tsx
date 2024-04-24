@@ -86,7 +86,6 @@ function OrderCreate() {
   }, [constructions]);
 
   useEffect(() => {
-    console.log("Teste: ", allMaterials);
     setMaterialsItems(allMaterials);
   }, [allMaterials]);
 
@@ -124,19 +123,16 @@ function OrderCreate() {
           return construction.code.startsWith(event.query);
         });
       }
-      console.log(_filteredConstructions);
       setConstructionsItems(_filteredConstructions);
     }, 150);
   };
 
   const materialSearch = (event: AutoCompleteCompleteEvent) => {
-    console.log(allMaterials);
     setTimeout(() => {
       let _filteredMaterials;
       if (!event.query.trim().length) {
         _filteredMaterials = [...allMaterials];
       } else {
-        console.log(event.query);
         _filteredMaterials = materialsItems.filter((material) => {
           return material.name
             .toLocaleUpperCase()

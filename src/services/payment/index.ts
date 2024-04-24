@@ -38,6 +38,8 @@ export async function getPaymentsByAccountId(
     beneficiary,
     paymentDate,
     weekOfTheYear,
+    paymentDateStart,
+    paymentDateEnd,
   }: PaymentByAccountIdPaginationParam,
   accountId: number
 ) {
@@ -53,6 +55,8 @@ export async function getPaymentsByAccountId(
         beneficiary,
         paymentDate,
         weekOfTheYear,
+        paymentDateStart,
+        paymentDateEnd,
       },
     }
   );

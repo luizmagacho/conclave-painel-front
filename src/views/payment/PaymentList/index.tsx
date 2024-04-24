@@ -35,6 +35,7 @@ import PaymentCreateForm from "../PaymentCreateForm";
 import { classNames } from "primereact/utils";
 import PaymentTransferCreateForm from "../PaymentTransferCreateForm";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
+import { Nullable } from "primereact/ts-helpers";
 
 interface Options {
   icon?: string;
@@ -81,6 +82,9 @@ function PaymentList() {
   const [finalBalance, setFinalBalance] = useState<string>("");
 
   const [isOthersAccounts, setIsOthersAccounts] = useState<boolean>(false);
+
+  const [dateTo, setDateTo] = useState<Date | null>(null);
+  const [dateFrom, setDateFrom] = useState<Date | null>(null);
 
   const {
     paymentsByAccountId,
@@ -257,7 +261,6 @@ function PaymentList() {
       (option) => option.value === selectedTransactionSearch
     );
     const enumValue = selectedOption?.value;
-    console.log(newDate);
     await handleGetPaymentsByAccountId(
       account.id,
       0,
@@ -285,6 +288,27 @@ function PaymentList() {
       week.number
     );
   }
+
+  useEffect(() => {
+    if (dateFrom && dateTo) {
+      const selectedOption = transactionsTypes.find(
+        (option) => option.value === selectedTransactionSearch
+      );
+      const enumValue = selectedOption?.value;
+      handleGetPaymentsByAccountId(
+        account.id,
+        0,
+        SearchType.CENTERCOST,
+        enumValue,
+        null,
+        "",
+        "",
+        null,
+        formatDateToYYYYMMDD(dateFrom) || "",
+        formatDateToYYYYMMDD(dateTo) || ""
+      );
+    }
+  }, [dateFrom, dateTo]);
 
   const footerTemplate = () => {
     return (
@@ -428,6 +452,46 @@ function PaymentList() {
                 style={{ height: "30px", fontSize: "0.8rem" }}
                 value={selectedYear}
                 onChange={(e: DropdownChangeEvent) => setSelectedYear(e.value)}
+              />
+            </div>
+          </>
+        )}
+        {selectedFrequencySearch?.name === "Período de Datas" && (
+          <>
+            <div className="field flex flex-column gap-1 w-full">
+              <LabelTitle
+                text="De"
+                htmlFor="fromDate"
+                className="font-semibold smaller-text"
+              />
+              <Calendar
+                locale="pt"
+                className="ui-state-default"
+                dateFormat="dd/mm/yy"
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                showIcon
+                value={dateFrom}
+                onChange={(e) => {
+                  setDateFrom(e.value || null);
+                }}
+              />
+            </div>
+            <div className="field flex flex-column gap-1 w-full">
+              <LabelTitle
+                text="Até"
+                htmlFor="toDate"
+                className="font-semibold smaller-text"
+              />
+              <Calendar
+                locale="pt"
+                className="ui-state-default"
+                dateFormat="dd/mm/yy"
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                showIcon
+                value={dateTo}
+                onChange={(e) => {
+                  setDateTo(e.value || null);
+                }}
               />
             </div>
           </>

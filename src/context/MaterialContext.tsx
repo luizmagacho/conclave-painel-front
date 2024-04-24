@@ -68,7 +68,6 @@ export const MaterialProvider = ({ children }: ProviderProps) => {
     setLoading(true);
 
     try {
-      console.log("Get All Matyerials");
       setAllMaterials(await getAllMaterials());
     } catch (error) {
       console.error(error);

@@ -89,7 +89,6 @@ function PaymentTransferCreateForm({
   const suppliersSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
       let _filteredSuppliers;
-      console.log(!event.query.trim().length);
       if (!event.query.trim().length) {
         _filteredSuppliers = [...allSuppliers];
       } else {
@@ -106,7 +105,6 @@ function PaymentTransferCreateForm({
   const accountsSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
       let _filteredAccounts;
-      console.log(!event.query.trim().length);
       if (!event.query.trim().length) {
         _filteredAccounts = [...accountsList];
       } else {

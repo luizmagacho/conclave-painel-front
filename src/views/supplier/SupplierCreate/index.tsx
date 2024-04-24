@@ -63,7 +63,6 @@ function SupplierCreate() {
 
   async function validateFields() {
     const resp = await handlePostSupplier(newSupplier);
-    console.log("Código: ", resp);
     if (postStatus === 201) {
       await setShowToast(true);
       await showSuccessToast("Fornecedor criado com sucesso");
