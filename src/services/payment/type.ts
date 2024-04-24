@@ -54,6 +54,8 @@ export type PaymentByAccountIdPaginationParam = {
   beneficiary?: string;
   paymentDate?: string;
   weekOfTheYear?: number | null;
+  paymentDateStart?: string;
+  paymentDateEnd?: string;
 };
 
 export type Category = {

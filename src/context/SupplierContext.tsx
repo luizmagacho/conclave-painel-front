@@ -100,7 +100,6 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
 
     try {
       const resp = await postSupplier(supplier);
-      console.log("Dentro do Provider: ", resp);
       if (resp === 201) {
         setPostStatus(resp);
         // ... Processar a resposta de sucesso ...

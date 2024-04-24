@@ -125,8 +125,6 @@ function SupplierList() {
   }
 
   useEffect(() => {
-    console.log("Mostrar Toast", showToast);
-    console.log("Mostrar Toast", postStatus);
     if (showToast) {
       toast.current?.show({
         severity: "success",

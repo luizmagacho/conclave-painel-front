@@ -130,7 +130,6 @@ function PaymentCreateForm({
   const suppliersSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
       let _filteredSuppliers;
-      console.log(!event.query.trim().length);
       if (!event.query.trim().length) {
         _filteredSuppliers = [...allSuppliers];
       } else {
@@ -140,7 +139,6 @@ function PaymentCreateForm({
             .startsWith(event.query.toLocaleUpperCase());
         });
       }
-      console.log(_filteredSuppliers);
       setAllSupplierItems(_filteredSuppliers);
     }, 150);
   };
@@ -173,7 +171,6 @@ function PaymentCreateForm({
             .startsWith(event.query.toLocaleUpperCase());
         });
       }
-      console.log(_filteredSubCategories);
       setAllSubCategoriesItems(_filteredSubCategories || []);
     }, 150);
   };
@@ -198,7 +195,6 @@ function PaymentCreateForm({
   }, [selectedBeneficiary, selectedCategory, selectedSubCategory]);
 
   async function validateFields() {
-    console.log(newPayment);
     setInvalidBeneficiary(
       !newPayment.beneficiary || newPayment.beneficiary === ""
     );
