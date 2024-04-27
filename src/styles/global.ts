@@ -42,7 +42,18 @@ const GlobalStyle = createGlobalStyle`
 }
 
 .smaller-text {
-  font-size: 0.8rem; /* Adjust the value for desired size */
+  font-size: 0.75rem; /* Adjust the value for desired size */
+}
+
+.p-inputtext {
+  font-size: 0.75rem;
+}
+.p-tabview .p-tabview-panels {
+  padding: 0.5rem;
+}
+.p-paginator {
+  padding: 0.5rem 0.75rem;
+
 }
 
 `;
