@@ -55,6 +55,8 @@ function PaymentTransferCreateForm({
     useState<AccountSimpleList | null>(null);
   const [invalidBeneficiary, setInvalidBeneficiary] = useState<boolean>(false);
   const [invalidAccount, setInvalidAccount] = useState<boolean>(false);
+  const [invalidDate, setInvalidDate] = useState<boolean>(false);
+  const [invalidValue, setInvalidValue] = useState<boolean>(false);
   const [newPaymentDate, setNewPaymentDate] = useState<Date | null>();
 
   const { allSuppliers, handleGetAllSuppliers } = useContext(SupplierContext);
@@ -132,13 +134,16 @@ function PaymentTransferCreateForm({
     setInvalidBeneficiary(
       !newPayment.beneficiary || newPayment.beneficiary === ""
     );
+    setInvalidAccount(!newPayment.accountId || newPayment.accountId === null);
+    setInvalidDate(!newPayment.paymentDate || newPayment.paymentDate === null);
+    setInvalidValue(!newPayment.withdraw || newPayment.withdraw === null);
     if (newPayment.withdraw) {
       setNewPayment({ ...newPayment, withdraw: newPayment.withdraw });
     }
     if (newPayment.deposit) {
       setNewPayment({ ...newPayment, deposit: newPayment.deposit });
     }
-    if (!invalidBeneficiary) {
+    if (!invalidBeneficiary || !invalidDate || !invalidValue) {
       await onCreate(newPayment);
       setSelectedBeneficiary(null);
       setSelectedAccount(null);
@@ -262,6 +267,13 @@ function PaymentTransferCreateForm({
                 setNewPaymentDate(e.value || null);
               }}
             />
+            {invalidDate && (
+              <Message
+                severity="error"
+                text="Data é obrigatória"
+                className="smaller-text"
+              />
+            )}
           </div>
         </div>
         <div className="flex flex-column gap-1 w-full">
@@ -271,19 +283,28 @@ function PaymentTransferCreateForm({
             className="font-semibold smaller-text"
           />
           {paymentType === "TRANSFER" && (
-            <InputNumber
-              inputId="currency-br"
-              mode="currency"
-              locale="pt-BR"
-              currency="BRL"
-              style={{ height: "30px", fontSize: "0.8rem" }}
-              value={formatCurrency(newPayment?.withdraw)}
-              onChange={(e) => {
-                if (e.value) {
-                  setNewPayment({ ...newPayment, withdraw: e.value * 100 });
-                }
-              }}
-            />
+            <>
+              <InputNumber
+                inputId="currency-br"
+                mode="currency"
+                locale="pt-BR"
+                currency="BRL"
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={formatCurrency(newPayment?.withdraw)}
+                onChange={(e) => {
+                  if (e.value) {
+                    setNewPayment({ ...newPayment, withdraw: e.value * 100 });
+                  }
+                }}
+              />
+              {invalidValue && (
+                <Message
+                  severity="error"
+                  text="Montante é obrigatório"
+                  className="smaller-text"
+                />
+              )}
+            </>
           )}
         </div>
       </div>

@@ -8,7 +8,7 @@ import {
   SubCategory,
   SubCategoryDTO,
 } from "@/services/payment/type";
-import { Supplier } from "@/services/supplier/type";
+import { Supplier, SupplierDTO } from "@/services/supplier/type";
 import {
   AutoComplete,
   AutoCompleteChangeEvent,
@@ -23,6 +23,7 @@ import { useContext, useEffect, useState } from "react";
 import CategoryCreateDialog from "../CategoryCreateDialog";
 import SubCategoryCreateDialog from "../SubCategoryCreateDialog";
 import CurrencyInput from "@/components/InputCurrency";
+import SupplierCreate from "@/views/supplier/SupplierCreate";
 
 interface PaymentCreateForm {
   accountId: number;
@@ -54,11 +55,13 @@ function PaymentCreateForm({
     enabled: true,
     numberCheckTransfer: "",
     description: "",
-    paymentDate: new Date(),
+    paymentDate: null,
   });
   const [invalidBeneficiary, setInvalidBeneficiary] = useState<boolean>(false);
   const [invalidCategory, setInvalidCategory] = useState<boolean>(false);
   const [invalidSubCategory, setInvalidSubCategory] = useState<boolean>(false);
+  const [invalidDate, setInvalidDate] = useState<boolean>(false);
+  const [invalidValue, setInvalidValue] = useState<boolean>(false);
   const [selectedBeneficiary, setSelectedBeneficiary] =
     useState<Supplier | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
@@ -68,10 +71,14 @@ function PaymentCreateForm({
     useState<SubCategory | null>(null);
   const [newPaymentDate, setNewPaymentDate] = useState<Date | null>();
 
-  const { allSuppliers, handleGetAllSuppliers } = useContext(SupplierContext);
+  const { allSuppliers, handleGetAllSuppliers, handlePostSupplier } =
+    useContext(SupplierContext);
   const [showCategoryCreateDialog, setShowCategoryCreateDialog] =
     useState<boolean>(false);
   const [showSubCategoryCreateDialog, setShowSubCategoryCreateDialog] =
+    useState<boolean>(false);
+
+  const [showSupplierCreateDialog, setShowSupplierCreateDialog] =
     useState<boolean>(false);
 
   const {
@@ -118,6 +125,20 @@ function PaymentCreateForm({
 
   function closeCreateSubCategoryDialog() {
     setShowSubCategoryCreateDialog((showCreateDialog) => !showCreateDialog);
+  }
+
+  function openCreateSupplier() {
+    setShowSupplierCreateDialog(true);
+  }
+
+  async function onCreateSupplier(supplierDTO: SupplierDTO) {
+    await handlePostSupplier(supplierDTO);
+    handleGetSubCategories();
+    setAllSubCategoriesItems(allSubCategories);
+  }
+
+  function closeCreateSupplierDialog() {
+    setShowSupplierCreateDialog((showCreateDialog) => !showCreateDialog);
   }
 
   useEffect(() => {
@@ -202,7 +223,15 @@ function PaymentCreateForm({
     setInvalidSubCategory(
       !newPayment.subCategory || newPayment.subCategory === ""
     );
-    if (!invalidBeneficiary) {
+    setInvalidDate(!newPayment.paymentDate || newPayment.paymentDate === null);
+    setInvalidValue(
+      !newPayment.withdraw ||
+        newPayment.withdraw === null ||
+        !newPayment.deposit ||
+        newPayment.deposit === null
+    );
+
+    if (!invalidBeneficiary || !invalidDate || !invalidValue) {
       await onCreate(newPayment);
       setSelectedBeneficiary(null);
       setSelectedCategory(null);
@@ -241,7 +270,7 @@ function PaymentCreateForm({
   return (
     <div>
       <div className="card flex flex-column md:flex-row gap-2 w-11/12">
-        <div className="field flex flex-column gap-1 w-full">
+        <div className="flex flex-column gap-1 w-full">
           <LabelTitle
             text="Pagar a:"
             htmlFor="payTo"
@@ -251,7 +280,7 @@ function PaymentCreateForm({
             suggestions={allSupplierItems}
             field="shortenedName"
             dropdown
-            style={{ height: "30px", fontSize: "0.8rem" }}
+            style={{ height: "30px", fontSize: "0.75rem" }}
             value={selectedBeneficiary}
             completeMethod={suppliersSearch}
             onChange={(e: AutoCompleteChangeEvent) => {
@@ -276,7 +305,7 @@ function PaymentCreateForm({
           />
           <InputText
             type="number"
-            style={{ height: "30px", fontSize: "0.8rem" }}
+            style={{ height: "30px", fontSize: "0.75rem" }}
             onChange={(e) => {
               setNewPayment({
                 ...newPayment,
@@ -287,14 +316,14 @@ function PaymentCreateForm({
         </div>
       </div>
       <div className="flex flex-column md:flex-row gap-2 w-11/12">
-        <div className="field flex flex-column gap-1 w-full">
+        <div className="flex flex-column gap-1 w-full">
           <LabelTitle
             text="Categoria:"
             htmlFor="payTo"
             className="font-semibold smaller-text"
           />
           <div className="flex flex-column md:flex-row gap-2 w-11/12">
-            <div className="field flex flex-column gap-1 w-full">
+            <div className="flex flex-column gap-1 w-full">
               <AutoComplete
                 suggestions={allCategoriesItems}
                 field="name"
@@ -309,7 +338,7 @@ function PaymentCreateForm({
                 }}
               />
             </div>
-            <div className="field flex flex-column gap-1">
+            <div className="flex flex-column gap-1">
               <Button
                 severity="danger"
                 style={{ height: "30px", fontSize: "0.8rem" }}
@@ -319,14 +348,14 @@ function PaymentCreateForm({
               />
             </div>
           </div>
-          <div className="field flex flex-column gap-1 w-full">
+          <div className="flex flex-column gap-1 w-full">
             <LabelTitle
               text="SubCategoria:"
               htmlFor="payTo"
               className="font-semibold smaller-text"
             />
-            <div className="flex flex-column md:flex-row gap-2 w-11/12">
-              <div className="field flex flex-column gap-1 w-full">
+            <div className="flex flex-column md:flex-row gap-1 w-11/12">
+              <div className="flex flex-column gap-1 w-full">
                 <AutoComplete
                   suggestions={allSubCategoriesItems}
                   field="name"
@@ -341,7 +370,7 @@ function PaymentCreateForm({
                   }}
                 />
               </div>
-              <div className="field flex flex-column gap-1">
+              <div className="flex flex-column gap-1">
                 <Button
                   severity="danger"
                   style={{ height: "30px", fontSize: "0.8rem" }}
@@ -366,7 +395,7 @@ function PaymentCreateForm({
           </div> */}
         </div>
         <div className="flex-column gap-1 w-full">
-          <div className="field flex flex-column gap-1 w-full">
+          <div className="flex flex-column gap-1 w-full">
             <LabelTitle
               text="Data"
               htmlFor="paymentDate"
@@ -382,6 +411,13 @@ function PaymentCreateForm({
                 setNewPaymentDate(e.value || null);
               }}
             />
+            {invalidDate && (
+              <Message
+                severity="error"
+                text="Data é obrigatória"
+                className="smaller-text"
+              />
+            )}
           </div>
           <div className="flex flex-column gap-2 w-full">
             <LabelTitle
@@ -442,10 +478,17 @@ function PaymentCreateForm({
                 />
               </>
             )}
+            {invalidValue && (
+              <Message
+                severity="error"
+                text="Montante é obrigatório"
+                className="smaller-text"
+              />
+            )}
           </div>
         </div>
       </div>
-      <div className="field flex flex-column gap-2 w-full">
+      <div className="field flex flex-column gap-1 w-full">
         <LabelTitle
           text="Memo: "
           htmlFor="memo"
@@ -493,6 +536,7 @@ function PaymentCreateForm({
           onHide={closeCreateSubCategoryDialog}
         />
       )}
+      {showSupplierCreateDialog && <SupplierCreate />}
     </div>
   );
 }

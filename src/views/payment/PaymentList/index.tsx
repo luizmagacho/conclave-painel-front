@@ -36,6 +36,7 @@ import { classNames } from "primereact/utils";
 import PaymentTransferCreateForm from "../PaymentTransferCreateForm";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { Nullable } from "primereact/ts-helpers";
+import { ScrollPanel } from "primereact/scrollpanel";
 
 interface Options {
   icon?: string;
@@ -177,7 +178,15 @@ function PaymentList() {
           currency: "BRL",
         })
       );
-      handleGetPaymentsByAccountId(account.id);
+      handleGetPaymentsByAccountId(
+        account.id,
+        0,
+        SearchType.CENTERCOST,
+        TransactionTypeEnum.ALLOPTIONS,
+        null,
+        "",
+        formatDateToYYYYMMDD(new Date()) || ""
+      );
     }
   }, [accountsFavoriteList]);
 
@@ -345,263 +354,271 @@ function PaymentList() {
   };
 
   return (
-    <section className="flex flex-column gap-1 p-3 w-full">
-      <div className="flex align-items-center justify-start w-full">
-        <h2 className="m-0">Pagamentos</h2>
-      </div>
-      <TabView
-        activeIndex={activeIndex}
-        onTabChange={(e) => setActiveIndex(e.index)}
-        className="smaller-text"
-      >
-        {accountsFavoriteList.map((account) => (
-          <TabPanel header={account.name} key={account.id}></TabPanel>
-        ))}
-        <TabPanel header="Outros"></TabPanel>
-      </TabView>
-      {isOthersAccounts && (
-        <Dropdown
-          options={accountsListNotFavorites}
-          optionLabel="name"
-          emptyMessage="Sem Contas"
-        />
-      )}
-      <div className="card flex flex-column md:flex-row gap-2 w-11/12">
-        <div className="field flex flex-column gap-1 w-full">
-          <LabelTitle
-            text="Tipo de Transação"
-            htmlFor="transactionType"
-            className="font-semibold smaller-text"
-          />
-          <Dropdown
-            options={transactionsTypes}
-            emptyMessage="Sem tipos de transação"
-            optionLabel="name"
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={selectedTransactionSearch}
-            onChange={(e: DropdownChangeEvent) => {
-              setSelectedTransactionSearch(e.value);
-              onChangeTransactionType(e.value);
-            }}
-          />
+    <ScrollPanel style={{ width: "100%", height: "100vh" }}>
+      <section className="flex flex-column gap-1 p-3 w-full">
+        <div className="flex align-items-center justify-start w-full">
+          <h2 className="m-0">Pagamentos</h2>
         </div>
-        <div className="field flex flex-column gap-1 w-full">
-          <LabelTitle
-            text="Periocidade"
-            htmlFor="periocity"
-            className="font-semibold smaller-text"
-          />
+
+        <TabView
+          activeIndex={activeIndex}
+          onTabChange={(e) => setActiveIndex(e.index)}
+          className="smaller-text"
+        >
+          {accountsFavoriteList.map((account) => (
+            <TabPanel header={account.name} key={account.id}></TabPanel>
+          ))}
+          <TabPanel header="Outros"></TabPanel>
+        </TabView>
+        {isOthersAccounts && (
           <Dropdown
-            options={frequencyTypes}
+            options={accountsListNotFavorites}
             optionLabel="name"
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={selectedFrequencySearch}
-            onChange={(e: DropdownChangeEvent) =>
-              setSelectedFrequencySearch(e.value)
-            }
+            emptyMessage="Sem Contas"
           />
-        </div>
-        {selectedFrequencySearch?.name === "Diário" && (
+        )}
+        <div className="card flex flex-column md:flex-row gap-2 w-11/12">
           <div className="field flex flex-column gap-1 w-full">
             <LabelTitle
-              text="Data"
-              htmlFor="periocity"
+              text="Tipo de Transação"
+              htmlFor="transactionType"
               className="font-semibold smaller-text"
             />
-            <Calendar
-              locale="pt"
-              className="ui-state-default"
-              dateFormat="dd/mm/yy"
+            <Dropdown
+              options={transactionsTypes}
+              emptyMessage="Sem tipos de transação"
+              optionLabel="name"
               style={{ height: "30px", fontSize: "0.8rem" }}
-              showIcon
-              value={selectedDate}
-              onChange={(e) => {
-                setSelectedDate(e.value || new Date());
-                onChangeFrequency(e.value || new Date());
+              value={selectedTransactionSearch}
+              onChange={(e: DropdownChangeEvent) => {
+                setSelectedTransactionSearch(e.value);
+                onChangeTransactionType(e.value);
               }}
             />
           </div>
-        )}
-        {selectedFrequencySearch?.name === "Semanal" && (
-          <>
+          <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="Periocidade"
+              htmlFor="periocity"
+              className="font-semibold smaller-text"
+            />
+            <Dropdown
+              options={frequencyTypes}
+              optionLabel="name"
+              style={{ height: "30px", fontSize: "0.8rem" }}
+              value={selectedFrequencySearch}
+              onChange={(e: DropdownChangeEvent) =>
+                setSelectedFrequencySearch(e.value)
+              }
+            />
+          </div>
+          {selectedFrequencySearch?.name === "Diário" && (
             <div className="field flex flex-column gap-1 w-full">
               <LabelTitle
-                text="Semana"
+                text="Data"
                 htmlFor="periocity"
                 className="font-semibold smaller-text"
               />
-              <Dropdown
-                options={weeksOfTheYear}
-                optionLabel="weekName"
-                style={{ height: "30px", fontSize: "0.8rem" }}
-                value={selectedWeekSearch}
-                onChange={(e: DropdownChangeEvent) => {
-                  setSelectedWeekSearch(e.value);
-                  onChangeWeekAndYear(e.value || null);
-                }}
-              />
-            </div>
-            <div className="field flex flex-column gap-1 w-full">
-              <LabelTitle
-                text="Ano"
-                htmlFor="yearFrequency"
-                className="font-semibold smaller-text"
-              />
-              <Dropdown
-                options={getPreviousYears()}
-                style={{ height: "30px", fontSize: "0.8rem" }}
-                value={selectedYear}
-                onChange={(e: DropdownChangeEvent) => setSelectedYear(e.value)}
-              />
-            </div>
-          </>
-        )}
-        {selectedFrequencySearch?.name === "Período de Datas" && (
-          <>
-            <div className="field flex flex-column gap-1 w-full">
-              <LabelTitle
-                text="De"
-                htmlFor="fromDate"
-                className="font-semibold smaller-text"
-              />
               <Calendar
                 locale="pt"
                 className="ui-state-default"
                 dateFormat="dd/mm/yy"
                 style={{ height: "30px", fontSize: "0.8rem" }}
                 showIcon
-                value={dateFrom}
+                value={selectedDate}
                 onChange={(e) => {
-                  setDateFrom(e.value || null);
+                  setSelectedDate(e.value || new Date());
+                  onChangeFrequency(e.value || new Date());
                 }}
               />
             </div>
-            <div className="field flex flex-column gap-1 w-full">
-              <LabelTitle
-                text="Até"
-                htmlFor="toDate"
-                className="font-semibold smaller-text"
-              />
-              <Calendar
-                locale="pt"
-                className="ui-state-default"
-                dateFormat="dd/mm/yy"
-                style={{ height: "30px", fontSize: "0.8rem" }}
-                showIcon
-                value={dateTo}
-                onChange={(e) => {
-                  setDateTo(e.value || null);
-                }}
-              />
-            </div>
-          </>
-        )}
-      </div>
+          )}
+          {selectedFrequencySearch?.name === "Semanal" && (
+            <>
+              <div className="field flex flex-column gap-1 w-full">
+                <LabelTitle
+                  text="Semana"
+                  htmlFor="periocity"
+                  className="font-semibold smaller-text"
+                />
+                <Dropdown
+                  options={weeksOfTheYear}
+                  optionLabel="weekName"
+                  style={{ height: "30px", fontSize: "0.8rem" }}
+                  value={selectedWeekSearch}
+                  onChange={(e: DropdownChangeEvent) => {
+                    setSelectedWeekSearch(e.value);
+                    onChangeWeekAndYear(e.value || null);
+                  }}
+                />
+              </div>
+              <div className="field flex flex-column gap-1 w-full">
+                <LabelTitle
+                  text="Ano"
+                  htmlFor="yearFrequency"
+                  className="font-semibold smaller-text"
+                />
+                <Dropdown
+                  options={getPreviousYears()}
+                  style={{ height: "30px", fontSize: "0.8rem" }}
+                  value={selectedYear}
+                  onChange={(e: DropdownChangeEvent) =>
+                    setSelectedYear(e.value)
+                  }
+                />
+              </div>
+            </>
+          )}
+          {selectedFrequencySearch?.name === "Período de Datas" && (
+            <>
+              <div className="field flex flex-column gap-1 w-full">
+                <LabelTitle
+                  text="De"
+                  htmlFor="fromDate"
+                  className="font-semibold smaller-text"
+                />
+                <Calendar
+                  locale="pt"
+                  className="ui-state-default"
+                  dateFormat="dd/mm/yy"
+                  style={{ height: "30px", fontSize: "0.8rem" }}
+                  showIcon
+                  value={dateFrom}
+                  onChange={(e) => {
+                    setDateFrom(e.value || null);
+                  }}
+                />
+              </div>
+              <div className="field flex flex-column gap-1 w-full">
+                <LabelTitle
+                  text="Até"
+                  htmlFor="toDate"
+                  className="font-semibold smaller-text"
+                />
+                <Calendar
+                  locale="pt"
+                  className="ui-state-default"
+                  dateFormat="dd/mm/yy"
+                  style={{ height: "30px", fontSize: "0.8rem" }}
+                  showIcon
+                  value={dateTo}
+                  onChange={(e) => {
+                    setDateTo(e.value || null);
+                  }}
+                />
+              </div>
+            </>
+          )}
+        </div>
 
-      <DataTable
-        emptyMessage="Nenhum pagamento para a conta encontrado"
-        value={paymentsByAccountId}
-        loading={loading}
-        stripedRows
-        showGridlines
-        selectionMode="single"
-        onSelectionChange={(e) => setCurrPayment(e.value)}
-        selection={currPayment!}
-        rows={10}
-        totalRecords={totalElements}
-        size="small"
-        className="smaller-text"
-        footer={footerTemplate}
-      >
-        <Column
-          field="numberCheckTransfer"
-          header="Número"
+        <DataTable
+          emptyMessage="Nenhum pagamento para a conta encontrado"
+          value={paymentsByAccountId}
+          loading={loading}
+          stripedRows
+          showGridlines
+          scrollable
+          scrollHeight="300px"
+          selectionMode="single"
+          onSelectionChange={(e) => setCurrPayment(e.value)}
+          selection={currPayment!}
+          rows={5}
+          totalRecords={totalElements}
+          size="small"
           className="smaller-text"
+          footer={footerTemplate}
+        >
+          <Column
+            field="numberCheckTransfer"
+            header="Número"
+            className="smaller-text"
+          />
+          <Column
+            field="paymentDateFormatted"
+            header="Data"
+            className="smaller-text"
+          />
+          <Column
+            field="beneficiary"
+            header="Favorecido"
+            className="smaller-text"
+          />
+          <Column
+            field="cleared"
+            header="C"
+            className="smaller-text"
+            body={clearedBodyTemplate}
+          />
+          <Column
+            field="withdraw"
+            header="Pagamento"
+            body={priceWithdrawBodyTemplate}
+            className="smaller-text"
+          />
+          <Column
+            field="deposit"
+            header="Depósito"
+            body={priceDepositBodyTemplate}
+            className="smaller-text"
+          />
+          <Column
+            field="balance"
+            header="Saldo"
+            body={priceBalanceBodyTemplate}
+            className="smaller-text"
+          />
+        </DataTable>
+        <Paginator
+          first={first}
+          rows={5}
+          totalRecords={totalElements}
+          onPageChange={onPageChange}
         />
-        <Column
-          field="paymentDateFormatted"
-          header="Data"
-          className="smaller-text"
-        />
-        <Column
-          field="beneficiary"
-          header="Favorecido"
-          className="smaller-text"
-        />
-        <Column
-          field="cleared"
-          header="C"
-          className="smaller-text"
-          body={clearedBodyTemplate}
-        />
-        <Column
-          field="withdraw"
-          header="Pagamento"
-          body={priceWithdrawBodyTemplate}
-          className="smaller-text"
-        />
-        <Column
-          field="deposit"
-          header="Depósito"
-          body={priceDepositBodyTemplate}
-          className="smaller-text"
-        />
-        <Column
-          field="balance"
-          header="Saldo"
-          body={priceBalanceBodyTemplate}
-          className="smaller-text"
-        />
-      </DataTable>
-      <Paginator
-        first={first}
-        rows={5}
-        totalRecords={totalElements}
-        onPageChange={onPageChange}
-      />
-      <TabView className="w-full smaller-text">
-        <TabPanel header="Depósito">
-          {account && (
-            <PaymentCreateForm
-              accountId={account.id}
-              accountName={account.name}
-              onCreate={onCreatePayment}
-              paymentType="DEPOSIT"
-            />
-          )}
-        </TabPanel>
-        <TabPanel header="Transferência">
-          {account && (
-            <PaymentTransferCreateForm
-              accountId={account.id}
-              accountName={account.name}
-              onCreate={onCreatePayment}
-              paymentType="TRANSFER"
-            />
-          )}
-        </TabPanel>
-        <TabPanel header="Retirada">
-          {account && (
-            <PaymentCreateForm
-              accountId={account.id}
-              accountName={account.name}
-              onCreate={onCreatePayment}
-              paymentType="WITHDRAW"
-            />
-          )}
-        </TabPanel>
-        <TabPanel header="Ret. em dinheiro">
-          {account && (
-            <PaymentCreateForm
-              accountId={account.id}
-              accountName={account.name}
-              onCreate={onCreatePayment}
-              paymentType="MONEYWITHDRAW"
-            />
-          )}
-        </TabPanel>
-      </TabView>
-    </section>
+
+        <TabView className="w-full smaller-text">
+          <TabPanel header="Depósito">
+            {account && (
+              <PaymentCreateForm
+                accountId={account.id}
+                accountName={account.name}
+                onCreate={onCreatePayment}
+                paymentType="DEPOSIT"
+              />
+            )}
+          </TabPanel>
+          <TabPanel header="Transferência">
+            {account && (
+              <PaymentTransferCreateForm
+                accountId={account.id}
+                accountName={account.name}
+                onCreate={onCreatePayment}
+                paymentType="TRANSFER"
+              />
+            )}
+          </TabPanel>
+          <TabPanel header="Retirada">
+            {account && (
+              <PaymentCreateForm
+                accountId={account.id}
+                accountName={account.name}
+                onCreate={onCreatePayment}
+                paymentType="WITHDRAW"
+              />
+            )}
+          </TabPanel>
+          <TabPanel header="Ret. em dinheiro">
+            {account && (
+              <PaymentCreateForm
+                accountId={account.id}
+                accountName={account.name}
+                onCreate={onCreatePayment}
+                paymentType="MONEYWITHDRAW"
+              />
+            )}
+          </TabPanel>
+        </TabView>
+      </section>
+    </ScrollPanel>
   );
 }
 
