@@ -45,9 +45,7 @@ const GlobalStyle = createGlobalStyle`
   font-size: 0.75rem; /* Adjust the value for desired size */
 }
 
-.p-inputtext {
-  font-size: 0.75rem;
-}
+
 .p-tabview .p-tabview-panels {
   padding: 0.5rem;
 }
