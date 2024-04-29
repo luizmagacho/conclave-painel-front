@@ -58,6 +58,8 @@ function PaymentList() {
   });
 
   const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [accountNotFavorite, setAccountNotFavorite] =
+    useState<AccountSimpleList | null>();
 
   const [todayBalance, setTodayBalance] = useState<number>(0);
 
@@ -142,6 +144,7 @@ function PaymentList() {
 
   useEffect(() => {
     const account = accountsFavoriteList[activeIndex];
+    setAccountNotFavorite(null);
     if (activeIndex === accountsFavoriteList.length) {
       handleGetAccountsByFavorite(0, "", false);
       setIsOthersAccounts(true);
@@ -245,6 +248,26 @@ function PaymentList() {
       enumValue
     );
     handleGetAccountById(account.id);
+  }
+
+  async function onChangeNotFavoriteAccount(
+    accountNotFavorite: AccountSimpleList
+  ) {
+    const selectedOption = transactionsTypes.find(
+      (option) => option.value === selectedTransactionSearch
+    );
+    const enumValue = selectedOption?.value;
+    console.log(accountNotFavorite);
+    await handleGetPaymentsByAccountId(
+      accountNotFavorite.id,
+      0,
+      SearchType.CENTERCOST,
+      enumValue,
+      null,
+      "",
+      "",
+      selectedWeekSearch?.number
+    );
   }
 
   async function onChangeTransactionType(transactionType: string) {
@@ -373,8 +396,13 @@ function PaymentList() {
         {isOthersAccounts && (
           <Dropdown
             options={accountsListNotFavorites}
+            value={accountNotFavorite}
             optionLabel="name"
             emptyMessage="Sem Contas"
+            onChange={(e: DropdownChangeEvent) => {
+              onChangeNotFavoriteAccount(e.value);
+              setAccountNotFavorite(e.value);
+            }}
           />
         )}
         <div className="card flex flex-column md:flex-row gap-2 w-11/12">
