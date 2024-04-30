@@ -550,7 +550,7 @@ function PaymentList() {
           selectionMode="single"
           onSelectionChange={(e) => setCurrPayment(e.value)}
           selection={currPayment!}
-          rows={5}
+          rows={10}
           totalRecords={totalElements}
           size="small"
           className="smaller-text"
