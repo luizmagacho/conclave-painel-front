@@ -236,7 +236,7 @@ function PaymentCreateForm({
       setSelectedBeneficiary(null);
       setSelectedCategory(null);
       setSelectedSubCategory(null);
-      setNewPaymentDate(null);
+      setNewPaymentDate(new Date());
       setNewPayment({
         accountId: accountId,
         accountIdTo: null,
@@ -254,7 +254,7 @@ function PaymentCreateForm({
         enabled: true,
         numberCheckTransfer: "",
         description: "",
-        paymentDate: null,
+        paymentDate: new Date(),
       });
     }
   }
