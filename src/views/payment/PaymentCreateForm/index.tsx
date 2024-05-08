@@ -236,7 +236,7 @@ function PaymentCreateForm({
       setSelectedBeneficiary(null);
       setSelectedCategory(null);
       setSelectedSubCategory(null);
-      setNewPaymentDate(null);
+      setNewPaymentDate(new Date());
       setNewPayment({
         accountId: accountId,
         accountIdTo: null,
@@ -254,7 +254,7 @@ function PaymentCreateForm({
         enabled: true,
         numberCheckTransfer: "",
         description: "",
-        paymentDate: null,
+        paymentDate: new Date(),
       });
     }
   }
@@ -315,14 +315,14 @@ function PaymentCreateForm({
           />
         </div>
       </div>
-      <div className="flex flex-column md:flex-row gap-2 w-11/12">
+      <div className="card flex flex-column md:flex-row gap-2 w-11/12">
         <div className="flex flex-column gap-1 w-full">
           <LabelTitle
             text="Categoria:"
             htmlFor="payTo"
             className="font-semibold smaller-text"
           />
-          <div className="flex flex-column md:flex-row gap-2 w-11/12">
+          <div className="flex flex-column md:flex-row gap-1 w-11/12">
             <div className="flex flex-column gap-1 w-full">
               <AutoComplete
                 suggestions={allCategoriesItems}
@@ -348,144 +348,132 @@ function PaymentCreateForm({
               />
             </div>
           </div>
-          <div className="flex flex-column gap-1 w-full">
-            <LabelTitle
-              text="SubCategoria:"
-              htmlFor="payTo"
-              className="font-semibold smaller-text"
+        </div>
+        <div className="flex flex-column gap-1 w-full">
+          <LabelTitle
+            text="Data"
+            htmlFor="paymentDate"
+            className="font-semibold smaller-text"
+          />
+          <Calendar
+            locale="pt"
+            className="ui-state-default"
+            dateFormat="dd/mm/yy"
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            showIcon
+            onChange={(e) => {
+              setNewPaymentDate(e.value || null);
+            }}
+          />
+          {invalidDate && (
+            <Message
+              severity="error"
+              text="Data é obrigatória"
+              className="smaller-text"
             />
-            <div className="flex flex-column md:flex-row gap-1 w-11/12">
-              <div className="flex flex-column gap-1 w-full">
-                <AutoComplete
-                  suggestions={allSubCategoriesItems}
-                  field="name"
-                  dropdown
-                  style={{ height: "30px", fontSize: "0.8rem" }}
-                  value={selectedSubCategory}
-                  completeMethod={subCategoriesSearch}
-                  onChange={(e: AutoCompleteChangeEvent) => {
-                    setSelectedSubCategory(e.value);
+          )}
+        </div>
+      </div>
+      <div className="card flex flex-column md:flex-row gap-2 w-11/12">
+        <div className="flex flex-column gap-1 w-full">
+          <LabelTitle
+            text="SubCategoria:"
+            htmlFor="payTo"
+            className="font-semibold smaller-text"
+          />
+          <div className="flex flex-column md:flex-row gap-1 w-11/12">
+            <div className="flex flex-column gap-1 w-full">
+              <AutoComplete
+                suggestions={allSubCategoriesItems}
+                field="name"
+                dropdown
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={selectedSubCategory}
+                completeMethod={subCategoriesSearch}
+                onChange={(e: AutoCompleteChangeEvent) => {
+                  setSelectedSubCategory(e.value);
 
-                    setInvalidSubCategory(false);
-                  }}
-                />
-              </div>
-              <div className="flex flex-column gap-1">
-                <Button
-                  severity="danger"
-                  style={{ height: "30px", fontSize: "0.8rem" }}
-                  icon="pi pi-plus" // PrimeReact's "+" icon class
-                  className="rounded-md px-3 smaller-text" // Optional styling
-                  onClick={openCreateSubCategory}
-                />
-              </div>
+                  setInvalidSubCategory(false);
+                }}
+              />
+            </div>
+            <div className="flex flex-column gap-1">
+              <Button
+                severity="danger"
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                icon="pi pi-plus" // PrimeReact's "+" icon class
+                className="rounded-md px-3 smaller-text" // Optional styling
+                onClick={openCreateSubCategory}
+              />
             </div>
           </div>
-          {/* <div className="field flex flex-column gap-1 w-full">
-            <LabelTitle
-              text=" "
-              htmlFor="payTo"
-              className="font-semibold smaller-text"
-            />
-            <Button
-              severity="danger"
-              className="flex-grow"
-              style={{ height: "30px", fontSize: "0.8rem" }}
-            />
-          </div> */}
         </div>
-        <div className="flex-column gap-1 w-full">
-          <div className="flex flex-column gap-1 w-full">
-            <LabelTitle
-              text="Data"
-              htmlFor="paymentDate"
-              className="font-semibold smaller-text"
-            />
-            <Calendar
-              locale="pt"
-              className="ui-state-default"
-              dateFormat="dd/mm/yy"
+        <div className="flex flex-column gap-1 w-full">
+          <LabelTitle
+            text="Montante"
+            htmlFor="withdraw"
+            className="font-semibold smaller-text"
+          />
+          {paymentType === "WITHDRAW" && (
+            <InputNumber
+              inputId="currency-br"
+              mode="currency"
+              locale="pt-BR"
+              currency="BRL"
               style={{ height: "30px", fontSize: "0.8rem" }}
-              showIcon
+              value={formatCurrency(newPayment?.withdraw)}
               onChange={(e) => {
-                setNewPaymentDate(e.value || null);
+                if (e.value) {
+                  setNewPayment({ ...newPayment, withdraw: e.value * 100 });
+                }
               }}
             />
-            {invalidDate && (
-              <Message
-                severity="error"
-                text="Data é obrigatória"
-                className="smaller-text"
-              />
-            )}
-          </div>
-          <div className="flex flex-column gap-2 w-full">
-            <LabelTitle
-              text="Montante"
-              htmlFor="withdraw"
-              className="font-semibold smaller-text"
+          )}
+          {paymentType === "MONEYWITHDRAW" && (
+            <InputNumber
+              inputId="currency-br"
+              mode="currency"
+              locale="pt-BR"
+              currency="BRL"
+              style={{ height: "30px", fontSize: "0.8rem" }}
+              value={formatCurrency(newPayment?.withdraw)}
+              onChange={(e) => {
+                if (e.value) {
+                  setNewPayment({ ...newPayment, withdraw: e.value * 100 });
+                }
+              }}
             />
-            {paymentType === "WITHDRAW" && (
-              <InputNumber
-                inputId="currency-br"
-                mode="currency"
-                locale="pt-BR"
-                currency="BRL"
-                style={{ height: "30px", fontSize: "0.8rem" }}
-                value={formatCurrency(newPayment?.withdraw)}
-                onChange={(e) => {
-                  if (e.value) {
-                    setNewPayment({ ...newPayment, withdraw: e.value * 100 });
-                  }
-                }}
-              />
-            )}
-            {paymentType === "MONEYWITHDRAW" && (
-              <InputNumber
-                inputId="currency-br"
-                mode="currency"
-                locale="pt-BR"
-                currency="BRL"
-                style={{ height: "30px", fontSize: "0.8rem" }}
-                value={formatCurrency(newPayment?.withdraw)}
-                onChange={(e) => {
-                  if (e.value) {
-                    setNewPayment({ ...newPayment, withdraw: e.value * 100 });
-                  }
-                }}
-              />
-            )}
-            {paymentType === "DEPOSIT" && (
-              <>
-                {/* <CurrencyInput
+          )}
+          {paymentType === "DEPOSIT" && (
+            <>
+              {/* <CurrencyInput
                   onChange={(e) => {
                     setNewPayment({ ...newPayment, deposit: e });
                   }}
                 /> */}
-                <InputNumber
-                  inputId="currency-br"
-                  mode="currency"
-                  locale="pt-BR"
-                  currency="BRL"
-                  style={{ height: "30px", fontSize: "0.8rem" }}
-                  className="smaller-text"
-                  value={formatCurrency(newPayment?.deposit)}
-                  onChange={(e) => {
-                    if (e.value) {
-                      setNewPayment({ ...newPayment, deposit: e.value * 100 });
-                    }
-                  }}
-                />
-              </>
-            )}
-            {invalidValue && (
-              <Message
-                severity="error"
-                text="Montante é obrigatório"
+              <InputNumber
+                inputId="currency-br"
+                mode="currency"
+                locale="pt-BR"
+                currency="BRL"
+                style={{ height: "30px", fontSize: "0.8rem" }}
                 className="smaller-text"
+                value={formatCurrency(newPayment?.deposit)}
+                onChange={(e) => {
+                  if (e.value) {
+                    setNewPayment({ ...newPayment, deposit: e.value * 100 });
+                  }
+                }}
               />
-            )}
-          </div>
+            </>
+          )}
+          {invalidValue && (
+            <Message
+              severity="error"
+              text="Montante é obrigatório"
+              className="smaller-text"
+            />
+          )}
         </div>
       </div>
       <div className="field flex flex-column gap-1 w-full">

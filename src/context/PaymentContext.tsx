@@ -162,7 +162,7 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
       const { content, totalElements } = await getPaymentsByAccountId(
         {
           page,
-          size: 5,
+          size: 10,
           searchType,
           transactionType,
           centerCost,
