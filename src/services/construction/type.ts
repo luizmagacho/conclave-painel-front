@@ -30,8 +30,8 @@ export type ConstructionDTO = {
   cad: boolean;
   openingDate: Date | null;
   closedDate?: Date | null;
-  totalBilled: number;
-  totalRemas: number;
+  totalBilled?: number;
+  totalRemas?: number;
   userId: string | null;
   enabled?: boolean;
 };

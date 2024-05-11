@@ -37,6 +37,8 @@ function OrderCompleteInfo() {
       local: "",
       service: "",
       userId: "",
+      totalBilled: 0,
+      totalRemas: 0,
       enabled: false,
       updatedAt: null,
       createdAt: null,
