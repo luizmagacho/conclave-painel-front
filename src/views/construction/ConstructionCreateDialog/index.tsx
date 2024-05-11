@@ -33,6 +33,8 @@ function ConstructionCreateDialog({
     client: "",
     openingDate: new Date(),
     local: "",
+    totalBilled: 0,
+    totalRemas: 0,
     service: "",
     userId: "",
   });

@@ -40,6 +40,8 @@ function ConstructionUpdateDialog({
     closedDate: data.closedDate,
     local: data.local,
     service: data.service,
+    totalBilled: data.totalBilled,
+    totalRemas: data.totalRemas,
     userId: data.userId,
     enabled: data.enabled,
     updatedAt: data.updatedAt,
