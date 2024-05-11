@@ -16,7 +16,7 @@ export async function getCosts({ page, size }: CostPaginationParam) {
 }
 
 export async function getCostsByCenterCostId(
-  centerCostId: number,
+  centerCostId: string,
   { page, size }: CostPaginationParam
 ) {
   let res = await api.get<Pagination<Cost>>(

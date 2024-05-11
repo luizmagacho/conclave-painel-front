@@ -1,10 +1,14 @@
+import LabelTitle from "@/components/LabelTitle";
+import { ConstructionContext } from "@/context/ConstructionContext";
 import { CostContext } from "@/context/CostContext";
-import { Cost } from "@/services/costs/type";
+import { Cost, CostDTO } from "@/services/costs/type";
 import { useRouter } from "next/router";
+import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import CostCreateDialog from "../CostCreateDialog";
 
 interface Options {
   icon?: string;
@@ -22,6 +26,7 @@ function CostList() {
   const router = useRouter();
   const [currCost, setCurrCost] = useState<Cost | null>(null);
   const [showDialog, setShowDialog] = useState<boolean>(false);
+  const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
 
   const {
     costs,
@@ -30,6 +35,9 @@ function CostList() {
     handleGetCostsByCenterCostId,
     handlePostCost,
   } = useContext(CostContext);
+
+  const { selectedConstruction, handleGetConstructionById } =
+    useContext(ConstructionContext);
 
   const [first, setFirst] = useState<number>(0);
 
@@ -49,9 +57,59 @@ function CostList() {
   function onPageChange(event: PaginatorPageChangeEvent) {
     const { page, first } = event;
     const { id } = router.query;
-    handleGetCostsByCenterCostId(typeof id === "number" ? id : 0, page);
+    handleGetCostsByCenterCostId(typeof id === "string" ? id : "", page);
     setFirst(first);
   }
+
+  async function onCreateCost(cost: CostDTO) {
+    await handlePostCost(cost);
+    const { id } = router.query;
+    handleGetCostsByCenterCostId(typeof id === "string" ? id : "");
+  }
+
+  function closeCreateDialog() {
+    setShowCreateDialog((showCreateDialog) => !showCreateDialog);
+  }
+
+  useEffect(() => {
+    const { id } = router.query;
+    handleGetConstructionById(typeof id === "string" ? id : "");
+  }, []);
+
+  const formatCurrency = (value: number | null) => {
+    if (!value) {
+      return "-";
+    }
+    return (value / 100).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+  };
+
+  const footerTemplate = () => {
+    return (
+      <div className="flex gap-2 w-full">
+        <div className="flex-grow-1">
+          <LabelTitle
+            text={`Total Bruto Faturado: ${formatCurrency(
+              selectedConstruction?.totalBilled || null
+            )}`}
+            htmlFor="todayBalance"
+            className="font-semibold smaller-text"
+          />
+        </div>
+        <div className="flex-shrink-0">
+          <LabelTitle
+            text={`Total Remas: ${formatCurrency(
+              selectedConstruction?.totalRemas || null
+            )}`}
+            htmlFor="finalBalance"
+            className="font-semibold smaller-text"
+          />
+        </div>
+      </div>
+    );
+  };
 
   return (
     <>
@@ -59,17 +117,48 @@ function CostList() {
         <div className="flex align-items-center justify-start w-full gap-2">
           <h1 className="m-0">Custos</h1>
         </div>
+        <div className="card flex flex-column md:flex-row gap-2 w-11/12">
+          <div className="flex flex-column gap-1 w-full">
+            <LabelTitle
+              text={`Centro de Custo: ${selectedConstruction?.code}`}
+              htmlFor="neighborhood"
+              className="font-semibold"
+            />
+          </div>
+          <div className="flex flex-column gap-1 w-full">
+            <LabelTitle
+              text={`Agência: ${selectedConstruction?.bankBranch}`}
+              htmlFor="neighborhood"
+              className="font-semibold"
+            />
+          </div>
+          <div className="flex flex-column gap-1 w-full">
+            <LabelTitle
+              text={`Local: ${selectedConstruction?.local}`}
+              htmlFor="neighborhood"
+              className="font-semibold"
+            />
+          </div>
+          <div className="flex flex-column gap-1 w-full">
+            <LabelTitle
+              text={`Serviço: ${selectedConstruction?.service}`}
+              htmlFor="neighborhood"
+              className="font-semibold"
+            />
+          </div>
+        </div>
         <DataTable
           emptyMessage="Nenhuma custo encontrado."
+          value={costs}
+          loading={loading}
           stripedRows
           showGridlines
           rows={10}
           tableStyle={{ minWidth: "50rem" }}
+          totalRecords={totalElements}
           size="small"
+          footer={footerTemplate}
         >
-          <Column field="costCenter" header="Centro de Custo" />
-          <Column field="bankBranch" header="Código Agência" />
-          <Column field="localBank" header="Local Agência" />
           <Column field="purchaseDate" header="Data" />
           <Column field="name" header="Nome" />
           <Column field="value" header="Valor" />
@@ -80,7 +169,38 @@ function CostList() {
           totalRecords={totalElements}
           onPageChange={onPageChange}
         />
+        <div
+          className="flex justify-end gap-6 w-full"
+          style={{ justifyContent: "end" }}
+        >
+          <Button
+            className="font-semibold text-sm"
+            label="Cancelar"
+            outlined
+            onClick={() => {
+              router.push("/centro-custo");
+            }}
+          />
+
+          <Button
+            onClick={() => {
+              setShowCreateDialog(true);
+            }}
+            className="rounded-md px-3 text-sm"
+            label="Adicionar"
+            severity="danger"
+          />
+        </div>
+        {showCreateDialog && (
+          <CostCreateDialog
+            visible={showCreateDialog}
+            onHide={closeCreateDialog}
+            onCreate={onCreateCost}
+          />
+        )}
       </section>
     </>
   );
 }
+
+export default CostList;

@@ -1,23 +1,28 @@
 export type Cost = {
-  id: number | null;
+  id: string | null;
   costCenter: string;
   bankBranch: string;
-  local: string;
+  localBank: string;
   purchaseDate: string;
-  costType: string;
-  userId: number;
+  type: string;
+  name: string;
+  value: string;
+  userId: string;
   enabled: boolean;
   createdAt: Date | null;
   updatedAt: Date | null;
 };
 
 export type CostDTO = {
+  name: string;
   costCenter: string;
   bankBranch: string;
-  local: string;
+  localBank: string;
   purchaseDate: string;
   costType: string;
-  userId: number;
+  value: number | null;
+  valueRemas: number | null;
+  userId: string;
   enabled?: boolean;
 };
 

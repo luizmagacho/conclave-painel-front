@@ -26,7 +26,7 @@ import CurrencyInput from "@/components/InputCurrency";
 import SupplierCreate from "@/views/supplier/SupplierCreate";
 
 interface PaymentCreateForm {
-  accountId: number;
+  accountId: string;
   accountName: string;
   onCreate: (payment: PaymentDTO) => void;
   paymentType: string;

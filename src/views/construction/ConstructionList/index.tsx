@@ -9,6 +9,7 @@ import { Toast } from "primereact/toast";
 import { useContext, useRef, useState } from "react";
 import ConstructionCreateDialog from "../ConstructionCreateDialog";
 import ConstructionUpdateDialog from "../ConstructionUpdateDialog";
+import { useRouter } from "next/router";
 
 interface Options {
   icon?: string;
@@ -78,18 +79,25 @@ function ConstructionList() {
     loading,
     totalElements,
     handleGetConstructions,
+    handleGetConstructionById,
     handlePostConstruction,
     handleUpdateConstruction,
   } = useContext(ConstructionContext);
 
   const toast = useRef<Toast>(null);
   const [first, setFirst] = useState<number>(0);
+  const router = useRouter();
 
   const options: Options[] = [
     {
       ariaLabel: "Editar",
       label: "Editar",
       onclick: openDialog,
+    },
+    {
+      ariaLabel: "Custos",
+      label: "Custos",
+      onclick: openCosts,
     },
   ];
 
@@ -111,6 +119,11 @@ function ConstructionList() {
   function closeDialog() {
     setShowDialog((showDialog) => !showDialog);
     setCurrConstruction(null);
+  }
+
+  async function openCosts(construction: Construction) {
+    await handleGetConstructionById(construction.id);
+    router.push(`/centro-custo/${construction.id}/custos`);
   }
 
   async function onCreateConstruction(construction: ConstructionDTO) {

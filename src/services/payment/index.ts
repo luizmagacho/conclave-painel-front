@@ -41,7 +41,7 @@ export async function getPaymentsByAccountId(
     paymentDateStart,
     paymentDateEnd,
   }: PaymentByAccountIdPaginationParam,
-  accountId: number
+  accountId: string
 ) {
   let res = await api.get<Pagination<Payment>>(
     `${baseUrl}/account/${accountId}`,

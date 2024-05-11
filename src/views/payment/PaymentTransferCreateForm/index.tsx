@@ -18,7 +18,7 @@ import { Message } from "primereact/message";
 import { useContext, useEffect, useState } from "react";
 
 interface PaymentTransferCreateForm {
-  accountId: number;
+  accountId: string;
   accountName: string;
   onCreate: (payment: PaymentDTO) => void;
   paymentType: string;

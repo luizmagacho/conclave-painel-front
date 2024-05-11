@@ -1,7 +1,7 @@
 import { Payment } from "../payment/type";
 
 export type AccountSimpleList = {
-  id: number;
+  id: string;
   name: string;
   financialInstitute: string;
   accountNumber: string;
@@ -17,7 +17,7 @@ export type AccountSimpleList = {
 };
 
 export type AccountDetails = {
-  id: number;
+  id: string;
   name: string;
   financialInstitute: string;
   accountNumber: string;

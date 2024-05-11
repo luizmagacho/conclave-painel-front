@@ -5,7 +5,7 @@ import { Dialog } from "primereact/dialog";
 interface AccountDeleteDialog {
   visible: boolean;
   onHide: () => void;
-  onDelete: (accountId: number) => void;
+  onDelete: (accountId: string) => void;
   data: AccountSimpleList;
 }
 

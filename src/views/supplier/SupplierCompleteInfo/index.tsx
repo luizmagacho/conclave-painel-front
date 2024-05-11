@@ -10,14 +10,13 @@ import { Button } from "primereact/button";
 import { useRouter } from "next/router";
 import { SupplierContext } from "@/context/SupplierContext";
 import { Skeleton } from "primereact/skeleton";
-import PhoneInput from "@/components/PhoneInput";
 
 function SupplierCompleteInfo() {
   const { selectedSupplier, handleGetSupplierById, handleUpdateSupplier } =
     useContext(SupplierContext);
   const [loading, setLoading] = useState<boolean>(false);
   const [updatedSupplier, setUpdatedSupplier] = useState<Supplier>({
-    id: selectedSupplier?.id || 0,
+    id: selectedSupplier?.id || "",
     cnpj: selectedSupplier?.cnpj || "",
     cpf: "",
     completeName: selectedSupplier?.completeName || "",
@@ -76,7 +75,7 @@ function SupplierCompleteInfo() {
 
   useEffect(() => {
     const { id } = router.query;
-    handleGetSupplierById(typeof id === "number" ? id : 0);
+    handleGetSupplierById(typeof id === "string" ? id : "");
   }, []);
 
   useEffect(() => {
