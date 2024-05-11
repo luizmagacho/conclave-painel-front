@@ -25,7 +25,7 @@ function OrderCompleteInfo() {
   const [updatedOrder, setUpdatedOrder] = useState<Order>({
     id: null,
     construction: {
-      id: null,
+      id: "",
       code: "",
       bankBranch: "",
       responsible: "",
@@ -36,7 +36,7 @@ function OrderCompleteInfo() {
       closedDate: "",
       local: "",
       service: "",
-      userId: 0,
+      userId: "",
       enabled: false,
       updatedAt: null,
       createdAt: null,
@@ -50,7 +50,7 @@ function OrderCompleteInfo() {
     createdAt: null,
   });
   const [updatedMaterial, setUpdatedMaterial] = useState<Material>({
-    id: 0,
+    id: "",
     name: "",
     quantity: "",
     metricUnit: "",

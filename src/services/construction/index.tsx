@@ -27,6 +27,11 @@ export async function getConstructions({
   return res.data;
 }
 
+export async function getConstructionById(id: string) {
+  let res = await api.get<Construction>(`${baseUrl}/${id}`);
+  return res.data;
+}
+
 export async function getAllConstructions() {
   let res = await api.get<Construction[]>(`${baseUrl}/all`);
   return res.data;

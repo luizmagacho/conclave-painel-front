@@ -100,7 +100,7 @@ function SupplierList() {
     setShowDialogDelete((showDeleteDialog) => !showDeleteDialog);
   }
 
-  async function onDeleteSupplier(supplierId: number) {
+  async function onDeleteSupplier(supplierId: string) {
     await handleDeleteSupplier(supplierId);
     handleGetSuppliers();
   }

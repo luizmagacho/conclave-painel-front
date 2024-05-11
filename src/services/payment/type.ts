@@ -1,11 +1,11 @@
 export type Payment = {
-  id: number;
+  id: string;
   numberCheckTransfer: string;
   paymentDate: Date;
   paymentDateFormatted: Date;
   weekOfTheYear: number;
   beneficiary: string;
-  beneficiaryId: number;
+  beneficiaryId: string;
   category: Category;
   subCategory: SubCategory;
   cleared: boolean;
@@ -13,7 +13,7 @@ export type Payment = {
   deposit: number;
   balance: number;
   transactionType: string;
-  accountId: number;
+  accountId: string;
   description: string;
   enabled: boolean;
   createdAt?: Date;
@@ -24,19 +24,19 @@ export type PaymentDTO = {
   numberCheckTransfer: string;
   paymentDate: Date | null;
   beneficiary: string;
-  beneficiaryId: number | null;
+  beneficiaryId: string | null;
   category: string;
-  categoryId: number | null;
+  categoryId: string | null;
   subCategory: string;
-  subCategoryId: number | null;
+  subCategoryId: string | null;
   cleared: boolean;
   withdraw: number | null;
   deposit: number | null;
   balance: number | null;
   transactionType: string;
   description: string;
-  accountId: number;
-  accountIdTo: number | null;
+  accountId: string;
+  accountIdTo: string | null;
   enabled: boolean;
 };
 
@@ -59,7 +59,7 @@ export type PaymentByAccountIdPaginationParam = {
 };
 
 export type Category = {
-  id: number;
+  id: string;
   name: string;
 };
 
@@ -68,7 +68,7 @@ export type CategoryDTO = {
 };
 
 export type SubCategory = {
-  id: number;
+  id: string;
   name: string;
 };
 

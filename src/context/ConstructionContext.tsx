@@ -1,5 +1,6 @@
 import {
   deleteConstruction,
+  getConstructionById,
   getConstructions,
   postConstruction,
   updateConstruction,
@@ -14,6 +15,7 @@ interface ProviderProps {
 
 interface ConstructionContextProps {
   constructions: Construction[];
+  selectedConstruction: Construction | null;
   loading: boolean;
   totalElements: number;
   handleGetConstructions: (
@@ -21,6 +23,7 @@ interface ConstructionContextProps {
     name?: string,
     type?: string
   ) => Promise<void>;
+  handleGetConstructionById: (id: string) => Promise<void>;
   handlePostConstruction: (construction: ConstructionDTO) => Promise<void>;
   handleUpdateConstruction: (construction: Construction) => Promise<void>;
 }
@@ -34,6 +37,8 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
   const [bufferedConstructions, setBufferedConstructions] = useState<
     Construction[]
   >([]);
+  const [selectedConstruction, setSelectedConstruction] =
+    useState<Construction | null>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -62,6 +67,14 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleGetConstructionById(id: string) {
+    try {
+      setSelectedConstruction(await getConstructionById(id));
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -109,9 +122,11 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
     <ConstructionContext.Provider
       value={{
         constructions,
+        selectedConstruction,
         loading,
         totalElements,
         handleGetConstructions,
+        handleGetConstructionById,
         handlePostConstruction,
         handleUpdateConstruction,
       }}

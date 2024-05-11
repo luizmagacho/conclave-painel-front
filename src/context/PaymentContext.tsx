@@ -47,7 +47,7 @@ interface PaymentContextProps {
   handleGetFrequencyTypes: () => Promise<void>;
   handleGetWeeksOfTheYear: (year: number) => Promise<void>;
   handleGetPaymentsByAccountId: (
-    accountId: number,
+    accountId: string,
     page?: number,
     searchType?: SearchType,
     transactionType?: TransactionTypeEnum,
@@ -146,7 +146,7 @@ export const PaymentProvider = ({ children }: ProviderProps) => {
   }
 
   async function handleGetPaymentsByAccountId(
-    accountId: number,
+    accountId: string,
     page: number = 0,
     searchType: SearchType = SearchType.CENTERCOST,
     transactionType: TransactionTypeEnum = TransactionTypeEnum.ALLOPTIONS,

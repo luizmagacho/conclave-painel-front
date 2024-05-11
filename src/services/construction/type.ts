@@ -1,5 +1,5 @@
 export type Construction = {
-  id: number | null;
+  id: string;
   code: string;
   bankBranch: string;
   client: string;
@@ -12,7 +12,9 @@ export type Construction = {
   openingDateFormatted?: string;
   closedDate: string;
   closedDateFormatted?: string;
-  userId: number;
+  totalBilled: number;
+  totalRemas: number;
+  userId: string;
   enabled: boolean;
   createdAt: Date | null;
   updatedAt: Date | null;
@@ -28,6 +30,8 @@ export type ConstructionDTO = {
   cad: boolean;
   openingDate: Date | null;
   closedDate?: Date | null;
+  totalBilled: number;
+  totalRemas: number;
   userId: string | null;
   enabled?: boolean;
 };

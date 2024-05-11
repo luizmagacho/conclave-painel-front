@@ -45,7 +45,7 @@ export async function getAccountsByFavorite({
   return res.data;
 }
 
-export async function getAccountById(accountId: number) {
+export async function getAccountById(accountId: string) {
   let res = await api.get<AccountDetails>(`${baseUrl}/${accountId}`);
   return res.data;
 }
@@ -65,7 +65,7 @@ export async function updateAccount(account: AccountSimpleList) {
   return res.status;
 }
 
-export async function deleteAccount(accountId: number) {
+export async function deleteAccount(accountId: string) {
   let resp = await api.delete(`${baseUrl}/${accountId}`);
   return resp.status;
 }

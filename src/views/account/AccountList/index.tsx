@@ -90,7 +90,7 @@ function AccountList() {
     setShowDeleteDialog((showDeleteDialog) => !showDeleteDialog);
   }
 
-  async function onDeleteAccount(accountId: number) {
+  async function onDeleteAccount(accountId: string) {
     await handleDeleteAccount(accountId);
     handleGetAccounts();
   }
