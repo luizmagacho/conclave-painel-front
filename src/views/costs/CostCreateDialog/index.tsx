@@ -3,7 +3,6 @@ import { ConstructionContext } from "@/context/ConstructionContext";
 import { Construction } from "@/services/construction/type";
 import { CostDTO } from "@/services/costs/type";
 import { formatDateToYYYYMMDD } from "@/util/date";
-import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
@@ -25,14 +24,15 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
   const { selectedConstruction } = useContext(ConstructionContext);
   const [newCost, setNewCost] = useState<CostDTO>({
     name: "",
-    costCenter: selectedConstruction?.code || "",
+    centerCost: selectedConstruction?.code || "",
+    centerCostId: selectedConstruction?.id || "",
     bankBranch: selectedConstruction?.bankBranch || "",
     costType: "",
     localBank: selectedConstruction?.local || "",
     purchaseDate: "",
     value: null,
     valueRemas: null,
-    userId: "",
+    userId: localStorage.getItem("portal.id") as string,
     enabled: true,
   });
   const [newPurchaseDate, setNewPurchaseDate] = useState<Date | null>(null);
@@ -50,7 +50,7 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
   }, [newPurchaseDate]);
 
   async function validateFields() {
-    const userId = await Cookies.get("portal.id");
+    const userId = await localStorage.getItem("portal.id");
     setNewCost({ ...newCost, userId: userId || "" });
     setInvalidName(!newCost.name || newCost.name === "");
     setInvalidValue(!newCost.value || newCost.value === null);
@@ -88,14 +88,8 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
           />
           <InputText
             type="text"
-            onChange={(e) => {
-              setNewCost({
-                ...newCost,
-                costCenter: e.target.value,
-              });
-            }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.costCenter}
+            value={newCost?.centerCost}
             disabled={true}
           />
         </div>
@@ -107,12 +101,6 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
           />
           <InputText
             type="text"
-            onChange={(e) => {
-              setNewCost({
-                ...newCost,
-                bankBranch: e.target.value,
-              });
-            }}
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={newCost?.bankBranch}
             disabled={true}
@@ -158,7 +146,6 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={newCost?.name}
-            disabled={true}
           />
           {invalidName && (
             <Message

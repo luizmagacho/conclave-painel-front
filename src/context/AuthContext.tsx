@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }: ProviderProps) => {
           resp.highestPriorityRole,
           cookieParams
         );
-        setUser({
+        await setUser({
           ...user,
           id: resp.id,
           name: resp.name,

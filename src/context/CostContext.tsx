@@ -67,6 +67,7 @@ export const CostProvider = ({ children }: ProviderProps) => {
 
       setBufferedCosts(content || []);
       setCosts(content || []);
+      console.log("Costs: ", content);
       setTotalElements(totalElements);
     } catch (error) {
       console.error(error);
