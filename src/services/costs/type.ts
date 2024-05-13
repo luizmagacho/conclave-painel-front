@@ -4,9 +4,10 @@ export type Cost = {
   bankBranch: string;
   localBank: string;
   purchaseDate: string;
+  purchaseDateFormatted: string;
   type: string;
   name: string;
-  value: string;
+  value: number;
   userId: string;
   enabled: boolean;
   createdAt: Date | null;
@@ -15,7 +16,8 @@ export type Cost = {
 
 export type CostDTO = {
   name: string;
-  costCenter: string;
+  centerCost: string;
+  centerCostId: string;
   bankBranch: string;
   localBank: string;
   purchaseDate: string;

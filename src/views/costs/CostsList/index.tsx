@@ -73,7 +73,9 @@ function CostList() {
 
   useEffect(() => {
     const { id } = router.query;
+    console.log(id);
     handleGetConstructionById(typeof id === "string" ? id : "");
+    handleGetCostsByCenterCostId(typeof id === "string" ? id : "");
   }, []);
 
   const formatCurrency = (value: number | null) => {
@@ -109,6 +111,10 @@ function CostList() {
         </div>
       </div>
     );
+  };
+
+  const priceWithdrawBodyTemplate = (cost: Cost) => {
+    return formatCurrency(cost.value || null);
   };
 
   return (
@@ -159,9 +165,13 @@ function CostList() {
           size="small"
           footer={footerTemplate}
         >
-          <Column field="purchaseDate" header="Data" />
+          <Column field="purchaseDateFormatted" header="Data" />
           <Column field="name" header="Nome" />
-          <Column field="value" header="Valor" />
+          <Column
+            field="value"
+            header="Valor"
+            body={priceWithdrawBodyTemplate}
+          />
         </DataTable>
         <Paginator
           first={first}
