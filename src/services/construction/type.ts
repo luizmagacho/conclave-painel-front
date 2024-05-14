@@ -28,7 +28,7 @@ export type ConstructionDTO = {
   responsible: string;
   service: string;
   cad: boolean;
-  openingDate: Date | null;
+  openingDate?: Date | null;
   closedDate?: Date | null;
   totalBilled?: number;
   totalRemas?: number;

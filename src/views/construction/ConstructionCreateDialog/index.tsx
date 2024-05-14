@@ -31,7 +31,6 @@ function ConstructionCreateDialog({
     responsible: "",
     cad: false,
     client: "",
-    openingDate: new Date(),
     local: "",
     totalBilled: 0,
     totalRemas: 0,
@@ -73,7 +72,6 @@ function ConstructionCreateDialog({
     setInvalidService(
       !newConstruction.service || newConstruction.service === ""
     );
-    setInvalidOpeningDate(!newConstruction.openingDate);
 
     if (
       !invalidCode &&
@@ -81,8 +79,7 @@ function ConstructionCreateDialog({
       !invalidLocal &&
       !invalidResponsible &&
       !invalidBankBranch &&
-      !invalidService &&
-      !invalidOpeningDate
+      !invalidService
     ) {
       onCreate(newConstruction);
       onHide();

@@ -1,13 +1,15 @@
 export type Cost = {
   id: string | null;
-  costCenter: string;
+  centerCost: string;
+  centerCostId: string;
   bankBranch: string;
   localBank: string;
   purchaseDate: string;
   purchaseDateFormatted: string;
-  type: string;
+  costType: string;
   name: string;
   value: number;
+  valueRemas: number;
   userId: string;
   enabled: boolean;
   createdAt: Date | null;

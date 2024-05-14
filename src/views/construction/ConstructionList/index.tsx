@@ -86,6 +86,7 @@ function ConstructionList() {
 
   const toast = useRef<Toast>(null);
   const [first, setFirst] = useState<number>(0);
+  const [page, setPage] = useState<number>(1);
   const router = useRouter();
 
   const options: Options[] = [
@@ -128,7 +129,7 @@ function ConstructionList() {
 
   async function onCreateConstruction(construction: ConstructionDTO) {
     await handlePostConstruction(construction);
-    handleGetConstructions();
+    handleGetConstructions(page);
   }
 
   function closeCreateDialog() {
@@ -139,6 +140,7 @@ function ConstructionList() {
     const { page, first } = event;
     handleGetConstructions(page);
     setFirst(first);
+    setPage(page);
   }
 
   function onSearch(name: string) {

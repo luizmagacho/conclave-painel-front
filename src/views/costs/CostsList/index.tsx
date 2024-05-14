@@ -9,6 +9,7 @@ import { DataTable } from "primereact/datatable";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { useContext, useEffect, useState } from "react";
 import CostCreateDialog from "../CostCreateDialog";
+import CostUpdateDialog from "../CostUpdateDialog";
 
 interface Options {
   icon?: string;
@@ -34,6 +35,7 @@ function CostList() {
     totalElements,
     handleGetCostsByCenterCostId,
     handlePostCost,
+    handleUpdateCost,
   } = useContext(CostContext);
 
   const { selectedConstruction, handleGetConstructionById } =
@@ -48,6 +50,10 @@ function CostList() {
       onClick: openDialog,
     },
   ];
+
+  const columnBodyOptions = {
+    options: (cost: Cost) => optionsBodyTemplate(options, cost),
+  };
 
   function openDialog(cost: Cost) {
     setCurrCost(cost);
@@ -65,10 +71,23 @@ function CostList() {
     await handlePostCost(cost);
     const { id } = router.query;
     handleGetCostsByCenterCostId(typeof id === "string" ? id : "");
+    handleGetConstructionById(typeof id === "string" ? id : "");
   }
 
   function closeCreateDialog() {
     setShowCreateDialog((showCreateDialog) => !showCreateDialog);
+  }
+
+  async function onUpateCost(cost: Cost) {
+    await handleUpdateCost(cost);
+    const { id } = router.query;
+    handleGetCostsByCenterCostId(typeof id === "string" ? id : "");
+    handleGetConstructionById(typeof id === "string" ? id : "");
+  }
+
+  function closeUpdateDialog() {
+    setShowDialog((showDialog) => !showDialog);
+    setCurrCost(null);
   }
 
   useEffect(() => {
@@ -172,6 +191,7 @@ function CostList() {
             header="Valor"
             body={priceWithdrawBodyTemplate}
           />
+          <Column header="Opções" body={columnBodyOptions.options} />
         </DataTable>
         <Paginator
           first={first}
@@ -208,9 +228,39 @@ function CostList() {
             onCreate={onCreateCost}
           />
         )}
+        {currCost && (
+          <CostUpdateDialog
+            visible={showDialog}
+            onHide={closeUpdateDialog}
+            onUpdate={onUpateCost}
+            data={currCost}
+          />
+        )}
       </section>
     </>
   );
+
+  function optionsBodyTemplate(elements: Options[], cost: Cost) {
+    return (
+      <div className="flex gap-2">
+        {elements.map((el, index) => {
+          return (
+            <Button
+              key={index}
+              icon={el.icon}
+              label={el.label}
+              aria-label={el.ariaLabel}
+              tooltip={el.tooltip}
+              tooltipOptions={{ position: "top", className: "text-xs" }}
+              size="small"
+              severity="danger"
+              onClick={() => el.onClick(cost)}
+            />
+          );
+        })}
+      </div>
+    );
+  }
 }
 
 export default CostList;

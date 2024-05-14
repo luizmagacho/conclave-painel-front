@@ -84,8 +84,8 @@ function SupplierCreate() {
               className="font-semibold text-sm"
             />
             <InputMask
-              mask="999.999.999/9999-99"
-              placeholder="999.999.999/9999-99"
+              mask="99.999.999/9999-99"
+              placeholder="99.999.999/9999-99"
               onChange={(e) => {
                 setNewSupplier({
                   ...newSupplier,
@@ -281,8 +281,8 @@ function SupplierCreate() {
               required={true}
             />
             <InputMask
-              mask="(99) 99999-9999"
-              placeholder="(99) 99999-9999"
+              mask="(99) 99999999?9"
+              placeholder="(99) 99999-9999 ou (99) 9999-9999"
               onChange={(e) => {
                 setNewSupplier({
                   ...newSupplier,
@@ -353,8 +353,8 @@ function SupplierCreate() {
               required={true}
             />
             <InputMask
-              mask="(99) 99999-9999"
-              placeholder="(99) 99999-9999"
+              mask="(99) 99999999?9"
+              placeholder="(99) 99999-9999 ou (99) 9999-9999"
               onChange={(e) => {
                 setNewSupplier({
                   ...newSupplier,
