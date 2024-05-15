@@ -210,7 +210,7 @@ function CostList() {
             label="Cancelar"
             outlined
             onClick={() => {
-              router.push("/centro-custo");
+              router.back();
             }}
           />
           <Button
