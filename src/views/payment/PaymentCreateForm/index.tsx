@@ -24,6 +24,7 @@ import CategoryCreateDialog from "../CategoryCreateDialog";
 import SubCategoryCreateDialog from "../SubCategoryCreateDialog";
 import CurrencyInput from "@/components/InputCurrency";
 import SupplierCreate from "@/views/supplier/SupplierCreate";
+import { useRouter } from "next/router";
 
 interface PaymentCreateForm {
   accountId: string;
@@ -38,6 +39,7 @@ function PaymentCreateForm({
   onCreate,
   paymentType,
 }: PaymentCreateForm) {
+  const router = useRouter();
   const [newPayment, setNewPayment] = useState<PaymentDTO>({
     accountId: accountId,
     accountIdTo: null,
@@ -276,19 +278,34 @@ function PaymentCreateForm({
             htmlFor="payTo"
             className="font-semibold smaller-text"
           />
-          <AutoComplete
-            suggestions={allSupplierItems}
-            field="shortenedName"
-            dropdown
-            style={{ height: "30px", fontSize: "0.75rem" }}
-            value={selectedBeneficiary}
-            completeMethod={suppliersSearch}
-            onChange={(e: AutoCompleteChangeEvent) => {
-              setSelectedBeneficiary(e.value);
+          <div className="flex flex-column md:flex-row gap-1 w-11/12">
+            <div className="flex flex-column gap-1 w-full">
+              <AutoComplete
+                suggestions={allSupplierItems}
+                field="shortenedName"
+                dropdown
+                style={{ height: "30px", fontSize: "0.75rem" }}
+                value={selectedBeneficiary}
+                completeMethod={suppliersSearch}
+                onChange={(e: AutoCompleteChangeEvent) => {
+                  setSelectedBeneficiary(e.value);
 
-              setInvalidBeneficiary(false);
-            }}
-          />
+                  setInvalidBeneficiary(false);
+                }}
+              />
+            </div>
+            <div className="flex flex-column gap-1">
+              <Button
+                severity="danger"
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                icon="pi pi-plus" // PrimeReact's "+" icon class
+                className="rounded-md px-3 smaller-text" // Optional styling
+                onClick={() => {
+                  router.push(`/fornecedores/cadastrar`);
+                }}
+              />
+            </div>
+          </div>
           {invalidBeneficiary && (
             <Message
               severity="error"

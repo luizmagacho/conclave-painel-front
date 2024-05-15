@@ -10,6 +10,7 @@ import { Toast } from "primereact/toast";
 import { useContext, useEffect, useRef, useState } from "react";
 import SupplierDeleteDialog from "../SupplierDeleteDialog";
 import { ToastContext } from "@/context/ToastContext";
+import Cookies from "js-cookie";
 
 interface Options {
   icon?: string;
@@ -43,6 +44,7 @@ const columns = [
 ];
 
 function SupplierList() {
+  const role = Cookies.get("portal.role");
   const router = useRouter();
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [nameSearch, setNameSearch] = useState<string>("");
@@ -145,17 +147,19 @@ function SupplierList() {
             onChange={onChangeSearch}
             inputType={optionType.type}
           />
-          <Button
-            style={{
-              backgroundColor: "var(--cor-primaria)",
-              border: "1px solid var(--cor-primaria)",
-            }}
-            onClick={() => {
-              openCreatePage();
-            }}
-          >
-            Adicionar
-          </Button>
+          {role === "Administrador" && (
+            <Button
+              style={{
+                backgroundColor: "var(--cor-primaria)",
+                border: "1px solid var(--cor-primaria)",
+              }}
+              onClick={() => {
+                openCreatePage();
+              }}
+            >
+              Adicionar
+            </Button>
+          )}
         </div>
         <DataTable
           emptyMessage="Nenhum fornecedor encontrado."
@@ -197,28 +201,32 @@ function SupplierList() {
       </section>
     </>
   );
-}
 
-function optionsBodyTemplate(elements: Options[], suppliers: Supplier) {
-  return (
-    <div className="flex gap-2">
-      {elements.map((el, index) => {
-        return (
-          <Button
-            key={index}
-            icon={el.icon}
-            label={el.label}
-            aria-label={el.ariaLabel}
-            tooltip={el.tooltip}
-            tooltipOptions={{ position: "top", className: "text-xs" }}
-            size="small"
-            severity="danger"
-            onClick={() => el.onclick(suppliers)}
-          />
-        );
-      })}
-    </div>
-  );
+  function optionsBodyTemplate(elements: Options[], suppliers: Supplier) {
+    return (
+      <div className="flex gap-2">
+        {elements.map((el, index) => {
+          return (
+            <>
+              {(role === "Administrador" || el.label !== "Excluir") && (
+                <Button
+                  key={index}
+                  icon={el.icon}
+                  label={el.label}
+                  aria-label={el.ariaLabel}
+                  tooltip={el.tooltip}
+                  tooltipOptions={{ position: "top", className: "text-xs" }}
+                  size="small"
+                  severity="danger"
+                  onClick={() => el.onclick(suppliers)}
+                />
+              )}
+            </>
+          );
+        })}
+      </div>
+    );
+  }
 }
 
 export default SupplierList;

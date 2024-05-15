@@ -67,7 +67,7 @@ function SupplierCreate() {
       await setShowToast(true);
       await showSuccessToast("Fornecedor criado com sucesso");
     }
-    router.push("/fornecedores");
+    router.back();
   }
 
   const toast = useRef<Toast>(null);
@@ -472,7 +472,7 @@ function SupplierCreate() {
             label="Cancelar"
             outlined
             onClick={() => {
-              router.push("/fornecedores");
+              router.back();
             }}
           />
           <Button
