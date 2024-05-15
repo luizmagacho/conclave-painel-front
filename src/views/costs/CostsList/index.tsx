@@ -10,6 +10,7 @@ import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { useContext, useEffect, useState } from "react";
 import CostCreateDialog from "../CostCreateDialog";
 import CostUpdateDialog from "../CostUpdateDialog";
+import Cookies from "js-cookie";
 
 interface Options {
   icon?: string;
@@ -24,6 +25,7 @@ interface OptionType {
 }
 
 function CostList() {
+  const role = Cookies.get("portal.role");
   const router = useRouter();
   const [currCost, setCurrCost] = useState<Cost | null>(null);
   const [showDialog, setShowDialog] = useState<boolean>(false);
@@ -211,7 +213,6 @@ function CostList() {
               router.push("/centro-custo");
             }}
           />
-
           <Button
             onClick={() => {
               setShowCreateDialog(true);

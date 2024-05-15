@@ -10,8 +10,10 @@ import { Button } from "primereact/button";
 import { useRouter } from "next/router";
 import { SupplierContext } from "@/context/SupplierContext";
 import { Skeleton } from "primereact/skeleton";
+import Cookies from "js-cookie";
 
 function SupplierCompleteInfo() {
+  const role = Cookies.get("portal.role");
   const { selectedSupplier, handleGetSupplierById, handleUpdateSupplier } =
     useContext(SupplierContext);
   const [loading, setLoading] = useState<boolean>(false);
@@ -123,17 +125,19 @@ function SupplierCompleteInfo() {
       <section className="flex flex-column gap-2 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
           <h1 className="text-xl m-0">Visualizar Fornecedor</h1>
-          <Button
-            style={{
-              backgroundColor: "var(--cor-primaria)",
-              border: "1px solid var(--cor-primaria)",
-            }}
-            onClick={() => setShowDisabled(!showDisabled)}
-            className="text-sm"
-          >
-            {" "}
-            Editar
-          </Button>
+          {role === "Administrador" && (
+            <Button
+              style={{
+                backgroundColor: "var(--cor-primaria)",
+                border: "1px solid var(--cor-primaria)",
+              }}
+              onClick={() => setShowDisabled(!showDisabled)}
+              className="text-sm"
+            >
+              {" "}
+              Editar
+            </Button>
+          )}
         </div>
         <div className="card flex flex-column md:flex-row gap-2 w-11/12">
           <div className="field flex flex-column gap-2 w-full">
