@@ -88,7 +88,7 @@ function ConstructionList() {
 
   const toast = useRef<Toast>(null);
   const [first, setFirst] = useState<number>(0);
-  const [page, setPage] = useState<number>(1);
+  const [page, setPage] = useState<number>(0);
   const router = useRouter();
 
   const options: Options[] = [
