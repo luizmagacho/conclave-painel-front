@@ -13,15 +13,28 @@ const api = getAPIClient();
 export async function getConstructions({
   page,
   size,
-  name,
-  type,
+  code,
 }: ConstructionPaginationParam) {
   let res = await api.get<Pagination<Construction>>(baseUrl, {
     params: {
       page,
       size,
-      name,
-      type,
+      code,
+    },
+  });
+  return res.data;
+}
+
+export async function getConstructionsNotEnabled({
+  page,
+  size,
+  code,
+}: ConstructionPaginationParam) {
+  let res = await api.get<Pagination<Construction>>(`${baseUrl}/disabled`, {
+    params: {
+      page,
+      size,
+      code,
     },
   });
   return res.data;
