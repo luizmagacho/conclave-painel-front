@@ -39,6 +39,5 @@ export type ConstructionDTO = {
 export type ConstructionPaginationParam = {
   size: number;
   page: number;
-  name: string;
-  type: string;
+  code: string;
 };
