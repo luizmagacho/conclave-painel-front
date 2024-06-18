@@ -123,7 +123,7 @@ function ConstructionUpdateDialog({
             onChange={(e) => {
               setUpdatedConstruction({
                 ...updatedConstruction,
-                code: typeof e.target.value,
+                code: e.target.value,
               });
               setInvalidCode(false);
             }}
