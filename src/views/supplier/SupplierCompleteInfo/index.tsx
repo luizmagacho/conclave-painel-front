@@ -29,9 +29,11 @@ function SupplierCompleteInfo() {
     cep: "",
     sellerName: "",
     sellerPhone: "",
+    sellerMobilePhone: "",
     sellerEmail: "",
     financialName: "",
     financialPhone: "",
+    financialMobilePhone: "",
     financialEmail: "",
     bank1: "",
     bank2: "",
@@ -41,6 +43,8 @@ function SupplierCompleteInfo() {
     updatedAt: selectedSupplier?.updatedAt || null,
     createdAt: selectedSupplier?.createdAt || null,
   });
+  const [invalidPersonalInfo, setInvalidPersonalInfo] =
+    useState<boolean>(false);
   const [invalidCompleteName, setInvalidCompleteName] =
     useState<boolean>(false);
   const [invalidShortenedName, setInvalidShortenedName] =
@@ -53,10 +57,14 @@ function SupplierCompleteInfo() {
   const [invalidCep, setInvalidCep] = useState<boolean>(false);
   const [invalidSellerName, setInvalidSellerName] = useState<boolean>(false);
   const [invalidSellerPhone, setInvalidSellerPhone] = useState<boolean>(false);
+  const [invalidSellerMobilePhone, setInvalidSellerMobilePhone] =
+    useState<boolean>(false);
   const [invalidSellerEmail, setInvalidSellerEmail] = useState<boolean>(false);
   const [invalidFinancialName, setInvalidFinancialName] =
     useState<boolean>(false);
   const [invalidFinancialPhone, setInvalidFinancialPhone] =
+    useState<boolean>(false);
+  const [invalidFinancialMobilePhone, setInvalidFinancialMobilePhone] =
     useState<boolean>(false);
   const [invalidFinancialEmail, setInvalidFinancialEmail] =
     useState<boolean>(false);
@@ -71,8 +79,14 @@ function SupplierCompleteInfo() {
   const router = useRouter();
 
   async function validateFields() {
-    await handleUpdateSupplier(updatedSupplier);
-    router.push("/fornecedores");
+    setInvalidPersonalInfo(
+      (!updatedSupplier.cnpj || updatedSupplier.cnpj === "") &&
+        (!updatedSupplier.cpf || updatedSupplier.cpf === "")
+    );
+    if (!invalidPersonalInfo) {
+      await handleUpdateSupplier(updatedSupplier);
+      router.push("/fornecedores");
+    }
   }
 
   useEffect(() => {
@@ -102,12 +116,17 @@ function SupplierCompleteInfo() {
         sellerName: selectedSupplier?.sellerName || prevSupplier.sellerName,
         sellerEmail: selectedSupplier?.sellerEmail || prevSupplier.sellerEmail,
         sellerPhone: selectedSupplier?.sellerPhone || prevSupplier.sellerPhone,
+        sellerMobilePhone:
+          selectedSupplier?.sellerMobilePhone || prevSupplier.sellerMobilePhone,
         financialName:
           selectedSupplier?.financialName || prevSupplier.financialName,
         financialEmail:
           selectedSupplier?.financialEmail || prevSupplier.financialEmail,
         financialPhone:
           selectedSupplier?.financialPhone || prevSupplier.financialPhone,
+        financialMobilePhone:
+          selectedSupplier?.financialMobilePhone ||
+          prevSupplier.financialMobilePhone,
         bank1: selectedSupplier?.bank1 || prevSupplier.bank1,
         bank2: selectedSupplier?.bank2 || prevSupplier.bank2,
         bank3: selectedSupplier?.bank3 || prevSupplier.bank3,
@@ -145,6 +164,7 @@ function SupplierCompleteInfo() {
               text="CNPJ"
               htmlFor="cnpj"
               className="font-semibold text-sm"
+              required={true}
             />
             {loading && <Skeleton height="2rem" className="mb-2"></Skeleton>}
             {!loading && (
@@ -161,12 +181,16 @@ function SupplierCompleteInfo() {
                 disabled={showDisabled}
               />
             )}
+            {invalidPersonalInfo && (
+              <Message severity="error" text="Cpf ou Cnpj é obrigatório" />
+            )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="CPF"
               htmlFor="cpf"
               className="font-semibold text-sm"
+              required={true}
             />
             <InputMask
               mask="999.999.999-99"
@@ -180,6 +204,9 @@ function SupplierCompleteInfo() {
               value={updatedSupplier?.cpf}
               disabled={showDisabled}
             />
+            {invalidPersonalInfo && (
+              <Message severity="error" text="Cpf ou Cnpj é obrigatório" />
+            )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
@@ -201,7 +228,7 @@ function SupplierCompleteInfo() {
               disabled={showDisabled}
             />
             {invalidCompleteName && (
-              <Message severity="error" text="Nome COmpleto é obrigatório" />
+              <Message severity="error" text="Nome Completo é obrigatório" />
             )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
@@ -234,7 +261,6 @@ function SupplierCompleteInfo() {
               text="Logradouro"
               htmlFor="streetAddress"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -257,7 +283,6 @@ function SupplierCompleteInfo() {
               text="Bairro"
               htmlFor="neighborhood"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -280,7 +305,6 @@ function SupplierCompleteInfo() {
               text="Cidade"
               htmlFor="city"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -303,7 +327,6 @@ function SupplierCompleteInfo() {
               text="CEP"
               htmlFor="cep"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputMask
               mask="99.999-999"
@@ -330,7 +353,6 @@ function SupplierCompleteInfo() {
               text="Nome Vendedor"
               htmlFor="sellerName"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -353,11 +375,10 @@ function SupplierCompleteInfo() {
               text="Telefone Vendedor"
               htmlFor="sellerPhone"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputMask
-              mask="(99) 99999999?9"
-              placeholder="(99) 99999-9999 ou (99) 9999-9999"
+              mask="(99) 9999-9999"
+              placeholder="(99) 9999-9999"
               onChange={(e) => {
                 setUpdatedSupplier({
                   ...updatedSupplier,
@@ -377,10 +398,32 @@ function SupplierCompleteInfo() {
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
+              text="Celular Vendedor"
+              htmlFor="sellerMobilePhone"
+              className="font-semibold text-sm"
+            />
+            <InputMask
+              mask="(99) 99999-9999"
+              placeholder="(99) 99999-9999"
+              onChange={(e) => {
+                setUpdatedSupplier({
+                  ...updatedSupplier,
+                  sellerMobilePhone: e.target.value || "",
+                });
+                setInvalidSellerMobilePhone(false);
+              }}
+              value={updatedSupplier?.sellerMobilePhone}
+              disabled={showDisabled}
+            />
+            {invalidSellerMobilePhone && (
+              <Message severity="error" text="Celular Vendedor é obrigatório" />
+            )}
+          </div>
+          <div className="field flex flex-column gap-2 w-full">
+            <LabelTitle
               text="E-mail Vendedor"
               htmlFor="sellerEmail"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -405,7 +448,6 @@ function SupplierCompleteInfo() {
               text="Nome Financeiro"
               htmlFor="financialName"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -420,19 +462,18 @@ function SupplierCompleteInfo() {
               disabled={showDisabled}
             />
             {invalidFinancialName && (
-              <Message severity="error" text="Nome Vendedor é obrigatório" />
+              <Message severity="error" text="Nome Financeiro é obrigatório" />
             )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
-              text="Telefone Vendedor"
+              text="Telefone Financeiro"
               htmlFor="FinancialPhone"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputMask
-              mask="(99) 99999999?9"
-              placeholder="(99) 99999-9999 ou (99) 9999-9999"
+              mask="(99) 9999-9999"
+              placeholder="(99) 9999-9999"
               onChange={(e) => {
                 setUpdatedSupplier({
                   ...updatedSupplier,
@@ -446,16 +487,41 @@ function SupplierCompleteInfo() {
             {invalidFinancialPhone && (
               <Message
                 severity="error"
-                text="Telefone Vendedor é obrigatório"
+                text="Telefone Financeiro é obrigatório"
               />
             )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
-              text="E-mail Vendedor"
+              text="Celular Financeiro"
+              htmlFor="FinancialMobilePhone"
+              className="font-semibold text-sm"
+            />
+            <InputMask
+              mask="(99) 99999-9999"
+              placeholder="(99) 99999-9999"
+              onChange={(e) => {
+                setUpdatedSupplier({
+                  ...updatedSupplier,
+                  financialMobilePhone: e.target.value || "",
+                });
+                setInvalidFinancialMobilePhone(false);
+              }}
+              value={updatedSupplier?.financialMobilePhone}
+              disabled={showDisabled}
+            />
+            {invalidFinancialMobilePhone && (
+              <Message
+                severity="error"
+                text="Celular Financeiro é obrigatório"
+              />
+            )}
+          </div>
+          <div className="field flex flex-column gap-2 w-full">
+            <LabelTitle
+              text="E-mail Financeiro"
               htmlFor="FinancialEmail"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -470,7 +536,10 @@ function SupplierCompleteInfo() {
               disabled={showDisabled}
             />
             {invalidFinancialEmail && (
-              <Message severity="error" text="E-mail Vendedor é obrigatório" />
+              <Message
+                severity="error"
+                text="E-mail Financeiro é obrigatório"
+              />
             )}
           </div>
         </div>
@@ -481,7 +550,6 @@ function SupplierCompleteInfo() {
               text="Banco 1"
               htmlFor="bank"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -504,7 +572,6 @@ function SupplierCompleteInfo() {
               text="Banco 2"
               htmlFor="bank"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -527,7 +594,6 @@ function SupplierCompleteInfo() {
               text="Banco 3"
               htmlFor="bank"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"

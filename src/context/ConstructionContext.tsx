@@ -21,10 +21,15 @@ interface ConstructionContextProps {
   loading: boolean;
   totalElements: number;
   totalElementsNotEnabled: number;
-  handleGetConstructions: (page?: number, code?: string) => Promise<void>;
+  handleGetConstructions: (
+    page?: number,
+    code?: string,
+    bankBranch?: string
+  ) => Promise<void>;
   handleGetConstructionsNotEnabled: (
     page?: number,
-    code?: string
+    code?: string,
+    bankBranch?: string
   ) => Promise<void>;
   handleGetConstructionById: (id: string) => Promise<void>;
   handlePostConstruction: (construction: ConstructionDTO) => Promise<void>;
@@ -55,14 +60,19 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
 
   const router = useRouter();
 
-  async function handleGetConstructions(page: number = 0, code: string = "") {
+  async function handleGetConstructions(
+    page: number = 0,
+    code: string = "",
+    bankBranch: string = ""
+  ) {
     setLoading(true);
 
     try {
       const { content, totalElements } = await getConstructions({
         page,
-        size: 10,
+        size: 20,
         code,
+        bankBranch,
       });
       setBufferedConstructions(content || []);
       setConstructions(content || []);
@@ -76,15 +86,17 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
 
   async function handleGetConstructionsNotEnabled(
     page: number = 0,
-    code: string = ""
+    code: string = "",
+    bankBranch: string = ""
   ) {
     setLoading(true);
 
     try {
       const { content, totalElements } = await getConstructionsNotEnabled({
         page,
-        size: 10,
+        size: 20,
         code,
+        bankBranch,
       });
       setConstructionsNotEnabled(content || []);
       setTotalElementsNotEnabled(totalElements);

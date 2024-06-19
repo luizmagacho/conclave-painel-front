@@ -14,12 +14,14 @@ export async function getConstructions({
   page,
   size,
   code,
+  bankBranch,
 }: ConstructionPaginationParam) {
   let res = await api.get<Pagination<Construction>>(baseUrl, {
     params: {
       page,
       size,
       code,
+      bankBranch,
     },
   });
   return res.data;
@@ -29,12 +31,14 @@ export async function getConstructionsNotEnabled({
   page,
   size,
   code,
+  bankBranch,
 }: ConstructionPaginationParam) {
   let res = await api.get<Pagination<Construction>>(`${baseUrl}/disabled`, {
     params: {
       page,
       size,
       code,
+      bankBranch,
     },
   });
   return res.data;

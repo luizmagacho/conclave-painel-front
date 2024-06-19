@@ -54,7 +54,7 @@ export const UserProvider = ({ children }: ProviderProps) => {
     try {
       const { content, totalElements } = await getUsers({
         page,
-        size: 10,
+        size: 20,
         name,
       });
       setBufferedUsers(content || []);

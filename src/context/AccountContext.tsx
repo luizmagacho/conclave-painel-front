@@ -69,7 +69,7 @@ export const AccountProvider = ({ children }: ProviderProps) => {
     try {
       const { content, totalElements } = await getAccounts({
         page,
-        size: 10,
+        size: 20,
         name,
       });
       setBufferedAccountsList(content || []);
@@ -92,7 +92,7 @@ export const AccountProvider = ({ children }: ProviderProps) => {
     try {
       const { content, totalElements } = await getAccountsByFavorite({
         page,
-        size: 10,
+        size: 20,
         name,
         favorite,
       });

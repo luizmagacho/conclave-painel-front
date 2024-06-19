@@ -58,7 +58,7 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
     try {
       const { content, totalElements } = await getSuppliers({
         page,
-        size: 10,
+        size: 20,
         completeName,
         type,
       });
