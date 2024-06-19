@@ -276,10 +276,13 @@ function ConstructionList() {
               loading={loading}
               stripedRows
               showGridlines
-              rows={10}
+              scrollable
+              scrollHeight="300px"
+              rows={20}
               totalRecords={totalElements}
               tableStyle={{ minWidth: "50rem" }}
               size="small"
+              className="smaller-text"
             >
               {columns.map((col) => {
                 return (
@@ -307,10 +310,13 @@ function ConstructionList() {
               loading={loading}
               stripedRows
               showGridlines
+              scrollable
+              scrollHeight="300px"
               rows={10}
               totalRecords={totalElementsNotEnabled}
               tableStyle={{ minWidth: "50rem" }}
               size="small"
+              className="smaller-text"
             >
               {columns.map((col) => {
                 return (

@@ -1,4 +1,3 @@
-import InputSearch from "@/components/InputSearch";
 import LabelTitle from "@/components/LabelTitle";
 import { AccountContext } from "@/context/AccountContext";
 import { PaymentContext } from "@/context/PaymentContext";
@@ -9,33 +8,21 @@ import {
   Payment,
   PaymentDTO,
   SearchType,
-  TransactionType,
   TransactionTypeEnum,
   Week,
 } from "@/services/payment/type";
 import { Supplier } from "@/services/supplier/type";
-import {
-  formatDateToYYYYMMDD,
-  formatarData,
-  formatarDataBR,
-  getPreviousYears,
-  localeBR,
-} from "@/util/date";
-import { AutoComplete, AutoCompleteChangeEvent } from "primereact/autocomplete";
-import { Button } from "primereact/button";
+import { formatDateToYYYYMMDD, getPreviousYears, localeBR } from "@/util/date";
 import { Calendar } from "primereact/calendar";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { Divider } from "primereact/divider";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
-import { InputText } from "primereact/inputtext";
 import { TabPanel, TabView, TabViewTabChangeEvent } from "primereact/tabview";
 import { useContext, useEffect, useState } from "react";
 import PaymentCreateForm from "../PaymentCreateForm";
 import { classNames } from "primereact/utils";
 import PaymentTransferCreateForm from "../PaymentTransferCreateForm";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
-import { Nullable } from "primereact/ts-helpers";
 import { ScrollPanel } from "primereact/scrollpanel";
 
 interface Options {
