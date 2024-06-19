@@ -137,7 +137,7 @@ function MaterialList() {
           stripedRows
           showGridlines
           scrollable
-          scrollHeight="80%"
+          scrollHeight="85vh"
           rows={10}
           totalRecords={totalElements}
           tableStyle={{ minWidth: "50rem" }}
