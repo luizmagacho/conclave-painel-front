@@ -153,7 +153,7 @@ function AccountList() {
           loading={loading}
           stripedRows
           showGridlines
-          rows={10}
+          rows={20}
           totalRecords={totalElements}
           size="small"
         >

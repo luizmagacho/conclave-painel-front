@@ -167,10 +167,13 @@ function SupplierList() {
           loading={loading}
           stripedRows
           showGridlines
-          rows={10}
+          scrollable
+          scrollHeight="300px"
+          rows={20}
           totalRecords={totalElements}
           tableStyle={{ minWidth: "50rem" }}
           size="small"
+          className="smaller-text"
         >
           {columns.map((col) => {
             return (
@@ -179,6 +182,7 @@ function SupplierList() {
                 key={col.field}
                 field={col.field}
                 header={col.header}
+                className="smaller-text"
               />
             );
           })}

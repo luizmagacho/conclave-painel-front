@@ -155,38 +155,48 @@ function OrderList() {
               totalRecords={totalElementsNotFinished}
               tableStyle={{ minWidth: "50rem" }}
               size="small"
+              className="smaller-text"
             >
               <Column
                 field="orderDate"
                 header="Data Abertura"
                 filter
                 filterPlaceholder="Buscar por Data"
+                className="smaller-text"
               />
               <Column
                 field="construction.code"
                 header="Centro de Custo"
                 filter
                 filterPlaceholder="Buscar por Centro de Custo"
+                className="smaller-text"
               />
               <Column
                 field="construction.bankBranch"
                 header="Código da Agência"
                 filter
                 filterPlaceholder="Buscar por Código"
+                className="smaller-text"
               />
               <Column
                 field="construction.local"
                 header="Local da Agência"
                 filter
                 filterPlaceholder="Buscar por Local"
+                className="smaller-text"
               />
               <Column
                 field="userRequest"
                 header="Solicitante"
                 filter
                 filterPlaceholder="Buscar por Solicitante"
+                className="smaller-text"
               />
-              <Column header="Opções" body={columnBodyOptions.options} />
+              <Column
+                header="Opções"
+                body={columnBodyOptions.options}
+                className="smaller-text"
+              />
             </DataTable>
             <Paginator
               first={firstNotFinished}

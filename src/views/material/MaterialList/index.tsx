@@ -136,10 +136,13 @@ function MaterialList() {
           loading={loading}
           stripedRows
           showGridlines
+          scrollable
+          scrollHeight="300px"
           rows={10}
           totalRecords={totalElements}
           tableStyle={{ minWidth: "50rem" }}
           size="small"
+          className="smaller-text"
         >
           {columns.map((col) => {
             return (
@@ -148,10 +151,15 @@ function MaterialList() {
                 key={col.field}
                 field={col.field}
                 header={col.header}
+                className="smaller-text"
               />
             );
           })}
-          <Column header="Opções" body={columnBodyOptions.options} />
+          <Column
+            header="Opções"
+            body={columnBodyOptions.options}
+            className="smaller-text"
+          />
         </DataTable>
         <Paginator
           first={first}

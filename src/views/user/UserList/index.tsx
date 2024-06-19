@@ -170,10 +170,13 @@ function UserList() {
           loading={loading}
           stripedRows
           showGridlines
+          scrollable
+          scrollHeight="300px"
           rows={10}
           totalRecords={totalElements}
           tableStyle={{ minWidth: "50rem" }}
           size="small"
+          className="smaller-text"
         >
           {columns.map((col) => {
             return (
