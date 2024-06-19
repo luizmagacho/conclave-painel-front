@@ -168,7 +168,7 @@ function SupplierList() {
           stripedRows
           showGridlines
           scrollable
-          scrollHeight="300px"
+          scrollHeight="90%"
           rows={20}
           totalRecords={totalElements}
           tableStyle={{ minWidth: "50rem" }}
