@@ -277,7 +277,7 @@ function ConstructionList() {
               stripedRows
               showGridlines
               scrollable
-              scrollHeight="80%"
+              scrollHeight="85vh"
               rows={20}
               totalRecords={totalElements}
               tableStyle={{ minWidth: "50rem" }}
@@ -311,7 +311,7 @@ function ConstructionList() {
               stripedRows
               showGridlines
               scrollable
-              scrollHeight="80%"
+              scrollHeight="85vh"
               rows={10}
               totalRecords={totalElementsNotEnabled}
               tableStyle={{ minWidth: "50rem" }}
