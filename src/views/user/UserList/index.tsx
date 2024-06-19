@@ -171,7 +171,7 @@ function UserList() {
           stripedRows
           showGridlines
           scrollable
-          scrollHeight="300px"
+          scrollHeight="90%"
           rows={10}
           totalRecords={totalElements}
           tableStyle={{ minWidth: "50rem" }}
