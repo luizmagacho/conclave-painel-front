@@ -10,9 +10,11 @@ export type Supplier = {
   cep: string;
   sellerName: string;
   sellerPhone: string;
+  sellerMobilePhone: string;
   sellerEmail: string;
   financialName: string;
   financialPhone: string;
+  financialMobilePhone: string;
   financialEmail: string;
   bank1: string;
   bank2: string;
@@ -34,9 +36,11 @@ export type SupplierDTO = {
   cep: string;
   sellerName: string;
   sellerPhone: string;
+  sellerMobilePhone: string;
   sellerEmail: string;
   financialName: string;
   financialPhone: string;
+  financialMobilePhone: string;
   financialEmail: string;
   bank1: string;
   bank2: string;

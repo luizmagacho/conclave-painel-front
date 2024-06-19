@@ -56,7 +56,7 @@ export const ProfileProvider = ({ children }: ProviderProps) => {
     try {
       const { content, totalElements } = await getProfiles({
         page,
-        size: 10,
+        size: 20,
         name,
         type,
       });

@@ -40,4 +40,5 @@ export type ConstructionPaginationParam = {
   size: number;
   page: number;
   code: string;
+  bankBranch: string;
 };

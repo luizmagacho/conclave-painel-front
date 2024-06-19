@@ -42,7 +42,7 @@ export const CostProvider = ({ children }: ProviderProps) => {
   async function handleGetCosts(page: number = 0) {
     setLoading(true);
     try {
-      const { content, totalElements } = await getCosts({ page, size: 10 });
+      const { content, totalElements } = await getCosts({ page, size: 20 });
 
       setBufferedCosts(content || []);
       setCosts(content || []);
@@ -62,7 +62,7 @@ export const CostProvider = ({ children }: ProviderProps) => {
     try {
       const { content, totalElements } = await getCostsByCenterCostId(
         centerCostId,
-        { page, size: 10 }
+        { page, size: 20 }
       );
 
       setBufferedCosts(content || []);

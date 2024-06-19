@@ -24,9 +24,11 @@ function SupplierCreate() {
     cep: "",
     sellerName: "",
     sellerPhone: "",
+    sellerMobilePhone: "",
     sellerEmail: "",
     financialName: "",
     financialPhone: "",
+    financialMobilePhone: "",
     financialEmail: "",
     bank1: "",
     bank2: "",
@@ -34,6 +36,8 @@ function SupplierCreate() {
     userId: "",
     enabled: true,
   });
+  const [invalidPersonalInfo, setInvalidPersonalInfo] =
+    useState<boolean>(false);
   const [invalidCompleteName, setInvalidCompleteName] =
     useState<boolean>(false);
   const [invalidShortenedName, setInvalidShortenedName] =
@@ -46,10 +50,14 @@ function SupplierCreate() {
   const [invalidCep, setInvalidCep] = useState<boolean>(false);
   const [invalidSellerName, setInvalidSellerName] = useState<boolean>(false);
   const [invalidSellerPhone, setInvalidSellerPhone] = useState<boolean>(false);
+  const [invalidSellerMobilePhone, setInvalidSellerMobilePhone] =
+    useState<boolean>(false);
   const [invalidSellerEmail, setInvalidSellerEmail] = useState<boolean>(false);
   const [invalidFinancialName, setInvalidFinancialName] =
     useState<boolean>(false);
   const [invalidFinancialPhone, setInvalidFinancialPhone] =
+    useState<boolean>(false);
+  const [invalidFinancialMobilePhone, setInvalidFinancialMobilePhone] =
     useState<boolean>(false);
   const [invalidFinancialEmail, setInvalidFinancialEmail] =
     useState<boolean>(false);
@@ -62,12 +70,18 @@ function SupplierCreate() {
   const router = useRouter();
 
   async function validateFields() {
-    const resp = await handlePostSupplier(newSupplier);
-    if (postStatus === 201) {
-      await setShowToast(true);
-      await showSuccessToast("Fornecedor criado com sucesso");
+    setInvalidPersonalInfo(
+      (!newSupplier.cnpj || newSupplier.cnpj === "") &&
+        (!newSupplier.cpf || newSupplier.cpf === "")
+    );
+    if (!invalidPersonalInfo) {
+      const resp = await handlePostSupplier(newSupplier);
+      if (postStatus === 201) {
+        await setShowToast(true);
+        await showSuccessToast("Fornecedor criado com sucesso");
+      }
+      router.back();
     }
-    router.back();
   }
 
   const toast = useRef<Toast>(null);
@@ -82,6 +96,7 @@ function SupplierCreate() {
               text="CNPJ"
               htmlFor="cnpj"
               className="font-semibold text-sm"
+              required={true}
             />
             <InputMask
               mask="99.999.999/9999-99"
@@ -94,12 +109,16 @@ function SupplierCreate() {
               }}
               value={newSupplier?.cnpj}
             />
+            {invalidPersonalInfo && (
+              <Message severity="error" text="Cpf ou Cnpj é obrigatório" />
+            )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="CPF"
               htmlFor="cpf"
               className="font-semibold text-sm"
+              required={true}
             />
             <InputMask
               mask="999.999.999-99"
@@ -112,12 +131,15 @@ function SupplierCreate() {
               }}
               value={newSupplier?.cpf}
             />
+            {invalidPersonalInfo && (
+              <Message severity="error" text="Cpf ou Cnpj é obrigatório" />
+            )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="Nome Completo"
               htmlFor="completeName"
-              className="font-semibold"
+              className="font-semibold text-sm"
               required={true}
             />
             <InputText
@@ -132,7 +154,7 @@ function SupplierCreate() {
               value={newSupplier?.completeName}
             />
             {invalidCompleteName && (
-              <Message severity="error" text="Nome COmpleto é obrigatório" />
+              <Message severity="error" text="Nome Completo é obrigatório" />
             )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
@@ -164,7 +186,6 @@ function SupplierCreate() {
               text="Logradouro"
               htmlFor="streetAddress"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -186,7 +207,6 @@ function SupplierCreate() {
               text="Bairro"
               htmlFor="neighborhood"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -208,7 +228,6 @@ function SupplierCreate() {
               text="Cidade"
               htmlFor="city"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -230,7 +249,6 @@ function SupplierCreate() {
               text="CEP"
               htmlFor="cep"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputMask
               mask="99.999-999"
@@ -256,7 +274,6 @@ function SupplierCreate() {
               text="Nome Vendedor"
               htmlFor="sellerName"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -278,11 +295,10 @@ function SupplierCreate() {
               text="Telefone Vendedor"
               htmlFor="sellerPhone"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputMask
-              mask="(99) 99999999?9"
-              placeholder="(99) 99999-9999 ou (99) 9999-9999"
+              mask="(99) 9999-9999"
+              placeholder="(99) 9999-9999"
               onChange={(e) => {
                 setNewSupplier({
                   ...newSupplier,
@@ -301,10 +317,31 @@ function SupplierCreate() {
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
+              text="Celular Vendedor"
+              htmlFor="sellerPhone"
+              className="font-semibold text-sm"
+            />
+            <InputMask
+              mask="(99) 99999-9999"
+              placeholder="(99) 99999-9999"
+              onChange={(e) => {
+                setNewSupplier({
+                  ...newSupplier,
+                  sellerMobilePhone: e.target.value || "",
+                });
+                setInvalidSellerMobilePhone(false);
+              }}
+              value={newSupplier?.sellerPhone}
+            />
+            {invalidSellerMobilePhone && (
+              <Message severity="error" text="Celular Vendedor é obrigatório" />
+            )}
+          </div>
+          <div className="field flex flex-column gap-2 w-full">
+            <LabelTitle
               text="E-mail Vendedor"
               htmlFor="sellerEmail"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -328,7 +365,6 @@ function SupplierCreate() {
               text="Nome Financeiro"
               htmlFor="financialName"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -342,19 +378,18 @@ function SupplierCreate() {
               value={newSupplier?.financialName}
             />
             {invalidFinancialName && (
-              <Message severity="error" text="Nome Vendedor é obrigatório" />
+              <Message severity="error" text="Nome Financeiro é obrigatório" />
             )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
-              text="Telefone Vendedor"
+              text="Telefone Financeiro"
               htmlFor="FinancialPhone"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputMask
-              mask="(99) 99999999?9"
-              placeholder="(99) 99999-9999 ou (99) 9999-9999"
+              mask="(99) 9999-9999"
+              placeholder="(99) 9999-9999"
               onChange={(e) => {
                 setNewSupplier({
                   ...newSupplier,
@@ -367,16 +402,40 @@ function SupplierCreate() {
             {invalidFinancialPhone && (
               <Message
                 severity="error"
-                text="Telefone Vendedor é obrigatório"
+                text="Telefone Financeiro é obrigatório"
               />
             )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
-              text="E-mail Vendedor"
+              text="Celular Financeiro"
+              htmlFor="FinancialPhone"
+              className="font-semibold text-sm"
+            />
+            <InputMask
+              mask="(99) 99999-9999"
+              placeholder="(99) 99999-9999"
+              onChange={(e) => {
+                setNewSupplier({
+                  ...newSupplier,
+                  financialMobilePhone: e.target.value || "",
+                });
+                setInvalidFinancialMobilePhone(false);
+              }}
+              value={newSupplier?.financialMobilePhone}
+            />
+            {invalidFinancialMobilePhone && (
+              <Message
+                severity="error"
+                text="Celular Financeiro é obrigatório"
+              />
+            )}
+          </div>
+          <div className="field flex flex-column gap-2 w-full">
+            <LabelTitle
+              text="E-mail Financeiro"
               htmlFor="FinancialEmail"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -390,7 +449,10 @@ function SupplierCreate() {
               value={newSupplier?.financialEmail}
             />
             {invalidFinancialEmail && (
-              <Message severity="error" text="E-mail Vendedor é obrigatório" />
+              <Message
+                severity="error"
+                text="E-mail Financeiro é obrigatório"
+              />
             )}
           </div>
         </div>
@@ -401,7 +463,6 @@ function SupplierCreate() {
               text="Banco 1"
               htmlFor="bank"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -423,7 +484,6 @@ function SupplierCreate() {
               text="Banco 2"
               htmlFor="bank"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"
@@ -445,7 +505,6 @@ function SupplierCreate() {
               text="Banco 3"
               htmlFor="bank"
               className="font-semibold text-sm"
-              required={true}
             />
             <InputText
               type="text"

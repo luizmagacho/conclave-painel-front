@@ -13,6 +13,8 @@ import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 import { TabPanel, TabView } from "primereact/tabview";
 import ConstructionDeleteDialog from "../ConstructionDeleteDialog";
+import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import LabelTitle from "@/components/LabelTitle";
 
 interface Options {
   icon?: string;
@@ -75,7 +77,8 @@ function ConstructionList() {
     useState<Construction | null>(null);
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
-  const [nameSearch, setNameSearch] = useState<string>("");
+  const [codeSearch, setCodeSearch] = useState<string>("");
+  const [bankBranchSearch, setbankBranchSearch] = useState<string>("");
   const [optionType, setOptionType] = useState<OptionType>({
     type: "Code",
   });
@@ -202,38 +205,68 @@ function ConstructionList() {
     setPageNotEnabled(page);
   }
 
-  function onSearch(code: string) {
-    handleGetConstructions(0, code);
-    handleGetConstructionsNotEnabled(0, code);
+  function onCodeSearch(code: string) {
+    handleGetConstructions(0, code, bankBranchSearch);
+    handleGetConstructionsNotEnabled(0, code, bankBranchSearch);
   }
 
-  function onChangeSearch(code: string) {
-    setNameSearch(code);
+  function onBankBranchSearch(bankBranch: string) {
+    handleGetConstructions(0, codeSearch, bankBranch);
+    handleGetConstructionsNotEnabled(0, codeSearch, bankBranch);
+  }
+
+  function onChangeCodeSearch(code: string) {
+    setCodeSearch(code);
+  }
+
+  function onChangeBankBranchSearch(bankBranch: string) {
+    setbankBranchSearch(bankBranch);
   }
 
   return (
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
+        <h1 className="m-0">Centros de Custos</h1>
         <div className="flex align-items-center justify-start w-full gap-2">
-          <h1 className="m-0">Centros de Custos</h1>
-          <InputSearch
-            onSearch={onSearch}
-            onChange={onChangeSearch}
-            inputType={optionType.type}
-          />
-          {role === "Administrador" && (
-            <Button
-              style={{
-                backgroundColor: "var(--cor-primaria)",
-                border: "1px solid var(--cor-primaria)",
-              }}
-              onClick={() => {
-                setShowCreateDialog(true);
-              }}
-            >
-              Adicionar
-            </Button>
-          )}
+          <>
+            <div className="field flex flex-column gap-1">
+              <LabelTitle
+                text="Centro de Custo"
+                htmlFor="centerCost"
+                className="font-semibold smaller-text"
+              />
+              <InputSearch
+                onSearch={onCodeSearch}
+                onChange={onChangeCodeSearch}
+                inputType={optionType.type}
+              />
+            </div>
+            <div className="field flex flex-column gap-1">
+              <LabelTitle
+                text="Agência"
+                htmlFor="bankBranch"
+                className="font-semibold smaller-text"
+              />
+              <InputSearch
+                onSearch={onBankBranchSearch}
+                onChange={onChangeBankBranchSearch}
+                inputType={optionType.type}
+              />
+            </div>
+            {role === "Administrador" && (
+              <Button
+                style={{
+                  backgroundColor: "var(--cor-primaria)",
+                  border: "1px solid var(--cor-primaria)",
+                }}
+                onClick={() => {
+                  setShowCreateDialog(true);
+                }}
+              >
+                Adicionar
+              </Button>
+            )}
+          </>
         </div>
         <TabView className="w-full smaller-text">
           <TabPanel header="Ativo">

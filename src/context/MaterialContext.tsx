@@ -50,7 +50,7 @@ export const MaterialProvider = ({ children }: ProviderProps) => {
     try {
       const { content, totalElements } = await getMaterials({
         page,
-        size: 10,
+        size: 20,
         name,
         type,
       });

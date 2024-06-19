@@ -61,7 +61,7 @@ export const OrderProvider = ({ children }: ProviderProps) => {
     try {
       const { content, totalElements } = await getOrders({
         page,
-        size: 10,
+        size: 20,
         constructionCode,
         orderDate,
         finish,
@@ -98,7 +98,7 @@ export const OrderProvider = ({ children }: ProviderProps) => {
     try {
       const { content, totalElements } = await getOrders({
         page,
-        size: 10,
+        size: 20,
         constructionCode,
         orderDate,
         finish,
