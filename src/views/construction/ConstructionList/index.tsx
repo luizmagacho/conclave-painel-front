@@ -225,9 +225,9 @@ function ConstructionList() {
 
   return (
     <>
-      <section className="flex flex-column gap-4 p-5 w-full">
+      <section className="flex flex-column gap-2 p-5 w-full">
         <h1 className="m-0">Centros de Custos</h1>
-        <div className="flex align-items-center justify-start w-full gap-2">
+        <div className="flex align-items-center justify-start w-full gap-1">
           <>
             <div className="field flex flex-column gap-1">
               <LabelTitle
@@ -278,7 +278,7 @@ function ConstructionList() {
               showGridlines
               scrollable
               scrollHeight="85vh"
-              rows={20}
+              rows={10}
               totalRecords={totalElements}
               tableStyle={{ minWidth: "50rem" }}
               size="small"
@@ -325,6 +325,7 @@ function ConstructionList() {
                     key={col.field}
                     field={col.field}
                     header={col.header}
+                    className="smaller-text"
                   />
                 );
               })}

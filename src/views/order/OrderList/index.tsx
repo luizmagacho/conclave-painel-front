@@ -151,7 +151,7 @@ function OrderList() {
                 "construction.bankBranch",
                 "construction.local",
               ]}
-              rows={10}
+              rows={15}
               totalRecords={totalElementsNotFinished}
               tableStyle={{ minWidth: "50rem" }}
               size="small"

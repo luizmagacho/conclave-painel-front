@@ -153,9 +153,10 @@ function AccountList() {
           loading={loading}
           stripedRows
           showGridlines
-          rows={20}
+          rows={15}
           totalRecords={totalElements}
           size="small"
+          className="smaller-text"
         >
           <Column field="name" header="Nome" />
           <Column field="financialInstitute" header="Instituição Financeira" />
