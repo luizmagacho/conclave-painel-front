@@ -172,7 +172,7 @@ function UserList() {
           showGridlines
           scrollable
           scrollHeight="85vh"
-          rows={10}
+          rows={15}
           totalRecords={totalElements}
           tableStyle={{ minWidth: "50rem" }}
           size="small"

@@ -169,7 +169,7 @@ function SupplierList() {
           showGridlines
           scrollable
           scrollHeight="85vh"
-          rows={20}
+          rows={15}
           totalRecords={totalElements}
           tableStyle={{ minWidth: "50rem" }}
           size="small"

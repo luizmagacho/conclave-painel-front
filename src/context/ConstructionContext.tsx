@@ -70,7 +70,7 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
     try {
       const { content, totalElements } = await getConstructions({
         page,
-        size: 20,
+        size: 10,
         code,
         bankBranch,
       });
@@ -94,7 +94,7 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
     try {
       const { content, totalElements } = await getConstructionsNotEnabled({
         page,
-        size: 20,
+        size: 10,
         code,
         bankBranch,
       });
