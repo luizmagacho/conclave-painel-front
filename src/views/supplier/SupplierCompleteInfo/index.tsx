@@ -338,7 +338,7 @@ function SupplierCompleteInfo() {
                 });
                 setInvalidCep(false);
               }}
-              value={updatedSupplier?.shortenedName}
+              value={updatedSupplier?.cep}
               disabled={showDisabled}
             />
             {invalidCep && (
