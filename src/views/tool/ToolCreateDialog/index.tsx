@@ -1,78 +1,70 @@
 import LabelTitle from "@/components/LabelTitle";
 import { ConstructionContext } from "@/context/ConstructionContext";
-import { CostDTO } from "@/services/costs/type";
+import { ToolDTO } from "@/services/tool/type";
 import { formatDateToYYYYMMDD } from "@/util/date";
 import { useRouter } from "next/router";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
-import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useContext, useEffect, useState } from "react";
 
-interface CostCreateDialog {
+interface ToolCreateDialog {
   visible: boolean;
   onHide: () => void;
-  onCreate: (cost: CostDTO) => void;
+  onCreate: (tool: ToolDTO) => void;
 }
 
-function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
+function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
   const router = useRouter();
   const { id } = router.query;
   const { selectedConstruction } = useContext(ConstructionContext);
-  const [newCost, setNewCost] = useState<CostDTO>({
+  const [newTool, setNewTool] = useState<ToolDTO>({
     name: "",
     centerCost: selectedConstruction?.code || "",
     centerCostId: selectedConstruction?.id || "",
     bankBranch: selectedConstruction?.bankBranch || "",
-    costType: "",
     localBank: selectedConstruction?.local || "",
-    purchaseDate: "",
-    value: null,
-    valueRemas: null,
+    dateLoanFrom: "",
+    dateLoanTo: "",
+    responsible: "",
     userId: localStorage.getItem("portal.id") as string,
     enabled: true,
   });
-  const [newPurchaseDate, setNewPurchaseDate] = useState<Date | null>(null);
-  const [invalidPurchaseDate, setInvalidPurchaseDate] =
-    useState<boolean>(false);
   const [invalidName, setInvalidName] = useState<boolean>(false);
-  const [invalidValue, setInvalidValue] = useState<boolean>(false);
-  const [invalidValueRemas, setInvalidValueRemas] = useState<boolean>(false);
+  const [invalidResponsible, setInvalidResponsible] = useState<boolean>(false);
+  const [newDateLoanFrom, setNewDateLoanFrom] = useState<Date | null>(null);
+  const [invalidNewDateLoanFrom, setInvalidNewDateLoanFrom] =
+    useState<boolean>(false);
+  const [newDateLoanTo, setNewDateLoanTo] = useState<Date | null>(null);
+
   useEffect(() => {
-    setNewCost((prevCost) => ({
-      ...prevCost,
-      purchaseDate:
-        formatDateToYYYYMMDD(newPurchaseDate) || prevCost.purchaseDate,
+    setNewTool((prevTool) => ({
+      ...prevTool,
+      dateLoanFrom:
+        formatDateToYYYYMMDD(newDateLoanFrom) || prevTool.dateLoanFrom,
+      dateLoanTo: formatDateToYYYYMMDD(newDateLoanTo) || prevTool.dateLoanTo,
     }));
-  }, [newPurchaseDate]);
+  }, [newDateLoanFrom, newDateLoanTo]);
 
   async function validateFields() {
+    console.log(newTool);
     const userId = await localStorage.getItem("portal.id");
-    setNewCost({ ...newCost, userId: userId || "" });
-    setInvalidName(!newCost.name || newCost.name === "");
-    setInvalidValue(!newCost.value || newCost.value === null);
-    setInvalidValueRemas(!newCost.valueRemas || newCost.value === null);
-    setInvalidPurchaseDate(!newPurchaseDate);
+    setNewTool({ ...newTool, userId: userId || "" });
+    setInvalidName(!newTool.name || newTool.name === "");
+    setInvalidNewDateLoanFrom(!newDateLoanFrom);
+    setInvalidResponsible(!newTool.responsible || newTool.responsible === "");
 
-    if (!invalidPurchaseDate && !invalidName && !invalidValue) {
-      onCreate(newCost);
+    if (!invalidNewDateLoanFrom && !invalidName && !invalidResponsible) {
+      onCreate(newTool);
       onHide();
     }
   }
 
-  const formatCurrency = (value: number | null) => {
-    if (value) {
-      return value / 100;
-    }
-
-    return null;
-  };
-
   return (
     <Dialog
-      header="Adicionar Novo Custo"
+      header="Adicionar Nova Ferramenta"
       visible={visible}
       onHide={onHide}
       className="w-50rem"
@@ -88,8 +80,11 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
           <InputText
             type="text"
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.centerCost}
-            disabled={true}
+            value={newTool?.centerCost}
+            onChange={(e) => {
+              setNewTool({ ...newTool, centerCost: e.target.value });
+            }}
+            disabled={selectedConstruction?.code !== null}
           />
         </div>
         <div className="field flex flex-column gap-2 w-full">
@@ -101,50 +96,27 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
           <InputText
             type="text"
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.bankBranch}
-            disabled={true}
+            value={newTool?.bankBranch}
+            onChange={(e) => {
+              setNewTool({
+                ...newTool,
+                bankBranch: e.target.value.toUpperCase(),
+              });
+            }}
+            disabled={selectedConstruction?.bankBranch !== null}
           />
         </div>
       </div>
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Data do Custo"
-            htmlFor="purchaseDate"
-            className="font-semibold"
-          />
-          <Calendar
-            id="buttondisplay"
-            onChange={(e) => {
-              setNewPurchaseDate(e.value || null);
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newPurchaseDate}
-            locale="pt"
-            className="ui-state-default"
-            dateFormat="dd/mm/yy"
-            showIcon
-          />
-          {invalidPurchaseDate && (
-            <Message
-              severity="error"
-              text="Data de Custo é obrigatório"
-              className="smaller-text"
-            />
-          )}
-        </div>
-        <div className="field flex flex-column gap-2 w-full">
           <LabelTitle text="Nome" htmlFor="name" className="font-semibold" />
           <InputText
             type="text"
-            onChange={(e) => {
-              setNewCost({
-                ...newCost,
-                name: e.target.value,
-              });
-            }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.name}
+            onChange={(e) => {
+              setNewTool({ ...newTool, name: e.target.value.toUpperCase() });
+            }}
+            value={newTool?.name}
           />
           {invalidName && (
             <Message
@@ -154,61 +126,77 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
             />
           )}
         </div>
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Responsável"
+            htmlFor="responsible"
+            className="font-semibold"
+          />
+          <InputText
+            type="text"
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            onChange={(e) => {
+              setNewTool({
+                ...newTool,
+                responsible: e.target.value.toUpperCase(),
+              });
+            }}
+            value={newTool?.responsible}
+          />
+          {invalidResponsible && (
+            <Message
+              severity="error"
+              text="Responsável é obrigatório"
+              className="smaller-text"
+            />
+          )}
+        </div>
       </div>
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Valor Serviço"
-            htmlFor="value"
+            text="Data do Empréstimo"
+            htmlFor="dateLoanFrom"
             className="font-semibold"
           />
-          <InputNumber
-            inputId="currency-br"
-            mode="currency"
-            locale="pt-BR"
-            currency="BRL"
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={formatCurrency(newCost?.value)}
+          <Calendar
+            id="buttondisplay"
             onChange={(e) => {
-              if (e.value) {
-                setNewCost({ ...newCost, value: e.value * 100 });
-              }
+              setNewDateLoanFrom(e.value || null);
             }}
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={newDateLoanFrom}
+            locale="pt"
+            className="ui-state-default"
+            dateFormat="dd/mm/yy"
+            showIcon
           />
-          {invalidValue && (
+          {invalidNewDateLoanFrom && (
             <Message
               severity="error"
-              text="Valor Serviço é obrigatório"
+              text="Data de Custo é obrigatório"
               className="smaller-text"
             />
           )}
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Valor Remas"
-            htmlFor="remasValue"
+            text="Data de Devolução"
+            htmlFor="dateLoanTo"
             className="font-semibold"
           />
-          <InputNumber
-            inputId="currency-br"
-            mode="currency"
-            locale="pt-BR"
-            currency="BRL"
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={formatCurrency(newCost?.valueRemas)}
+          <Calendar
+            id="buttondisplay"
             onChange={(e) => {
-              if (e.value) {
-                setNewCost({ ...newCost, valueRemas: e.value * 100 });
-              }
+              setNewDateLoanTo(e.value || null);
             }}
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={newDateLoanTo}
+            locale="pt"
+            className="ui-state-default"
+            dateFormat="dd/mm/yy"
+            showIcon
           />
-          {invalidValueRemas && (
-            <Message
-              severity="error"
-              text="Valor Remas é obrigatório"
-              className="smaller-text"
-            />
-          )}
         </div>
       </div>
       <div className="flex gap-2">
@@ -224,4 +212,4 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
   );
 }
 
-export default CostCreateDialog;
+export default ToolCreateDialog;

@@ -1,44 +1,45 @@
 import LabelTitle from "@/components/LabelTitle";
 import { ConstructionContext } from "@/context/ConstructionContext";
-import { CostContext } from "@/context/CostContext";
-import { Cost, CostDTO } from "@/services/costs/type";
+import { ToolContext } from "@/context/ToolContext";
+import { Tool, ToolDTO } from "@/services/tool/type";
+import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { useContext, useEffect, useState } from "react";
-import CostCreateDialog from "../CostCreateDialog";
-import CostUpdateDialog from "../CostUpdateDialog";
-import Cookies from "js-cookie";
+import ToolCreateDialog from "../ToolCreateDialog";
+import ToolUpdateDialog from "../ToolUpdateDialog";
 
 interface Options {
   icon?: string;
   ariaLabel: string;
   tooltip?: string;
   label?: string;
-  onClick: (costs: Cost) => void;
+  onClick: (tool: Tool) => void;
 }
 
 interface OptionType {
   type: string;
 }
 
-function CostList() {
+function ToolListCenterCost() {
   const role = Cookies.get("portal.role");
   const router = useRouter();
-  const [currCost, setCurrCost] = useState<Cost | null>(null);
+  const [currTool, setCurrTool] = useState<Tool | null>(null);
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
 
   const {
-    costs,
+    tools,
     loading,
     totalElements,
-    handleGetCostsByCenterCostId,
-    handlePostCost,
-    handleUpdateCost,
-  } = useContext(CostContext);
+    handleGetToolsByCenterCostId,
+    handlePostTool,
+    handleUpdateTool,
+    handleDeleteTool,
+  } = useContext(ToolContext);
 
   const { selectedConstruction, handleGetConstructionById } =
     useContext(ConstructionContext);
@@ -54,25 +55,18 @@ function CostList() {
   ];
 
   const columnBodyOptions = {
-    options: (cost: Cost) => optionsBodyTemplate(options, cost),
+    options: (tool: Tool) => optionsBodyTemplate(options, tool),
   };
 
-  function openDialog(cost: Cost) {
-    setCurrCost(cost);
+  function openDialog(tool: Tool) {
+    setCurrTool(tool);
     setShowDialog(true);
   }
 
   function onPageChange(event: PaginatorPageChangeEvent) {
     const { page, first } = event;
     const { id } = router.query;
-    handleGetCostsByCenterCostId(typeof id === "string" ? id : "", page);
-    setFirst(first);
-  }
-
-  async function onCreateCost(cost: CostDTO) {
-    await handlePostCost(cost);
-    const { id } = router.query;
-    handleGetCostsByCenterCostId(typeof id === "string" ? id : "");
+    handleGetConstructionById(typeof id === "string" ? id : "");
     handleGetConstructionById(typeof id === "string" ? id : "");
   }
 
@@ -80,69 +74,36 @@ function CostList() {
     setShowCreateDialog((showCreateDialog) => !showCreateDialog);
   }
 
-  async function onUpateCost(cost: Cost) {
-    await handleUpdateCost(cost);
-    const { id } = router.query;
-    handleGetCostsByCenterCostId(typeof id === "string" ? id : "");
-    handleGetConstructionById(typeof id === "string" ? id : "");
-  }
-
-  function closeUpdateDialog() {
+  function closeUpdatedDialog() {
     setShowDialog((showDialog) => !showDialog);
-    setCurrCost(null);
   }
 
   useEffect(() => {
     const { id } = router.query;
-    console.log(id);
     handleGetConstructionById(typeof id === "string" ? id : "");
-    handleGetCostsByCenterCostId(typeof id === "string" ? id : "");
+    handleGetToolsByCenterCostId(typeof id === "string" ? id : "");
   }, []);
 
-  const formatCurrency = (value: number | null) => {
-    if (!value) {
-      return "-";
-    }
-    return (value / 100).toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-  };
+  async function onCreateTool(tool: ToolDTO) {
+    await handlePostTool(tool);
+    const { id } = router.query;
+    handleGetToolsByCenterCostId(typeof id === "string" ? id : "");
+    handleGetConstructionById(typeof id === "string" ? id : "");
+  }
 
-  const footerTemplate = () => {
-    return (
-      <div className="flex gap-2 w-full">
-        <div className="flex-grow-1">
-          <LabelTitle
-            text={`Total Bruto Faturado: ${formatCurrency(
-              selectedConstruction?.totalBilled || null
-            )}`}
-            htmlFor="todayBalance"
-            className="font-semibold smaller-text"
-          />
-        </div>
-        <div className="flex-shrink-0">
-          <LabelTitle
-            text={`Total Remas: ${formatCurrency(
-              selectedConstruction?.totalRemas || null
-            )}`}
-            htmlFor="finalBalance"
-            className="font-semibold smaller-text"
-          />
-        </div>
-      </div>
-    );
-  };
+  async function onUpdatedTool(tool: Tool) {
+    await handleUpdateTool(tool);
 
-  const priceWithdrawBodyTemplate = (cost: Cost) => {
-    return formatCurrency(cost.value || null);
-  };
+    const { id } = router.query;
+    handleGetToolsByCenterCostId(typeof id === "string" ? id : "");
+    handleGetConstructionById(typeof id === "string" ? id : "");
+  }
 
   return (
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
-          <h1 className="m-0">Custos</h1>
+          <h1 className="m-0">Ferramentas</h1>
         </div>
         <div className="card flex flex-column md:flex-row gap-2 w-11/12">
           <div className="flex flex-column gap-1 w-full">
@@ -175,8 +136,8 @@ function CostList() {
           </div>
         </div>
         <DataTable
-          emptyMessage="Nenhum custo encontrado."
-          value={costs}
+          emptyMessage="Nenhuma ferramenta encontrada."
+          value={tools}
           loading={loading}
           stripedRows
           showGridlines
@@ -184,15 +145,11 @@ function CostList() {
           tableStyle={{ minWidth: "50rem" }}
           totalRecords={totalElements}
           size="small"
-          footer={footerTemplate}
         >
-          <Column field="purchaseDateFormatted" header="Data" />
           <Column field="name" header="Nome" />
-          <Column
-            field="value"
-            header="Valor"
-            body={priceWithdrawBodyTemplate}
-          />
+          <Column field="responsible" header="Responsável" />
+          <Column field="dateLoanFromFormatted" header="Data de Empréstimo" />
+          <Column field="dateLoanToFormatted" header="Data de Devolução" />
           <Column header="Opções" body={columnBodyOptions.options} />
         </DataTable>
         <Paginator
@@ -223,25 +180,25 @@ function CostList() {
           />
         </div>
         {showCreateDialog && (
-          <CostCreateDialog
-            visible={showCreateDialog}
+          <ToolCreateDialog
+            onCreate={onCreateTool}
             onHide={closeCreateDialog}
-            onCreate={onCreateCost}
+            visible={showCreateDialog}
           />
         )}
-        {currCost && (
-          <CostUpdateDialog
+        {currTool && (
+          <ToolUpdateDialog
+            onUpdate={onUpdatedTool}
+            onHide={closeUpdatedDialog}
             visible={showDialog}
-            onHide={closeUpdateDialog}
-            onUpdate={onUpateCost}
-            data={currCost}
+            data={currTool}
           />
         )}
       </section>
     </>
   );
 
-  function optionsBodyTemplate(elements: Options[], cost: Cost) {
+  function optionsBodyTemplate(elements: Options[], tool: Tool) {
     return (
       <div className="flex gap-2">
         {elements.map((el, index) => {
@@ -255,7 +212,7 @@ function CostList() {
               tooltipOptions={{ position: "top", className: "text-xs" }}
               size="small"
               severity="danger"
-              onClick={() => el.onClick(cost)}
+              onClick={() => el.onClick(tool)}
             />
           );
         })}
@@ -264,4 +221,4 @@ function CostList() {
   }
 }
 
-export default CostList;
+export default ToolListCenterCost;
