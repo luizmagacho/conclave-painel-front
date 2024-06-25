@@ -117,9 +117,9 @@ function ConstructionList() {
       onclick: openCosts,
     },
     {
-      ariaLabel: "Encerrar",
-      label: "Encerrar",
-      onclick: openDeleteDialog,
+      ariaLabel: "Ferramentas",
+      label: "Ferramentas",
+      onclick: openTools,
     },
   ];
 
@@ -180,6 +180,11 @@ function ConstructionList() {
   async function openCosts(construction: Construction) {
     await handleGetConstructionById(construction.id);
     router.push(`/centro-custo/${construction.id}/custos`);
+  }
+
+  async function openTools(construction: Construction) {
+    await handleGetConstructionById(construction.id);
+    router.push(`/centro-custo/${construction.id}/ferramentas`);
   }
 
   async function onCreateConstruction(construction: ConstructionDTO) {
