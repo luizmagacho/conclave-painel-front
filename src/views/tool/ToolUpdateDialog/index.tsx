@@ -1,13 +1,13 @@
 import LabelTitle from "@/components/LabelTitle";
 import { Tool } from "@/services/tool/type";
-import { convertStringToDate } from "@/util/date";
+import { convertStringToDate, formatDateToYYYYMMDD } from "@/util/date";
 import { useRouter } from "next/router";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface ToolUpdateDialog {
   visible: boolean;
@@ -50,6 +50,16 @@ function ToolUpdateDialog({
   );
   const [invalidName, setInvalidName] = useState<boolean>(false);
   const [invalidResponsible, setInvalidResponsible] = useState<boolean>(false);
+
+  useEffect(() => {
+    setUpdatedTool((prevTool) => ({
+      ...prevTool,
+      dateLoanFrom:
+        formatDateToYYYYMMDD(updatedDateLoanFrom) || prevTool.dateLoanFrom,
+      dateLoanTo:
+        formatDateToYYYYMMDD(updatedDateLoanTo) || prevTool.dateLoanTo,
+    }));
+  }, [updatedDateLoanFrom, updatedDateLoanTo]);
 
   async function validateFields() {
     const userId = await localStorage.getItem("portal.id");

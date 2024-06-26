@@ -64,6 +64,13 @@ const useMenu = () => {
         router.push("/pedidos");
       },
     },
+    {
+      label: "Ferramentas",
+      icon: "pi pi-fw pi-wrench",
+      command: () => {
+        router.push("/ferramentas");
+      },
+    },
   ];
 
   useEffect(() => {
