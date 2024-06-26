@@ -10,6 +10,8 @@ export async function getTools({
   size,
   name,
   responsible,
+  centerCost,
+  bankBranch,
 }: CostPaginationParam) {
   let res = await api.get<Pagination<Tool>>(baseUrl, {
     params: {
@@ -17,6 +19,8 @@ export async function getTools({
       size,
       name,
       responsible,
+      centerCost,
+      bankBranch,
     },
   });
   return res.data;

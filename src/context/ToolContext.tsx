@@ -20,7 +20,9 @@ interface ToolContextProps {
   handleGetTools: (
     page?: number,
     name?: string,
-    responsible?: string
+    responsible?: string,
+    centerCost?: string,
+    bankBranch?: string
   ) => Promise<void>;
   handleGetToolsByCenterCostId: (
     centerToolId: string,
@@ -46,7 +48,9 @@ export const ToolProvider = ({ children }: ProviderProps) => {
   async function handleGetTools(
     page: number = 0,
     name: string = "",
-    responsible: string = ""
+    responsible: string = "",
+    centerCost: string = "",
+    bankBranch: string = ""
   ) {
     setLoading(true);
     try {
@@ -55,6 +59,8 @@ export const ToolProvider = ({ children }: ProviderProps) => {
         size: 15,
         name,
         responsible,
+        centerCost,
+        bankBranch,
       });
       setBufferedTools(content || []);
       setTools(content || []);
