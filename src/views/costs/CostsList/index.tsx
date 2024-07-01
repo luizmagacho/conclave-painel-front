@@ -11,6 +11,7 @@ import { useContext, useEffect, useState } from "react";
 import CostCreateDialog from "../CostCreateDialog";
 import CostUpdateDialog from "../CostUpdateDialog";
 import Cookies from "js-cookie";
+import { classNames } from "primereact/utils";
 
 interface Options {
   icon?: string;
@@ -138,6 +139,17 @@ function CostList() {
     return formatCurrency(cost.value || null);
   };
 
+  const clearedBodyTemplate = (cost: Cost) => {
+    return (
+      <i
+        className={classNames("pi", {
+          "true-icon pi-check-circle": cost.paymentStatus,
+          "false-icon pi-times-circle": !cost.paymentStatus,
+        })}
+      ></i>
+    );
+  };
+
   return (
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
@@ -186,12 +198,22 @@ function CostList() {
           size="small"
           footer={footerTemplate}
         >
-          <Column field="purchaseDateFormatted" header="Data" />
-          <Column field="name" header="Nome" />
+          <Column field="purchaseDateFormatted" header="Data do Custo" />
+          <Column field="vendorName" header="Favorecido" />
           <Column
             field="value"
             header="Valor"
             body={priceWithdrawBodyTemplate}
+          />
+          <Column
+            field="paymentDeadlineFormatted"
+            header="Data de Vencimento"
+          />
+          <Column
+            field="cleared"
+            header="C"
+            className="smaller-text"
+            body={clearedBodyTemplate}
           />
           <Column header="Opções" body={columnBodyOptions.options} />
         </DataTable>
