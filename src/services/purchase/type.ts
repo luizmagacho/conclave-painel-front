@@ -26,9 +26,9 @@ export type PurchaseDTO = {
   requestedDate: string;
   type: string;
   material: string;
-  quantity: number;
-  unitValue: number;
-  totalValue: number;
+  quantity: number | null;
+  unitValue: number | null;
+  totalValue: number | null;
 
   userId: string;
   enabled?: boolean;
