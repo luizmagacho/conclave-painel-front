@@ -71,6 +71,13 @@ const useMenu = () => {
         router.push("/ferramentas");
       },
     },
+    {
+      label: "Compras",
+      icon: "pi pi-fw pi-shopping-cart",
+      command: () => {
+        router.push("/compras");
+      },
+    },
   ];
 
   useEffect(() => {

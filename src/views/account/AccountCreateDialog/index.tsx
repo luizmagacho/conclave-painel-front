@@ -156,7 +156,7 @@ function AccountCreateDialog({
               value={formatCurrency(newAccount?.startBalance)}
             />
             {invalidStartBalance && (
-              <Message severity="error" text="Logradouro é obrigatório" />
+              <Message severity="error" text="Saldo Inicial é obrigatório" />
             )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
