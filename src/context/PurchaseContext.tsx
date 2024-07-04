@@ -6,7 +6,7 @@ import {
 } from "@/services/purchase";
 import { Purchase, PurchaseDTO } from "@/services/purchase/type";
 import { useRouter } from "next/router";
-import { ReactNode, createContext, useState } from "react";
+import { ReactNode, createContext, useEffect, useState } from "react";
 
 interface ProviderProps {
   children: ReactNode;
@@ -82,6 +82,10 @@ export const PurchaseProvider = ({ children }: ProviderProps) => {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    handleGetPurchases();
+  }, []);
 
   return (
     <PurchaseContext.Provider
