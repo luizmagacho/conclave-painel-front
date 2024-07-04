@@ -7,6 +7,7 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useContext, useState } from "react";
 import PurchaseCreateDialog from "../PurchaseCreateDialog";
+import PurchaseUpdateDialog from "../PurchaseUpdateDialog";
 
 interface Options {
   icon?: string;
@@ -88,6 +89,11 @@ function PurchaseList() {
     handleGetPurchases();
   }
 
+  function closeUpdatedDialog() {
+    setCurrPurchase(null);
+    setShowDialog((showDialog) => !showDialog);
+  }
+
   return (
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
@@ -134,6 +140,7 @@ function PurchaseList() {
             body={priceTotalValuewBodyTemplate}
             header="Valor Total"
           />
+          <Column header="Opções" body={columnBodyOptions.options} />
         </DataTable>
       </section>
       {showCreateDialog && (
@@ -141,6 +148,14 @@ function PurchaseList() {
           onCreate={onCreatePurchase}
           onHide={closeCreateDialog}
           visible={showCreateDialog}
+        />
+      )}
+      {currPurchase && (
+        <PurchaseUpdateDialog
+          onUpdate={onUpdatePurchase}
+          onHide={closeUpdatedDialog}
+          data={currPurchase}
+          visible={showDialog}
         />
       )}
     </>

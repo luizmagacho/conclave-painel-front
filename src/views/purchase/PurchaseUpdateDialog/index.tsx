@@ -1,9 +1,8 @@
 import LabelTitle from "@/components/LabelTitle";
 import { ConstructionContext } from "@/context/ConstructionContext";
-import { Construction, ConstructionDTO } from "@/services/construction/type";
-import { PurchaseDTO } from "@/services/purchase/type";
-import { formatDateToYYYYMMDD } from "@/util/date";
-import { useRouter } from "next/router";
+import { Construction } from "@/services/construction/type";
+import { Purchase } from "@/services/purchase/type";
+import { convertStringToDate, formatDateToYYYYMMDD } from "@/util/date";
 import {
   AutoComplete,
   AutoCompleteChangeEvent,
@@ -17,41 +16,60 @@ import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useContext, useEffect, useState } from "react";
 
-interface PurchaseCreateDialog {
+interface PurchaseUpdateDialog {
   visible: boolean;
   onHide: () => void;
-  onCreate: (purchase: PurchaseDTO) => void;
+  onUpdate: (purchase: Purchase) => void;
+  data: Purchase;
 }
 
-function PurchaseCreateDialog({
-  visible,
-  onCreate,
+function PurchaseUpdateDialog({
+  data,
   onHide,
-}: PurchaseCreateDialog) {
-  const router = useRouter();
-  const { id } = router.query;
-  const userId = localStorage.getItem("portal.id");
-  const [newPurchase, setNewPurchase] = useState<PurchaseDTO>({
-    material: "",
-    centerCost: "",
-    centerCostId: "",
-    purchaseDate: "",
-    quantity: null,
-    requestedDate: "",
-    totalValue: null,
-    type: "",
-    unitValue: null,
-    userId: userId || "",
-    enabled: true,
+  onUpdate,
+  visible,
+}: PurchaseUpdateDialog) {
+  const [updatedPurchase, setUpdatedPurchase] = useState<Purchase>({
+    id: data.id,
+    centerCost: data.centerCost,
+    centerCostId: data.centerCostId,
+    material: data.material,
+    purchaseDate: data.purchaseDate,
+    purchaseDateFormatted: data.purchaseDateFormatted,
+    requestedDate: data.requestedDate,
+    requestedDateFormatted: data.requestedDateFormatted,
+    unitValue: data.unitValue,
+    quantity: data.quantity,
+    totalValue: data.totalValue,
+    type: data.type,
+    userId: data.userId,
+    enabled: data.enabled,
+    updatedAt: data.updatedAt,
+    createdAt: data.createdAt,
   });
+  const { constructions } = useContext(ConstructionContext);
 
   const [selectedConstruction, setSelectedConstruction] =
-    useState<Construction>();
+    useState<Construction | null>(() => {
+      if (data.centerCostId) {
+        const construction = constructions.find(
+          (construction) => construction.id === data.centerCostId
+        );
+        if (construction) {
+          return construction;
+        }
+      }
+      return null;
+    });
 
-  const [newPurchaseDate, setNewPurchaseDate] = useState<Date | null>(null);
+  const [updatedPurchaseDate, setUpdatedPurchaseDate] = useState<Date | null>(
+    convertStringToDate(data.purchaseDate)
+  );
   const [invalidPurchaseDate, setInvalidPurchaseDate] =
     useState<boolean>(false);
-  const [newRequestDate, setNewRequestDate] = useState<Date | null>(null);
+  const [updatedRequestDate, setUpdatedRequestDate] = useState<Date | null>(
+    convertStringToDate(data.requestedDate)
+  );
   const [invalidRequestDate, setInvalidRequestDate] = useState<boolean>(false);
   const [invalidMaterial, setInvalidMaterial] = useState<boolean>(false);
   const [invalidQuantity, setInvalidQuantity] = useState<boolean>(false);
@@ -59,36 +77,40 @@ function PurchaseCreateDialog({
   const [invalidCenterCost, setInvalidCenterCost] = useState<boolean>(false);
 
   useEffect(() => {
-    setNewPurchase((prevPurchase) => ({
+    setUpdatedPurchase((prevPurchase) => ({
       ...prevPurchase,
       purchaseDate:
-        formatDateToYYYYMMDD(newPurchaseDate) || prevPurchase.purchaseDate,
+        formatDateToYYYYMMDD(updatedPurchaseDate) || prevPurchase.purchaseDate,
       requestedDate:
-        formatDateToYYYYMMDD(newRequestDate) || prevPurchase.requestedDate,
+        formatDateToYYYYMMDD(updatedRequestDate) || prevPurchase.requestedDate,
     }));
-  }, [newPurchaseDate, newRequestDate]);
+  }, [updatedPurchaseDate, updatedRequestDate]);
 
   async function validateFields() {
-    setNewPurchase({
-      ...newPurchase,
+    setUpdatedPurchase({
+      ...updatedPurchase,
       centerCost: selectedConstruction?.code || "",
     });
-    setNewPurchase({
-      ...newPurchase,
+    setUpdatedPurchase({
+      ...updatedPurchase,
       centerCostId: selectedConstruction?.id || "",
     });
     setInvalidCenterCost(
-      !newPurchase.centerCost || newPurchase.centerCost === ""
+      !updatedPurchase.centerCost || updatedPurchase.centerCost === ""
     );
-    setInvalidMaterial(!newPurchase.quantity || newPurchase.material === "");
-    setInvalidQuantity(!newPurchase.unitValue || newPurchase.quantity === null);
+    setInvalidMaterial(
+      !updatedPurchase.quantity || updatedPurchase.material === ""
+    );
+    setInvalidQuantity(
+      !updatedPurchase.unitValue || updatedPurchase.quantity === null
+    );
     setInvalidUnitValue(
-      !newPurchase.unitValue || newPurchase.unitValue === null
+      !updatedPurchase.unitValue || updatedPurchase.unitValue === null
     );
-    setInvalidPurchaseDate(!newPurchaseDate);
-    setInvalidRequestDate(!newRequestDate);
+    setInvalidPurchaseDate(!updatedPurchaseDate);
+    setInvalidRequestDate(!updatedRequestDate);
     setInvalidCenterCost(
-      !newPurchase.centerCost || newPurchase.centerCost === ""
+      !updatedPurchase.centerCost || updatedPurchase.centerCost === ""
     );
 
     if (
@@ -100,7 +122,7 @@ function PurchaseCreateDialog({
       !invalidUnitValue &&
       !invalidCenterCost
     ) {
-      onCreate(newPurchase);
+      onUpdate(updatedPurchase);
       onHide();
     }
   }
@@ -112,8 +134,6 @@ function PurchaseCreateDialog({
 
     return null;
   };
-
-  const { constructions } = useContext(ConstructionContext);
 
   const [constructionsItems, setConstructionsItems] =
     useState<Construction[]>(constructions);
@@ -134,19 +154,19 @@ function PurchaseCreateDialog({
 
   useEffect(() => {
     if (
-      newPurchase.unitValue &&
-      newPurchase.unitValue !== null &&
-      newPurchase.quantity
+      updatedPurchase.unitValue &&
+      updatedPurchase.unitValue !== null &&
+      updatedPurchase.quantity
     ) {
-      setNewPurchase({
-        ...newPurchase,
-        totalValue: newPurchase.quantity * newPurchase.unitValue,
+      setUpdatedPurchase({
+        ...updatedPurchase,
+        totalValue: updatedPurchase.quantity * updatedPurchase.unitValue,
       });
     }
-  }, [newPurchase.unitValue, newPurchase.quantity]);
+  }, [updatedPurchase.unitValue, updatedPurchase.quantity]);
 
   useEffect(() => {
-    setNewPurchase((prevPurchase) => ({
+    setUpdatedPurchase((prevPurchase) => ({
       ...prevPurchase,
       centerCost: selectedConstruction?.code || prevPurchase.centerCost,
       centerCostId: selectedConstruction?.id || prevPurchase.centerCostId,
@@ -155,7 +175,7 @@ function PurchaseCreateDialog({
 
   return (
     <Dialog
-      header="Adicionar Nova Compra"
+      header="Editar Compra"
       visible={visible}
       onHide={onHide}
       className="w-50rem"
@@ -171,10 +191,10 @@ function PurchaseCreateDialog({
           <Calendar
             id="buttondisplay"
             onChange={(e) => {
-              setNewRequestDate(e.value || null);
+              setUpdatedRequestDate(e.value || null);
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newRequestDate}
+            value={updatedRequestDate}
             locale="pt"
             className="ui-state-default"
             dateFormat="dd/mm/yy"
@@ -197,10 +217,10 @@ function PurchaseCreateDialog({
           <Calendar
             id="buttondisplay"
             onChange={(e) => {
-              setNewPurchaseDate(e.value || null);
+              setUpdatedPurchaseDate(e.value || null);
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newPurchaseDate}
+            value={updatedPurchaseDate}
             locale="pt"
             className="ui-state-default"
             dateFormat="dd/mm/yy"
@@ -225,13 +245,13 @@ function PurchaseCreateDialog({
           <InputText
             type="text"
             onChange={(e) => {
-              setNewPurchase({
-                ...newPurchase,
+              setUpdatedPurchase({
+                ...updatedPurchase,
                 material: e.target.value,
               });
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newPurchase?.material}
+            value={updatedPurchase?.material}
           />
           {invalidMaterial && (
             <Message
@@ -284,15 +304,15 @@ function PurchaseCreateDialog({
             currency="BRL"
             onChange={(e) => {
               if (e.value) {
-                setNewPurchase({
-                  ...newPurchase,
+                setUpdatedPurchase({
+                  ...updatedPurchase,
                   unitValue: e.value * 100,
                 });
               }
               setInvalidUnitValue(false);
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={formatCurrency(newPurchase?.unitValue)}
+            value={formatCurrency(updatedPurchase?.unitValue)}
           />
           {invalidUnitValue && (
             <Message severity="error" text="Valor Unitário é obrigatório" />
@@ -308,15 +328,15 @@ function PurchaseCreateDialog({
           <InputNumber
             onChange={(e) => {
               if (e.value) {
-                setNewPurchase({
-                  ...newPurchase,
+                setUpdatedPurchase({
+                  ...updatedPurchase,
                   quantity: e.value,
                 });
               }
               setInvalidQuantity(false);
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newPurchase?.quantity}
+            value={updatedPurchase?.quantity}
           />
           {invalidQuantity && (
             <Message severity="error" text="Quantidade é obrigatório" />
@@ -335,7 +355,7 @@ function PurchaseCreateDialog({
             mode="currency"
             locale="pt-BR"
             currency="BRL"
-            value={formatCurrency(newPurchase?.totalValue)}
+            value={formatCurrency(updatedPurchase?.totalValue)}
             disabled={true}
           />
         </div>
@@ -353,4 +373,4 @@ function PurchaseCreateDialog({
   );
 }
 
-export default PurchaseCreateDialog;
+export default PurchaseUpdateDialog;
