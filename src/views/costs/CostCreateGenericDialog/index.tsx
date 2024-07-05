@@ -1,8 +1,14 @@
 import LabelTitle from "@/components/LabelTitle";
 import { ConstructionContext } from "@/context/ConstructionContext";
+import { Construction } from "@/services/construction/type";
 import { CostDTO } from "@/services/costs/type";
 import { formatDateToYYYYMMDD } from "@/util/date";
 import { useRouter } from "next/router";
+import {
+  AutoComplete,
+  AutoCompleteChangeEvent,
+  AutoCompleteCompleteEvent,
+} from "primereact/autocomplete";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
@@ -12,25 +18,28 @@ import { Message } from "primereact/message";
 import { RadioButton } from "primereact/radiobutton";
 import { useContext, useEffect, useState } from "react";
 
-interface CostCreateDialog {
+interface CostCreateGenericDialog {
   visible: boolean;
   onHide: () => void;
   onCreate: (cost: CostDTO) => void;
 }
 
-function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
+function CostCreateGenericDialog({
+  visible,
+  onCreate,
+  onHide,
+}: CostCreateGenericDialog) {
   const router = useRouter();
   const { id } = router.query;
-  const { selectedConstruction } = useContext(ConstructionContext);
   const [newCost, setNewCost] = useState<CostDTO>({
     name: "",
     vendorName: "",
-    centerCost: selectedConstruction?.code || "",
-    centerCostId: selectedConstruction?.id || "",
-    bankBranch: selectedConstruction?.bankBranch || "",
+    centerCost: "",
+    centerCostId: "",
+    bankBranch: "",
     costType: "",
     costCategory: "",
-    localBank: selectedConstruction?.local || "",
+    localBank: "",
     purchaseDate: "",
     paymentDeadline: "",
     workerValue: null,
@@ -43,6 +52,8 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
     additionalDetails: "",
     paymentStatus: false,
   });
+  const [selectedConstruction, setSelectedConstruction] =
+    useState<Construction>();
   const [newPurchaseDate, setNewPurchaseDate] = useState<Date | null>(null);
   const [invalidPurchaseDate, setInvalidPurchaseDate] =
     useState<boolean>(false);
@@ -57,8 +68,6 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
   const [invalidWorkerValue, setInvalidWorkerValue] = useState<boolean>(false);
   const [invalidMaterialValue, setInvalidMaterialValue] =
     useState<boolean>(false);
-  const [invalidInssValue, setInvalidInssValue] = useState<boolean>(false);
-  const [invalidValueRemas, setInvalidValueRemas] = useState<boolean>(false);
   useEffect(() => {
     setNewCost((prevCost) => ({
       ...prevCost,
@@ -106,6 +115,35 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
     }
   }, [newCost.workerValue, newCost.materialValue]);
 
+  const { constructions } = useContext(ConstructionContext);
+
+  const [constructionsItems, setConstructionsItems] =
+    useState<Construction[]>(constructions);
+
+  const constructionSearch = (event: AutoCompleteCompleteEvent) => {
+    setTimeout(() => {
+      let _filteredConstructions;
+      if (!event.query.trim().length) {
+        _filteredConstructions = [...constructions];
+      } else {
+        _filteredConstructions = constructionsItems.filter((construction) => {
+          return construction.code.startsWith(event.query);
+        });
+      }
+      setConstructionsItems(_filteredConstructions);
+    }, 150);
+  };
+
+  useEffect(() => {
+    setNewCost((prevCost) => ({
+      ...prevCost,
+      centerCostId: selectedConstruction?.id || prevCost.centerCostId,
+      centerCost: selectedConstruction?.code || prevCost.centerCost,
+      bankBranch: selectedConstruction?.bankBranch || prevCost.bankBranch,
+      localBank: selectedConstruction?.local || prevCost.localBank,
+    }));
+  }, [selectedConstruction]);
+
   return (
     <Dialog
       header="Adicionar Novo Custo"
@@ -114,6 +152,45 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
       className="w-60rem"
       style={{ width: "40vw" }}
     >
+      <div className="card flex flex-column md:flex-row gap-3 w-full">
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Centro de Custo"
+            htmlFor="centerCost"
+            className="font-semibold"
+          />
+          <AutoComplete
+            type="text"
+            field="code"
+            value={selectedConstruction}
+            suggestions={constructionsItems}
+            completeMethod={constructionSearch}
+            onChange={(e: AutoCompleteChangeEvent) =>
+              setSelectedConstruction(e.value)
+            }
+          />
+          {invalidPurchaseDate && (
+            <Message
+              severity="error"
+              text="Data de Custo é obrigatório"
+              className="smaller-text"
+            />
+          )}
+        </div>
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Local da Agência"
+            htmlFor="localBank"
+            className="font-semibold"
+          />
+          <InputText
+            type="text"
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={newCost?.localBank}
+            disabled
+          />
+        </div>
+      </div>
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -381,4 +458,4 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
   );
 }
 
-export default CostCreateDialog;
+export default CostCreateGenericDialog;

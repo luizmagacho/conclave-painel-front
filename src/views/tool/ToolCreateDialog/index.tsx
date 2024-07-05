@@ -18,7 +18,6 @@ interface ToolCreateDialog {
 
 function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
   const router = useRouter();
-  const { id } = router.query;
   const { selectedConstruction } = useContext(ConstructionContext);
   const [newTool, setNewTool] = useState<ToolDTO>({
     name: "",
@@ -49,7 +48,6 @@ function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
   }, [newDateLoanFrom, newDateLoanTo]);
 
   async function validateFields() {
-    console.log(newTool);
     const userId = await localStorage.getItem("portal.id");
     setNewTool({ ...newTool, userId: userId || "" });
     setInvalidName(!newTool.name || newTool.name === "");

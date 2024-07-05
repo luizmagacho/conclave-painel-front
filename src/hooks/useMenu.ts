@@ -78,6 +78,13 @@ const useMenu = () => {
         router.push("/compras");
       },
     },
+    {
+      label: "Custos",
+      icon: "pi pi-fw pi-money-bill",
+      command: () => {
+        router.push("/custos");
+      },
+    },
   ];
 
   useEffect(() => {

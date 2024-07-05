@@ -41,7 +41,9 @@ function CostUpdateDialog({
     localBank: data.localBank,
     costType: data.costType,
     costCategory: data.costCategory,
-    value: data.value,
+    workerValue: data.workerValue,
+    materialValue: data.materialValue,
+    inssValue: data.inssValue,
     valueRemas: data.valueRemas,
     paymentStatus: data.paymentStatus,
     totalAmount: data.totalAmount,
@@ -62,7 +64,9 @@ function CostUpdateDialog({
   const [invalidPaymentDeadline, setInvalidPaymentDeadline] =
     useState<boolean>(false);
   const [invalidVendorName, setInvalidVendorName] = useState<boolean>(false);
-  const [invalidValue, setInvalidValue] = useState<boolean>(false);
+  const [invalidWorkerValue, setInvalidWorkerValue] = useState<boolean>(false);
+  const [invalidMaterialValue, setInvalidMaterialValue] =
+    useState<boolean>(false);
   const [invalidValueRemas, setInvalidValueRemas] = useState<boolean>(false);
   const [invalidCostCategory, setInvalidCostCategory] =
     useState<boolean>(false);
@@ -84,11 +88,23 @@ function CostUpdateDialog({
     setInvalidVendorName(
       !updatedCost.vendorName || updatedCost.vendorName === ""
     );
-    setInvalidValue(!updatedCost.value || updatedCost.value === null);
-    setInvalidValueRemas(!updatedCost.valueRemas || updatedCost.value === null);
+    setInvalidWorkerValue(
+      !updatedCost.workerValue || updatedCost.workerValue === null
+    );
+    setInvalidMaterialValue(
+      !updatedCost.materialValue || updatedCost.materialValue === null
+    );
+    setInvalidValueRemas(
+      !updatedCost.valueRemas || updatedCost.valueRemas === null
+    );
     setInvalidPurchaseDate(!updatedPurchaseDate);
 
-    if (!invalidPurchaseDate && !invalidVendorName && !invalidValue) {
+    if (
+      !invalidPurchaseDate &&
+      !invalidVendorName &&
+      !invalidWorkerValue &&
+      !invalidMaterialValue
+    ) {
       onUpdate(updatedCost);
       onHide();
     }
@@ -102,12 +118,22 @@ function CostUpdateDialog({
     return null;
   };
 
+  useEffect(() => {
+    if (updatedCost.workerValue !== null && updatedCost.materialValue) {
+      const totalValue = updatedCost.workerValue + updatedCost.materialValue;
+      setUpdatedCost((prevCost) => ({
+        ...prevCost,
+        totalAmount: totalValue || prevCost.totalAmount,
+      }));
+    }
+  }, [updatedCost.workerValue, updatedCost.materialValue]);
+
   return (
     <Dialog
       header="Editar Custo"
       visible={visible}
       onHide={onHide}
-      className="w-50rem"
+      className="w-60rem"
       style={{ width: "40vw" }}
     >
       <div className="card flex flex-column md:flex-row gap-3 w-full">
@@ -219,7 +245,7 @@ function CostUpdateDialog({
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Valor Serviço"
+            text="Valor Mão de Obra"
             htmlFor="value"
             className="font-semibold"
           />
@@ -229,25 +255,29 @@ function CostUpdateDialog({
             locale="pt-BR"
             currency="BRL"
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={formatCurrency(updatedCost?.value)}
+            value={formatCurrency(updatedCost?.workerValue)}
             onChange={(e) => {
               if (e.value) {
-                setUpdatedCost({ ...updatedCost, value: e.value * 100 });
+                setUpdatedCost({
+                  ...updatedCost,
+                  workerValue: e.value * 100,
+                  inssValue: e.value * 100 * 0.11,
+                });
               }
             }}
           />
-          {invalidValue && (
+          {invalidWorkerValue && (
             <Message
               severity="error"
-              text="Valor Serviço é obrigatório"
+              text="Valor Mão de Obra é obrigatório"
               className="smaller-text"
             />
           )}
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Valor Remas"
-            htmlFor="remasValue"
+            text="Valor Material"
+            htmlFor="value"
             className="font-semibold"
           />
           <InputNumber
@@ -256,17 +286,20 @@ function CostUpdateDialog({
             locale="pt-BR"
             currency="BRL"
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={formatCurrency(updatedCost?.valueRemas)}
+            value={formatCurrency(updatedCost?.materialValue)}
             onChange={(e) => {
               if (e.value) {
-                setUpdatedCost({ ...updatedCost, valueRemas: e.value * 100 });
+                setUpdatedCost({
+                  ...updatedCost,
+                  materialValue: e.value * 100,
+                });
               }
             }}
           />
-          {invalidValueRemas && (
+          {invalidMaterialValue && (
             <Message
               severity="error"
-              text="Valor Remas é obrigatório"
+              text="Valor Material é obrigatório"
               className="smaller-text"
             />
           )}

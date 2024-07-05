@@ -1,7 +1,6 @@
 import LabelTitle from "@/components/LabelTitle";
 import { AccountContext } from "@/context/AccountContext";
 import { PaymentContext } from "@/context/PaymentContext";
-import { SupplierContext } from "@/context/SupplierContext";
 import { AccountSimpleList } from "@/services/account/type";
 import {
   FrequencyType,
@@ -11,7 +10,6 @@ import {
   TransactionTypeEnum,
   Week,
 } from "@/services/payment/type";
-import { Supplier } from "@/services/supplier/type";
 import { formatDateToYYYYMMDD, getPreviousYears, localeBR } from "@/util/date";
 import { Calendar } from "primereact/calendar";
 import { Column } from "primereact/column";
@@ -39,19 +37,12 @@ interface OptionType {
 
 function PaymentList() {
   const [currPayment, setCurrPayment] = useState<Payment | null>(null);
-  const [nameSearch, setNameSearch] = useState<string>("");
-  const [optionType, setOptionType] = useState<OptionType>({
-    type: ["Data", "Favorecido"],
-  });
 
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [accountNotFavorite, setAccountNotFavorite] =
     useState<AccountSimpleList | null>();
 
   const [todayBalance, setTodayBalance] = useState<number>(0);
-
-  const [selectedBeneficiary, setSelectedBeneficiary] =
-    useState<Supplier | null>(null);
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedYear, setSelectedYear] = useState<number>(2024);
@@ -63,8 +54,6 @@ function PaymentList() {
     handleGetAccountsByFavorite,
     handleGetAccountById,
   } = useContext(AccountContext);
-
-  const { suppliers } = useContext(SupplierContext);
 
   const [account, setAccount] = useState<AccountSimpleList>(
     accountsFavoriteList[activeIndex]
@@ -78,7 +67,6 @@ function PaymentList() {
 
   const {
     paymentsByAccountId,
-    allCategories,
     frequencyTypes,
     weeksOfTheYear,
     loading,
@@ -244,7 +232,6 @@ function PaymentList() {
       (option) => option.value === selectedTransactionSearch
     );
     const enumValue = selectedOption?.value;
-    console.log(accountNotFavorite);
     await handleGetPaymentsByAccountId(
       accountNotFavorite.id,
       0,

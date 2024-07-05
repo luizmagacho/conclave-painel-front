@@ -1,16 +1,20 @@
 import LabelTitle from "@/components/LabelTitle";
-import { ConstructionContext } from "@/context/ConstructionContext";
 import { CostContext } from "@/context/CostContext";
 import { Cost, CostDTO } from "@/services/costs/type";
+import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
+import { classNames } from "primereact/utils";
 import { useContext, useEffect, useState } from "react";
 import CostCreateDialog from "../CostCreateDialog";
 import CostUpdateDialog from "../CostUpdateDialog";
-import { classNames } from "primereact/utils";
+import InputSearch from "@/components/InputSearch";
+import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { getMonthsNames } from "@/util/date";
+import CostCreateGenericDialog from "../CostCreateGenericDialog";
 
 interface Options {
   icon?: string;
@@ -24,23 +28,26 @@ interface OptionType {
   type: string;
 }
 
-function CostList() {
+function CostListGeneral() {
+  const role = Cookies.get("portal.role");
   const router = useRouter();
   const [currCost, setCurrCost] = useState<Cost | null>(null);
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
-
+  const [totalValue, setTotalValue] = useState<number | null>(null);
+  const [workerValue, setWorkerValue] = useState<number | null>(null);
+  const [materialValue, setMaterialValue] = useState<number | null>(null);
   const {
     costs,
     loading,
     totalElements,
-    handleGetCostsByCenterCostId,
+    handleGetCosts,
     handlePostCost,
     handleUpdateCost,
   } = useContext(CostContext);
 
-  const { selectedConstruction, handleGetConstructionById } =
-    useContext(ConstructionContext);
+  const [centerCostSearch, setCenterCostSearch] = useState<string>("");
+  const [monthSearch, setMonthSearch] = useState<string>("");
 
   const [first, setFirst] = useState<number>(0);
 
@@ -64,15 +71,14 @@ function CostList() {
   function onPageChange(event: PaginatorPageChangeEvent) {
     const { page, first } = event;
     const { id } = router.query;
-    handleGetCostsByCenterCostId(typeof id === "string" ? id : "", page);
+    handleGetCosts();
     setFirst(first);
   }
 
   async function onCreateCost(cost: CostDTO) {
     await handlePostCost(cost);
     const { id } = router.query;
-    handleGetCostsByCenterCostId(typeof id === "string" ? id : "");
-    handleGetConstructionById(typeof id === "string" ? id : "");
+    handleGetCosts();
   }
 
   function closeCreateDialog() {
@@ -82,8 +88,7 @@ function CostList() {
   async function onUpateCost(cost: Cost) {
     await handleUpdateCost(cost);
     const { id } = router.query;
-    handleGetCostsByCenterCostId(typeof id === "string" ? id : "");
-    handleGetConstructionById(typeof id === "string" ? id : "");
+    handleGetCosts();
   }
 
   function closeUpdateDialog() {
@@ -93,8 +98,7 @@ function CostList() {
 
   useEffect(() => {
     const { id } = router.query;
-    handleGetConstructionById(typeof id === "string" ? id : "");
-    handleGetCostsByCenterCostId(typeof id === "string" ? id : "");
+    handleGetCosts();
   }, []);
 
   const formatCurrency = (value: number | null) => {
@@ -112,18 +116,14 @@ function CostList() {
       <div className="flex gap-2 w-full">
         <div className="flex-grow-1">
           <LabelTitle
-            text={`Total Bruto Faturado: ${formatCurrency(
-              selectedConstruction?.totalBilled || null
-            )}`}
+            text={`Total Mão de Obra: ${formatCurrency(workerValue || null)}`}
             htmlFor="todayBalance"
             className="font-semibold smaller-text"
           />
         </div>
         <div className="flex-shrink-0">
           <LabelTitle
-            text={`Total Remas: ${formatCurrency(
-              selectedConstruction?.totalRemas || null
-            )}`}
+            text={`Total Remas: ${formatCurrency(materialValue || null)}`}
             htmlFor="finalBalance"
             className="font-semibold smaller-text"
           />
@@ -136,16 +136,16 @@ function CostList() {
     return formatCurrency(cost.workerValue || null);
   };
 
+  const priceInssValueBodyTemplate = (cost: Cost) => {
+    return formatCurrency(cost.inssValue || null);
+  };
+
   const priceMaterialValueBodyTemplate = (cost: Cost) => {
     return formatCurrency(cost.materialValue || null);
   };
 
-  const priceTotalAmountBodyTemplate = (cost: Cost) => {
+  const priceTotalValueBodyTemplate = (cost: Cost) => {
     return formatCurrency(cost.totalAmount || null);
-  };
-
-  const priceInssValueBodyTemplate = (cost: Cost) => {
-    return formatCurrency(cost.inssValue || null);
   };
 
   const clearedBodyTemplate = (cost: Cost) => {
@@ -159,6 +159,22 @@ function CostList() {
     );
   };
 
+  function onCenterCostSearch(centerCost: string) {
+    handleGetCosts(0, centerCost, monthSearch);
+  }
+
+  function onChangeCenterCost(centerCost: string) {
+    setCenterCostSearch(centerCost);
+  }
+
+  function onMonthSearch(month: string) {
+    handleGetCosts(0, centerCostSearch, month);
+  }
+
+  function onChageMonth(month: string) {
+    setMonthSearch(month);
+  }
+
   return (
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
@@ -166,32 +182,30 @@ function CostList() {
           <h1 className="m-0">Custos</h1>
         </div>
         <div className="card flex flex-column md:flex-row gap-2 w-11/12">
-          <div className="flex flex-column gap-1 w-full">
+          <div className="field flex flex-column gap-1 w-full">
             <LabelTitle
-              text={`Centro de Custo: ${selectedConstruction?.code}`}
-              htmlFor="neighborhood"
-              className="font-semibold"
+              text="Centro de Custo"
+              htmlFor="centerCost"
+              className="font-semibold smaller-text"
+            />
+            <InputSearch
+              onSearch={onCenterCostSearch}
+              onChange={onChangeCenterCost}
             />
           </div>
-          <div className="flex flex-column gap-1 w-full">
+          <div className="field flex flex-column gap-1 w-full">
             <LabelTitle
-              text={`Agência: ${selectedConstruction?.bankBranch}`}
-              htmlFor="neighborhood"
-              className="font-semibold"
+              text="Mês"
+              htmlFor="month"
+              className="font-semibold smaller-text"
             />
-          </div>
-          <div className="flex flex-column gap-1 w-full">
-            <LabelTitle
-              text={`Local: ${selectedConstruction?.local}`}
-              htmlFor="neighborhood"
-              className="font-semibold"
-            />
-          </div>
-          <div className="flex flex-column gap-1 w-full">
-            <LabelTitle
-              text={`Serviço: ${selectedConstruction?.service}`}
-              htmlFor="neighborhood"
-              className="font-semibold"
+            <Dropdown
+              options={getMonthsNames()}
+              value={monthSearch}
+              onChange={(e: DropdownChangeEvent) => {
+                setMonthSearch(e.value);
+                onMonthSearch(e.value);
+              }}
             />
           </div>
         </div>
@@ -205,33 +219,52 @@ function CostList() {
           tableStyle={{ minWidth: "50rem" }}
           totalRecords={totalElements}
           size="small"
+          className="smaller-text"
           footer={footerTemplate}
         >
-          <Column field="purchaseDateFormatted" header="Data do Custo" />
-          <Column field="vendorName" header="Favorecido" />
+          <Column
+            field="centerCost"
+            header="Centro de Custo"
+            className="smaller-text"
+          />
+          <Column
+            field="purchaseDateFormatted"
+            header="Data do Custo"
+            className="smaller-text"
+          />
+          <Column
+            field="vendorName"
+            header="Favorecido"
+            className="smaller-text"
+          />
           <Column
             field="workerValue"
-            header="Valor da Mão de Obra"
+            header="Valor Mão de Obra"
             body={priceWorkerValueBodyTemplate}
+            className="smaller-text"
           />
           <Column
             field="materialValue"
-            header="Valor da Material"
+            header="Valor Material"
             body={priceMaterialValueBodyTemplate}
+            className="smaller-text"
           />
           <Column
             field="totalAmount"
             header="Valor Total"
-            body={priceTotalAmountBodyTemplate}
+            body={priceTotalValueBodyTemplate}
+            className="smaller-text"
           />
           <Column
             field="inssValue"
-            header="Valor do INSS"
+            header="INSS"
             body={priceInssValueBodyTemplate}
+            className="smaller-text"
           />
           <Column
             field="paymentDeadlineFormatted"
             header="Data de Vencimento"
+            className="smaller-text"
           />
           <Column
             field="cleared"
@@ -269,7 +302,7 @@ function CostList() {
           />
         </div>
         {showCreateDialog && (
-          <CostCreateDialog
+          <CostCreateGenericDialog
             visible={showCreateDialog}
             onHide={closeCreateDialog}
             onCreate={onCreateCost}
@@ -310,4 +343,4 @@ function CostList() {
   }
 }
 
-export default CostList;
+export default CostListGeneral;
