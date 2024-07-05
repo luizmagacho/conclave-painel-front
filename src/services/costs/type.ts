@@ -12,8 +12,10 @@ export type Cost = {
   costCategory: string;
   name: string;
   vendorName: string;
+  workerValue: number;
+  materialValue: number;
+  inssValue: number;
   totalAmount: number;
-  value: number;
   valueRemas: number;
   userId: string;
   enabled: boolean;
@@ -34,16 +36,20 @@ export type CostDTO = {
   costCategory: string;
   name: string;
   vendorName: string;
+  workerValue: number | null;
+  materialValue: number | null;
+  inssValue: number | null;
   totalAmount: number | null;
-  value: number | null;
   valueRemas: number | null;
   userId: string;
-  enabled?: boolean;
-  paymentStatus: boolean;
+  enabled: boolean;
   additionalDetails: string;
+  paymentStatus: boolean;
 };
 
 export type CostPaginationParam = {
   size: number;
   page: number;
+  centerCost: string;
+  month: string;
 };

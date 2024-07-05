@@ -5,11 +5,18 @@ import { Cost, CostDTO, CostPaginationParam } from "./type";
 const baseUrl = "/cost";
 const api = getAPIClient();
 
-export async function getCosts({ page, size }: CostPaginationParam) {
+export async function getCosts({
+  page,
+  size,
+  centerCost,
+  month,
+}: CostPaginationParam) {
   let res = await api.get<Pagination<Cost>>(baseUrl, {
     params: {
       page,
       size,
+      centerCost,
+      month,
     },
   });
   return res.data;

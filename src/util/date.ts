@@ -101,6 +101,7 @@ export function getMonthNames(numberOfMonth: number): string {
 
 export function getMonthsNames(): string[] {
   return [
+    "",
     "Janeiro",
     "Fevereiro",
     "Março",

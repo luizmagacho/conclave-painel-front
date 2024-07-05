@@ -17,7 +17,11 @@ interface CostsContextProps {
   costs: Cost[];
   loading: boolean;
   totalElements: number;
-  handleGetCosts: (page?: number) => Promise<void>;
+  handleGetCosts: (
+    page?: number,
+    centerCost?: string,
+    month?: string
+  ) => Promise<void>;
   handleGetCostsByCenterCostId: (
     centerCostId: string,
     page?: number
@@ -37,12 +41,19 @@ export const CostProvider = ({ children }: ProviderProps) => {
 
   const [totalElements, setTotalElements] = useState<number>(0);
 
-  const router = useRouter();
-
-  async function handleGetCosts(page: number = 0) {
+  async function handleGetCosts(
+    page: number = 0,
+    centerCost: string = "",
+    month: string = ""
+  ) {
     setLoading(true);
     try {
-      const { content, totalElements } = await getCosts({ page, size: 15 });
+      const { content, totalElements } = await getCosts({
+        page,
+        size: 15,
+        centerCost,
+        month,
+      });
 
       setBufferedCosts(content || []);
       setCosts(content || []);
@@ -62,12 +73,11 @@ export const CostProvider = ({ children }: ProviderProps) => {
     try {
       const { content, totalElements } = await getCostsByCenterCostId(
         centerCostId,
-        { page, size: 20 }
+        { page, size: 20, centerCost: "", month: "" }
       );
 
       setBufferedCosts(content || []);
       setCosts(content || []);
-      console.log("Costs: ", content);
       setTotalElements(totalElements);
     } catch (error) {
       console.error(error);
