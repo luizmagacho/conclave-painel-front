@@ -47,6 +47,13 @@ export type CostDTO = {
   paymentStatus: boolean;
 };
 
+export type CostTotal = {
+  totalWorkersValue: number;
+  totalMaterialValue: number;
+  totalInssValue: number;
+  totalValue: number;
+};
+
 export type CostPaginationParam = {
   size: number;
   page: number;

@@ -1,6 +1,6 @@
 import { Pagination } from "@/types/pagination";
 import { getAPIClient } from "../axios";
-import { Cost, CostDTO, CostPaginationParam } from "./type";
+import { Cost, CostDTO, CostPaginationParam, CostTotal } from "./type";
 
 const baseUrl = "/cost";
 const api = getAPIClient();
@@ -29,6 +29,16 @@ export async function getCostsByCenterCostId(
   let res = await api.get<Pagination<Cost>>(
     `${baseUrl}/center-cost/${centerCostId}`
   );
+  return res.data;
+}
+
+export async function getTotalsValue(centerCost: string, month: string) {
+  let res = await api.get<CostTotal>(`${baseUrl}/totals`, {
+    params: {
+      centerCost,
+      month,
+    },
+  });
   return res.data;
 }
 

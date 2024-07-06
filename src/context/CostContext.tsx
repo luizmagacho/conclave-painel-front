@@ -2,11 +2,11 @@ import {
   deleteCost,
   getCosts,
   getCostsByCenterCostId,
+  getTotalsValue,
   postCost,
   updateCost,
 } from "@/services/costs";
-import { Cost, CostDTO } from "@/services/costs/type";
-import { useRouter } from "next/router";
+import { Cost, CostDTO, CostTotal } from "@/services/costs/type";
 import { ReactNode, createContext, useState } from "react";
 
 interface ProviderProps {
@@ -15,6 +15,7 @@ interface ProviderProps {
 
 interface CostsContextProps {
   costs: Cost[];
+  costTotal: CostTotal | null;
   loading: boolean;
   totalElements: number;
   handleGetCosts: (
@@ -26,6 +27,7 @@ interface CostsContextProps {
     centerCostId: string,
     page?: number
   ) => Promise<void>;
+  handleGetCostTotal: (centerCost?: string, month?: string) => Promise<void>;
   handlePostCost: (cost: CostDTO) => Promise<void>;
   handleUpdateCost: (cost: Cost) => Promise<void>;
   handleDeleteCost: (costId: string) => Promise<void>;
@@ -35,6 +37,7 @@ export const CostContext = createContext({} as CostsContextProps);
 
 export const CostProvider = ({ children }: ProviderProps) => {
   const [costs, setCosts] = useState<Cost[]>([]);
+  const [costTotal, setCostTotal] = useState<CostTotal | null>(null);
   const [bufferedCosts, setBufferedCosts] = useState<Cost[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -86,6 +89,20 @@ export const CostProvider = ({ children }: ProviderProps) => {
     }
   }
 
+  async function handleGetCostTotal(
+    centerCost: string = "",
+    month: string = ""
+  ) {
+    setLoading(true);
+    try {
+      setCostTotal(await getTotalsValue(centerCost, month));
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function handlePostCost(cost: CostDTO) {
     setLoading(true);
 
@@ -125,10 +142,12 @@ export const CostProvider = ({ children }: ProviderProps) => {
     <CostContext.Provider
       value={{
         costs,
+        costTotal,
         loading,
         totalElements,
         handleGetCosts,
         handleGetCostsByCenterCostId,
+        handleGetCostTotal,
         handlePostCost,
         handleUpdateCost,
         handleDeleteCost,
