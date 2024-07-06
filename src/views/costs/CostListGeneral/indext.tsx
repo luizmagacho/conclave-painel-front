@@ -39,9 +39,11 @@ function CostListGeneral() {
   const [materialValue, setMaterialValue] = useState<number | null>(null);
   const {
     costs,
+    costTotal,
     loading,
     totalElements,
     handleGetCosts,
+    handleGetCostTotal,
     handlePostCost,
     handleUpdateCost,
   } = useContext(CostContext);
@@ -99,6 +101,7 @@ function CostListGeneral() {
   useEffect(() => {
     const { id } = router.query;
     handleGetCosts();
+    handleGetCostTotal();
   }, []);
 
   const formatCurrency = (value: number | null) => {
@@ -113,21 +116,33 @@ function CostListGeneral() {
 
   const footerTemplate = () => {
     return (
-      <div className="flex gap-2 w-full">
-        <div className="flex-grow-1">
-          <LabelTitle
-            text={`Total Mão de Obra: ${formatCurrency(workerValue || null)}`}
-            htmlFor="todayBalance"
-            className="font-semibold smaller-text"
-          />
-        </div>
-        <div className="flex-shrink-0">
-          <LabelTitle
-            text={`Total Remas: ${formatCurrency(materialValue || null)}`}
-            htmlFor="finalBalance"
-            className="font-semibold smaller-text"
-          />
-        </div>
+      <div className="card flex flex-column md:flex-row gap-2 w-11/12">
+        <LabelTitle
+          text={`Total Mão de Obra: ${formatCurrency(
+            costTotal?.totalWorkersValue || null
+          )}`}
+          htmlFor="todayBalance"
+          className="font-semibold smaller-text"
+        />
+        <LabelTitle
+          text={`Total Material: ${formatCurrency(
+            costTotal?.totalMaterialValue || null
+          )}`}
+          htmlFor="finalBalance"
+          className="font-semibold smaller-text"
+        />
+        <LabelTitle
+          text={`Total INSS: ${formatCurrency(
+            costTotal?.totalInssValue || null
+          )}`}
+          htmlFor="finalBalance"
+          className="font-semibold smaller-text"
+        />
+        <LabelTitle
+          text={`Total: ${formatCurrency(costTotal?.totalValue || null)}`}
+          htmlFor="finalBalance"
+          className="font-semibold smaller-text"
+        />
       </div>
     );
   };
@@ -161,6 +176,7 @@ function CostListGeneral() {
 
   function onCenterCostSearch(centerCost: string) {
     handleGetCosts(0, centerCost, monthSearch);
+    handleGetCostTotal(centerCost, monthSearch);
   }
 
   function onChangeCenterCost(centerCost: string) {
@@ -169,6 +185,7 @@ function CostListGeneral() {
 
   function onMonthSearch(month: string) {
     handleGetCosts(0, centerCostSearch, month);
+    handleGetCostTotal(centerCostSearch, month);
   }
 
   function onChageMonth(month: string) {
