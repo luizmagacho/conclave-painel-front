@@ -34,9 +34,6 @@ function CostListGeneral() {
   const [currCost, setCurrCost] = useState<Cost | null>(null);
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
-  const [totalValue, setTotalValue] = useState<number | null>(null);
-  const [workerValue, setWorkerValue] = useState<number | null>(null);
-  const [materialValue, setMaterialValue] = useState<number | null>(null);
   const {
     costs,
     costTotal,
@@ -72,14 +69,12 @@ function CostListGeneral() {
 
   function onPageChange(event: PaginatorPageChangeEvent) {
     const { page, first } = event;
-    const { id } = router.query;
     handleGetCosts();
     setFirst(first);
   }
 
   async function onCreateCost(cost: CostDTO) {
     await handlePostCost(cost);
-    const { id } = router.query;
     handleGetCosts();
   }
 
@@ -89,7 +84,6 @@ function CostListGeneral() {
 
   async function onUpateCost(cost: Cost) {
     await handleUpdateCost(cost);
-    const { id } = router.query;
     handleGetCosts();
   }
 
@@ -99,7 +93,6 @@ function CostListGeneral() {
   }
 
   useEffect(() => {
-    const { id } = router.query;
     handleGetCosts();
     handleGetCostTotal();
   }, []);
@@ -197,6 +190,16 @@ function CostListGeneral() {
       <section className="flex flex-column gap-4 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
           <h1 className="m-0">Custos</h1>
+          {(role === "Administrador" || role === "Notas") && (
+            <Button
+              onClick={() => {
+                setShowCreateDialog(true);
+              }}
+              className="rounded-md px-3 text-sm"
+              label="Adicionar"
+              severity="danger"
+            />
+          )}
         </div>
         <div className="card flex flex-column md:flex-row gap-2 w-11/12">
           <div className="field flex flex-column gap-1 w-full">
@@ -297,27 +300,6 @@ function CostListGeneral() {
           totalRecords={totalElements}
           onPageChange={onPageChange}
         />
-        <div
-          className="flex justify-end gap-6 w-full"
-          style={{ justifyContent: "end" }}
-        >
-          <Button
-            className="font-semibold text-sm"
-            label="Cancelar"
-            outlined
-            onClick={() => {
-              router.back();
-            }}
-          />
-          <Button
-            onClick={() => {
-              setShowCreateDialog(true);
-            }}
-            className="rounded-md px-3 text-sm"
-            label="Adicionar"
-            severity="danger"
-          />
-        </div>
         {showCreateDialog && (
           <CostCreateGenericDialog
             visible={showCreateDialog}
