@@ -11,6 +11,7 @@ import { useContext, useEffect, useState } from "react";
 import CostCreateDialog from "../CostCreateDialog";
 import CostUpdateDialog from "../CostUpdateDialog";
 import { classNames } from "primereact/utils";
+import Cookies from "js-cookie";
 
 interface Options {
   icon?: string;
@@ -25,6 +26,7 @@ interface OptionType {
 }
 
 function CostList() {
+  const role = Cookies.get("portal.role");
   const router = useRouter();
   const [currCost, setCurrCost] = useState<Cost | null>(null);
   const [showDialog, setShowDialog] = useState<boolean>(false);
@@ -259,14 +261,16 @@ function CostList() {
               router.back();
             }}
           />
-          <Button
-            onClick={() => {
-              setShowCreateDialog(true);
-            }}
-            className="rounded-md px-3 text-sm"
-            label="Adicionar"
-            severity="danger"
-          />
+          {(role === "Administrador" || role === "Notas") && (
+            <Button
+              onClick={() => {
+                setShowCreateDialog(true);
+              }}
+              className="rounded-md px-3 text-sm"
+              label="Adicionar"
+              severity="danger"
+            />
+          )}
         </div>
         {showCreateDialog && (
           <CostCreateDialog
@@ -292,17 +296,21 @@ function CostList() {
       <div className="flex gap-2">
         {elements.map((el, index) => {
           return (
-            <Button
-              key={index}
-              icon={el.icon}
-              label={el.label}
-              aria-label={el.ariaLabel}
-              tooltip={el.tooltip}
-              tooltipOptions={{ position: "top", className: "text-xs" }}
-              size="small"
-              severity="danger"
-              onClick={() => el.onClick(cost)}
-            />
+            <>
+              {(role === "Administrador" || role === "Notas") && (
+                <Button
+                  key={index}
+                  icon={el.icon}
+                  label={el.label}
+                  aria-label={el.ariaLabel}
+                  tooltip={el.tooltip}
+                  tooltipOptions={{ position: "top", className: "text-xs" }}
+                  size="small"
+                  severity="danger"
+                  onClick={() => el.onClick(cost)}
+                />
+              )}
+            </>
           );
         })}
       </div>
