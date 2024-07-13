@@ -2,6 +2,7 @@ import LabelTitle from "@/components/LabelTitle";
 import { Material } from "@/services/material/type";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
+import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useState } from "react";
@@ -34,9 +35,7 @@ function MaterialUpdateDialog({
 
   function validateFields() {
     setInvalidName(!updatedMaterial.name || updatedMaterial.name === "");
-    setInvalidQuantity(
-      !updatedMaterial.quantity || updatedMaterial.quantity === ""
-    );
+    setInvalidQuantity(!updatedMaterial.quantity);
     setInvalidMetricUnit(
       !updatedMaterial.metricUnit || updatedMaterial.metricUnit === ""
     );
@@ -73,51 +72,51 @@ function MaterialUpdateDialog({
             <Message severity="error" text="Nome é obrigatório" />
           )}
         </div>
-        <div className="formgrid grid">
-          <div className="field col">
-            <LabelTitle
-              text="Quantidade"
-              htmlFor="quantity"
-              className="font-semibold"
-              required={true}
-            />
-            <InputText
-              type="number"
-              onChange={(e) => {
+        <div className="field flex flex-column gap-2">
+          <LabelTitle
+            text="Quantidade"
+            htmlFor="quantity"
+            className="font-semibold"
+            required={true}
+          />
+          <InputNumber
+            onChange={(e) => {
+              if (e.value) {
                 setUpdatedMaterial({
                   ...updatedMaterial,
-                  quantity: e.target.value,
+                  quantity: e.value,
                 });
-                setInvalidMetricUnit(false);
-              }}
-              value={updatedMaterial.quantity}
-            />
-            {invalidQuantity && (
-              <Message severity="error" text="Quantidade é obrigatório" />
-            )}
-          </div>
-          <div className="field col">
-            <LabelTitle
-              text="Quantidade"
-              htmlFor="quantity"
-              className="font-semibold"
-              required={true}
-            />
-            <InputText
-              type="text"
-              onChange={(e) => {
-                setUpdatedMaterial({
-                  ...updatedMaterial,
-                  metricUnit: e.target.value,
-                });
-                setInvalidQuantity(false);
-              }}
-              value={updatedMaterial.metricUnit}
-            />
-            {invalidMetricUnit && (
-              <Message severity="error" text="Unidade métrica é obrigatória" />
-            )}
-          </div>
+              }
+              setInvalidQuantity(false);
+            }}
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={updatedMaterial?.quantity}
+          />
+          {invalidQuantity && (
+            <Message severity="error" text="Quantidade é obrigatório" />
+          )}
+        </div>
+        <div className="field flex flex-column gap-2">
+          <LabelTitle
+            text="Quantidade"
+            htmlFor="quantity"
+            className="font-semibold"
+            required={true}
+          />
+          <InputText
+            type="text"
+            onChange={(e) => {
+              setUpdatedMaterial({
+                ...updatedMaterial,
+                metricUnit: e.target.value,
+              });
+              setInvalidQuantity(false);
+            }}
+            value={updatedMaterial.metricUnit}
+          />
+          {invalidMetricUnit && (
+            <Message severity="error" text="Unidade métrica é obrigatória" />
+          )}
         </div>
       </div>
       <div className="flex gap-2">

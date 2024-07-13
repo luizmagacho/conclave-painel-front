@@ -5,7 +5,7 @@ import { Divider } from "primereact/divider";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { InputMask } from "primereact/inputmask";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
 import { SupplierContext } from "@/context/SupplierContext";
@@ -38,6 +38,8 @@ function SupplierCreate() {
   });
   const [invalidPersonalInfo, setInvalidPersonalInfo] =
     useState<boolean>(false);
+  const [invalidCnpj, setInvalidCnpj] = useState<boolean>(false);
+  const [invalidCpf, setInvalidCpf] = useState<boolean>(false);
   const [invalidCompleteName, setInvalidCompleteName] =
     useState<boolean>(false);
   const [invalidShortenedName, setInvalidShortenedName] =
@@ -65,15 +67,34 @@ function SupplierCreate() {
   const [invalidBank2, setInvalidBank2] = useState<boolean>(false);
   const [invalidBank3, setInvalidBank3] = useState<boolean>(false);
 
-  const { handlePostSupplier, postStatus } = useContext(SupplierContext);
+  const {
+    existsCnpj,
+    existsCpf,
+    handlePostSupplier,
+    postStatus,
+    handleValidateCnpj,
+    handleValidateCpf,
+  } = useContext(SupplierContext);
   const { showSuccessToast, setShowToast } = useContext(ToastContext);
   const router = useRouter();
 
   async function validateFields() {
-    setInvalidPersonalInfo(
-      (!newSupplier.cnpj || newSupplier.cnpj === "") &&
-        (!newSupplier.cpf || newSupplier.cpf === "")
+    await setInvalidCpf(
+      !newSupplier.cpf || newSupplier.cpf === "" || newSupplier.cpf.length >= 11
     );
+
+    await setInvalidCnpj(!newSupplier.cnpj || newSupplier.cnpj === "");
+    setInvalidPersonalInfo(invalidCpf && invalidCnpj);
+    console.log("Validate CPF: ", existsCpf);
+    console.log(
+      "Invalid Personal Info1: ",
+      !newSupplier.cnpj || newSupplier.cnpj === ""
+    );
+    console.log(
+      "Invalid Personal Info2: ",
+      !newSupplier.cpf || newSupplier.cpf === ""
+    );
+    console.log("Invalid Personal Info: ", invalidPersonalInfo);
     if (!invalidPersonalInfo) {
       const resp = await handlePostSupplier(newSupplier);
       if (postStatus === 201) {
@@ -83,6 +104,18 @@ function SupplierCreate() {
       router.back();
     }
   }
+
+  useEffect(() => {
+    console.log(newSupplier.cnpj.replace(`/[^a-zA-Z0-9\s]/g`, ""));
+    console.log(newSupplier.cpf.replace(`/[^a-zA-Z0-9\s]/g`, ""));
+    if (newSupplier.cnpj && newSupplier.cnpj.length >= 14) {
+      handleValidateCnpj(newSupplier.cnpj);
+    }
+    console.log(newSupplier.cpf.length);
+    if (newSupplier.cpf && newSupplier.cpf.length >= 11) {
+      handleValidateCpf(newSupplier.cpf);
+    }
+  }, [newSupplier.cnpj, newSupplier.cpf]);
 
   const toast = useRef<Toast>(null);
 
@@ -292,13 +325,13 @@ function SupplierCreate() {
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
-              text="Telefone Vendedor"
+              text="Celular Vendedor I"
               htmlFor="sellerPhone"
               className="font-semibold text-sm"
             />
             <InputMask
-              mask="(99) 9999-9999"
-              placeholder="(99) 9999-9999"
+              mask="(99) 99999-9999"
+              placeholder="(99) 99999-9999"
               onChange={(e) => {
                 setNewSupplier({
                   ...newSupplier,
@@ -311,13 +344,13 @@ function SupplierCreate() {
             {invalidSellerPhone && (
               <Message
                 severity="error"
-                text="Telefone Vendedor é obrigatório"
+                text="Celular Vendedor I é obrigatório"
               />
             )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
-              text="Celular Vendedor"
+              text="Celular Vendedor II"
               htmlFor="sellerPhone"
               className="font-semibold text-sm"
             />
@@ -383,13 +416,13 @@ function SupplierCreate() {
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
-              text="Telefone Financeiro"
+              text="Celular Financeiro I"
               htmlFor="FinancialPhone"
               className="font-semibold text-sm"
             />
             <InputMask
-              mask="(99) 9999-9999"
-              placeholder="(99) 9999-9999"
+              mask="(99) 99999-9999"
+              placeholder="(99) 99999-9999"
               onChange={(e) => {
                 setNewSupplier({
                   ...newSupplier,
@@ -402,13 +435,13 @@ function SupplierCreate() {
             {invalidFinancialPhone && (
               <Message
                 severity="error"
-                text="Telefone Financeiro é obrigatório"
+                text="Celular Financeiro I é obrigatório"
               />
             )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
-              text="Celular Financeiro"
+              text="Celular Financeiro II"
               htmlFor="FinancialPhone"
               className="font-semibold text-sm"
             />

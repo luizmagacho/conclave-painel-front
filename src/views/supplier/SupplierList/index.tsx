@@ -35,7 +35,7 @@ const columns = [
   },
   {
     field: "sellerPhone",
-    header: "Telefone Vendedor",
+    header: "Celular Vendedor I",
   },
   {
     field: "sellerEmail",

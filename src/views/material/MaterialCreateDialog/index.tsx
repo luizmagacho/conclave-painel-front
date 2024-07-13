@@ -2,6 +2,7 @@ import LabelTitle from "@/components/LabelTitle";
 import { MaterialDTO } from "@/services/material/type";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
+import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useState } from "react";
@@ -19,8 +20,9 @@ function MaterialCreateDialog({
 }: MaterialCreateDialog) {
   const [newMaterial, setNewMaterial] = useState<MaterialDTO>({
     name: "",
-    quantity: "",
+    quantity: null,
     metricUnit: "",
+    enabled: true,
   });
   const [invalidName, setInvalidName] = useState<boolean>(false);
   const [invalidQuantity, setInvalidQuantity] = useState<boolean>(false);
@@ -28,11 +30,15 @@ function MaterialCreateDialog({
 
   function validateFields() {
     setInvalidName(!newMaterial.name || newMaterial.name === "");
-    setInvalidQuantity(!newMaterial.quantity || newMaterial.quantity === "");
+    setInvalidQuantity(newMaterial.quantity === null);
+    console.log(!newMaterial.quantity);
+    console.log(newMaterial.quantity === null);
+
     setInvalidMetricUnit(
       !newMaterial.metricUnit || newMaterial.metricUnit === ""
     );
     if (!invalidName && !invalidQuantity && !invalidMetricUnit) {
+      console.log(newMaterial);
       onCreate(newMaterial);
       onHide();
     }
@@ -73,12 +79,22 @@ function MaterialCreateDialog({
               className="font-semibold"
               required={true}
             />
-            <InputText
-              type="number"
+            <InputNumber
               onChange={(e) => {
-                setNewMaterial({ ...newMaterial, quantity: e.target.value });
+                if (e.value) {
+                  setNewMaterial({
+                    ...newMaterial,
+                    quantity: e.value,
+                  });
+                } else {
+                  setNewMaterial({
+                    ...newMaterial,
+                    quantity: 0,
+                  });
+                }
                 setInvalidQuantity(false);
               }}
+              style={{ height: "30px", fontSize: "0.8rem" }}
               value={newMaterial?.quantity}
             />
             {invalidQuantity && (

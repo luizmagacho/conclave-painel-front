@@ -9,6 +9,7 @@ export type Order = {
   userRequest: string;
   finish: boolean;
   orderDate: Date;
+  orderDateFormatted: string;
   createdAt: Date | null;
   updatedAt: Date | null;
 };

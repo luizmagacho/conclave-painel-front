@@ -1,7 +1,7 @@
 export type Material = {
   id: string;
   name: string;
-  quantity: string;
+  quantity: number | null;
   metricUnit: string;
   enabled: boolean;
   createdAt?: Date;
@@ -10,8 +10,9 @@ export type Material = {
 
 export type MaterialDTO = {
   name: string;
-  quantity: string;
+  quantity: number | null;
   metricUnit: string;
+  enabled?: boolean;
 };
 
 export type MaterialPaginationParam = {

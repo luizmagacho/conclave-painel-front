@@ -47,3 +47,13 @@ export async function deleteSupplier(supplierId: string) {
   let res = await api.delete(`${baseUrl}/${supplierId}`);
   return res.status;
 }
+
+export async function validateCpf(cpf: string) {
+  let res = await api.get(`${baseUrl}/validate-cpf/${cpf}`);
+  return res.data;
+}
+
+export async function validateCnpj(cnpj: string) {
+  let res = await api.get(`${baseUrl}/validate-cnpj/${cnpj}`);
+  return res.data;
+}

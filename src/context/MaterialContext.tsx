@@ -23,7 +23,10 @@ interface MaterialContextProps {
     type?: string
   ) => Promise<void>;
   handleGetAllMaterials: () => Promise<void>;
-  handlePostMaterial: (material: MaterialDTO) => Promise<void>;
+  handlePostMaterial: (
+    material: MaterialDTO,
+    isOrder?: boolean
+  ) => Promise<void>;
   handleUpdateMaterial: (material: Material) => Promise<void>;
 }
 
@@ -76,11 +79,14 @@ export const MaterialProvider = ({ children }: ProviderProps) => {
     }
   }
 
-  async function handlePostMaterial(material: MaterialDTO) {
+  async function handlePostMaterial(
+    material: MaterialDTO,
+    isOrder: boolean = false
+  ) {
     setLoading(true);
 
     try {
-      const resp = await postMaterial(material);
+      const resp = await postMaterial(material, isOrder);
     } catch (error) {
       console.error(error);
     } finally {

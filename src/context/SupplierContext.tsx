@@ -5,6 +5,8 @@ import {
   getSuppliers,
   postSupplier,
   updateSupplier,
+  validateCnpj,
+  validateCpf,
 } from "@/services/supplier";
 import { Supplier, SupplierDTO } from "@/services/supplier/type";
 import { Toast } from "primereact/toast";
@@ -21,6 +23,8 @@ interface SupplierContextProps {
   loading: boolean;
   totalElements: number;
   postStatus: number;
+  existsCpf: boolean;
+  existsCnpj: boolean;
   handleGetSuppliers: (
     page?: number,
     completeName?: string,
@@ -31,12 +35,16 @@ interface SupplierContextProps {
   handleGetSupplierById: (supplierId: string) => Promise<void>;
   handleUpdateSupplier: (supplier: Supplier) => Promise<void>;
   handleDeleteSupplier: (supplierId: string) => Promise<void>;
+  handleValidateCpf: (cpf: string) => Promise<void>;
+  handleValidateCnpj: (cnpj: string) => Promise<void>;
 }
 
 export const SupplierContext = createContext({} as SupplierContextProps);
 
 export const SupplierProvider = ({ children }: ProviderProps) => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [existsCpf, setExistsCpf] = useState<boolean>(false);
+  const [existsCnpj, setExistsCnpj] = useState<boolean>(false);
   const [allSuppliers, setAllSuplliers] = useState<Supplier[]>([]);
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
     null
@@ -145,6 +153,14 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
     }
   }
 
+  async function handleValidateCpf(cpf: string) {
+    setExistsCpf(await validateCpf(cpf));
+  }
+
+  async function handleValidateCnpj(cnpj: string) {
+    setExistsCnpj(await validateCnpj(cnpj));
+  }
+
   useEffect(() => {
     handleGetSuppliers();
   }, []);
@@ -158,12 +174,16 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
         loading,
         totalElements,
         postStatus,
+        existsCpf,
+        existsCnpj,
         handleGetSuppliers,
         handleGetAllSuppliers,
         handleGetSupplierById,
         handlePostSupplier,
         handleUpdateSupplier,
         handleDeleteSupplier,
+        handleValidateCnpj,
+        handleValidateCpf,
       }}
     >
       <Toast ref={toast} />

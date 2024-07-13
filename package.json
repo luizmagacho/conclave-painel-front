@@ -21,7 +21,7 @@
     "dotenv": "^16.3.1",
     "husky": "^8.0.3",
     "js-cookie": "^3.0.5",
-    "next": "^13.5.4",
+    "next": "^14.2.4",
     "nookies": "^2.5.2",
     "primeflex": "^3.3.1",
     "primeicons": "^6.0.1",
