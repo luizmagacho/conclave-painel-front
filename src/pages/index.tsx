@@ -8,6 +8,8 @@ import { LoginDTO } from "@/services/user/type";
 import { AuthContext } from "@/context/AuthContext";
 import { Message } from "primereact/message";
 import { Logo } from "@/views/common";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 
 interface LeftPanelProps {
   children: ReactNode;
@@ -89,7 +91,7 @@ export default function Login(): JSX.Element {
             <Logo />
           </div>
           <div className="flex flex-column items-center justify-center">
-            <div className="flex flex-column items-center justify-center gap-2">
+            <div className="flex flex-column items-center justify-center gap-2 flex-wrap">
               <LabelTitle
                 text="E-mail"
                 htmlFor="email"
@@ -104,17 +106,19 @@ export default function Login(): JSX.Element {
                 }}
               />
             </div>
-            <div className="flex flex-column items-center justify-center gap-2">
+            <div className="field flex flex-column gap-2">
               <LabelTitle
                 text="Senha"
                 htmlFor="password"
                 className="font-semibold"
               />
-              <span className="p-input-icon-right w-full">
-                <i
-                  className={showPassword ? "pi pi-eye" : "pi pi-eye-slash"}
+              <IconField iconPosition="right">
+                <InputIcon
                   onClick={() => setShowPassword(!showPassword)}
-                />
+                  className={showPassword ? "pi pi-eye" : "pi pi-eye-slash"}
+                >
+                  {" "}
+                </InputIcon>
                 <InputText
                   type={showPassword ? "text" : "password"}
                   onChange={(e) => {
@@ -123,7 +127,7 @@ export default function Login(): JSX.Element {
                     setInvalidUsername(false);
                   }}
                 ></InputText>
-              </span>
+              </IconField>
               {hasError && <Message severity="error" text={msg} />}
               <Button
                 label="Esqueci a senha"

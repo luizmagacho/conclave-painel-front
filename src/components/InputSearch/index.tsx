@@ -1,4 +1,6 @@
 import { InputText } from "primereact/inputtext";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 
 interface InputSearchProps {
   onSearch: (userName: string) => void;
@@ -17,8 +19,8 @@ function InputSearch({ onSearch, onChange, inputType }: InputSearchProps) {
     }
   }
   return (
-    <span className="p-input-icon-left w-90">
-      <i className="pi pi-search" />
+    <IconField iconPosition="left">
+      <InputIcon className="pi pi-search"> </InputIcon>
       <InputText
         placeholder="Search"
         className="w-12"
@@ -26,7 +28,7 @@ function InputSearch({ onSearch, onChange, inputType }: InputSearchProps) {
           searchUserByName(e.target.value);
         }}
       />
-    </span>
+    </IconField>
   );
 }
 
