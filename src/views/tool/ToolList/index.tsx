@@ -158,8 +158,8 @@ function ToolList() {
             )}
           </div>
         </div>
-        <div className="flex align-items-center justify-start w-full gap-1">
-          <div className="field flex flex-column gap-1">
+        <div className="card flex flex-column md:flex-row gap-3 w-full">
+          <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="Nome"
               htmlFor="name"
@@ -167,7 +167,7 @@ function ToolList() {
             />
             <InputSearch onSearch={onNameSearch} onChange={onChangeNameearch} />
           </div>
-          <div className="field flex flex-column gap-1">
+          <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="Responsável"
               htmlFor="responsible"
@@ -178,7 +178,7 @@ function ToolList() {
               onChange={onChangeResponsibleSearch}
             />
           </div>
-          <div className="field flex flex-column gap-1">
+          <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="Centro de Custo"
               htmlFor="centerCost"
@@ -189,7 +189,7 @@ function ToolList() {
               onChange={onChangeCodeSearch}
             />
           </div>
-          <div className="field flex flex-column gap-1">
+          <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="Agência"
               htmlFor="bankBranch"
