@@ -23,7 +23,7 @@ interface OptionType {
 
 const columns = [
   {
-    field: "orderDate",
+    field: "orderDateFormatted",
     header: "Data do Pedido",
   },
   {
@@ -158,7 +158,7 @@ function OrderList() {
               className="smaller-text"
             >
               <Column
-                field="orderDate"
+                field="orderDateFormatted"
                 header="Data Abertura"
                 filter
                 filterPlaceholder="Buscar por Data"

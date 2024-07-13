@@ -79,10 +79,17 @@ const useMenu = () => {
       },
     },
     {
-      label: "Custos",
-      icon: "pi pi-fw pi-money-bill",
+      label: "Custos - Notas",
+      icon: "pi pi-fw pi-wallet",
       command: () => {
         router.push("/custos");
+      },
+    },
+    {
+      label: "Custos - Contas a Pagar",
+      icon: "pi pi-fw pi-money-bill",
+      command: () => {
+        router.push("/custos/contas-a-pagar");
       },
     },
   ];

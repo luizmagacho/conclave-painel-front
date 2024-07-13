@@ -1,3 +1,4 @@
+import InputSearch from "@/components/InputSearch";
 import LabelTitle from "@/components/LabelTitle";
 import { CostContext } from "@/context/CostContext";
 import { Cost, CostDTO } from "@/services/costs/type";
@@ -9,11 +10,8 @@ import { DataTable } from "primereact/datatable";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { classNames } from "primereact/utils";
 import { useContext, useEffect, useState } from "react";
-import CostUpdateDialog from "../CostUpdateDialog";
-import InputSearch from "@/components/InputSearch";
-import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
-import { getMonthsNames } from "@/util/date";
-import CostCreateGenericDialog from "../CostCreateGenericDialog";
+import CostPurchaseCreateDialog from "../CostPurchaseCreateDialog";
+import CostPurchaseDialog from "../CostPurchaseDialog";
 
 interface Options {
   icon?: string;
@@ -27,7 +25,7 @@ interface OptionType {
   type: string;
 }
 
-function CostListGeneral() {
+function CostPurchaseList() {
   const role = Cookies.get("portal.role");
   const router = useRouter();
   const [currCost, setCurrCost] = useState<Cost | null>(null);
@@ -35,7 +33,6 @@ function CostListGeneral() {
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
   const {
     costs,
-    costTotal,
     loading,
     totalElements,
     handleGetCosts,
@@ -45,7 +42,6 @@ function CostListGeneral() {
   } = useContext(CostContext);
 
   const [centerCostSearch, setCenterCostSearch] = useState<string>("");
-  const [monthSearch, setMonthSearch] = useState<string>("");
 
   const [first, setFirst] = useState<number>(0);
 
@@ -61,17 +57,6 @@ function CostListGeneral() {
     options: (cost: Cost) => optionsBodyTemplate(options, cost),
   };
 
-  function openDialog(cost: Cost) {
-    setCurrCost(cost);
-    setShowDialog(true);
-  }
-
-  function onPageChange(event: PaginatorPageChangeEvent) {
-    const { page, first } = event;
-    handleGetCosts();
-    setFirst(first);
-  }
-
   async function onCreateCost(cost: CostDTO) {
     await handlePostCost(cost);
     handleGetCosts();
@@ -79,6 +64,11 @@ function CostListGeneral() {
 
   function closeCreateDialog() {
     setShowCreateDialog((showCreateDialog) => !showCreateDialog);
+  }
+
+  function openDialog(cost: Cost) {
+    setCurrCost(cost);
+    setShowDialog(true);
   }
 
   async function onUpateCost(cost: Cost) {
@@ -91,69 +81,11 @@ function CostListGeneral() {
     setCurrCost(null);
   }
 
-  useEffect(() => {
+  function onPageChange(event: PaginatorPageChangeEvent) {
+    const { page, first } = event;
     handleGetCosts();
-    handleGetCostTotal();
-  }, []);
-
-  const formatCurrency = (value: number | null) => {
-    if (!value) {
-      return "-";
-    }
-    return (value / 100).toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-  };
-
-  const footerTemplate = () => {
-    return (
-      <div className="card flex flex-column md:flex-row gap-2 w-11/12">
-        <LabelTitle
-          text={`Total Mão de Obra: ${formatCurrency(
-            costTotal?.totalWorkersValue || null
-          )}`}
-          htmlFor="todayBalance"
-          className="font-semibold smaller-text"
-        />
-        <LabelTitle
-          text={`Total Material: ${formatCurrency(
-            costTotal?.totalMaterialValue || null
-          )}`}
-          htmlFor="finalBalance"
-          className="font-semibold smaller-text"
-        />
-        <LabelTitle
-          text={`Total INSS: ${formatCurrency(
-            costTotal?.totalInssValue || null
-          )}`}
-          htmlFor="finalBalance"
-          className="font-semibold smaller-text"
-        />
-        <LabelTitle
-          text={`Total: ${formatCurrency(costTotal?.totalValue || null)}`}
-          htmlFor="finalBalance"
-          className="font-semibold smaller-text"
-        />
-      </div>
-    );
-  };
-
-  const priceWorkerValueBodyTemplate = (cost: Cost) => {
-    return formatCurrency(cost.workerValue || null);
-  };
-
-  const priceInssValueBodyTemplate = (cost: Cost) => {
-    return formatCurrency(cost.inssValue || null);
-  };
-
-  const priceMaterialValueBodyTemplate = (cost: Cost) => {
-    return formatCurrency(cost.materialValue || null);
-  };
-
-  const priceTotalValueBodyTemplate = (cost: Cost) => {
-    return formatCurrency(cost.totalAmount || null);
-  };
+    setFirst(first);
+  }
 
   const clearedBodyTemplate = (cost: Cost) => {
     return (
@@ -167,28 +99,23 @@ function CostListGeneral() {
   };
 
   function onCenterCostSearch(centerCost: string) {
-    handleGetCosts(0, centerCost, monthSearch);
-    handleGetCostTotal(centerCost, monthSearch);
+    handleGetCosts(0, centerCost);
+    handleGetCostTotal(centerCost);
   }
 
   function onChangeCenterCost(centerCost: string) {
     setCenterCostSearch(centerCost);
   }
 
-  function onMonthSearch(month: string) {
-    handleGetCosts(0, centerCostSearch, month);
-    handleGetCostTotal(centerCostSearch, month);
-  }
-
-  function onChageMonth(month: string) {
-    setMonthSearch(month);
-  }
+  useEffect(() => {
+    handleGetCosts();
+  }, []);
 
   return (
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
-          <h1 className="m-0">Custos</h1>
+          <h1 className="m-0">Custos - Contas a Pagar</h1>
           {(role === "Administrador" || role === "Notas") && (
             <Button
               onClick={() => {
@@ -212,21 +139,6 @@ function CostListGeneral() {
               onChange={onChangeCenterCost}
             />
           </div>
-          <div className="field flex flex-column gap-1 w-full">
-            <LabelTitle
-              text="Mês"
-              htmlFor="month"
-              className="font-semibold smaller-text"
-            />
-            <Dropdown
-              options={getMonthsNames()}
-              value={monthSearch}
-              onChange={(e: DropdownChangeEvent) => {
-                setMonthSearch(e.value);
-                onMonthSearch(e.value);
-              }}
-            />
-          </div>
         </div>
         <DataTable
           emptyMessage="Nenhum custo encontrado."
@@ -239,7 +151,6 @@ function CostListGeneral() {
           totalRecords={totalElements}
           size="small"
           className="smaller-text"
-          footer={footerTemplate}
         >
           <Column
             field="centerCost"
@@ -254,30 +165,6 @@ function CostListGeneral() {
           <Column
             field="vendorName"
             header="Favorecido"
-            className="smaller-text"
-          />
-          <Column
-            field="workerValue"
-            header="Valor Mão de Obra"
-            body={priceWorkerValueBodyTemplate}
-            className="smaller-text"
-          />
-          <Column
-            field="materialValue"
-            header="Valor Material"
-            body={priceMaterialValueBodyTemplate}
-            className="smaller-text"
-          />
-          <Column
-            field="totalAmount"
-            header="Valor Total"
-            body={priceTotalValueBodyTemplate}
-            className="smaller-text"
-          />
-          <Column
-            field="inssValue"
-            header="INSS"
-            body={priceInssValueBodyTemplate}
             className="smaller-text"
           />
           <Column
@@ -300,14 +187,14 @@ function CostListGeneral() {
           onPageChange={onPageChange}
         />
         {showCreateDialog && (
-          <CostCreateGenericDialog
+          <CostPurchaseCreateDialog
             visible={showCreateDialog}
             onHide={closeCreateDialog}
             onCreate={onCreateCost}
           />
         )}
         {currCost && (
-          <CostUpdateDialog
+          <CostPurchaseDialog
             visible={showDialog}
             onHide={closeUpdateDialog}
             onUpdate={onUpateCost}
@@ -341,4 +228,4 @@ function CostListGeneral() {
   }
 }
 
-export default CostListGeneral;
+export default CostPurchaseList;

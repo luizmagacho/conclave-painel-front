@@ -14,8 +14,15 @@ import Cookies from "js-cookie";
 
 function SupplierCompleteInfo() {
   const role = Cookies.get("portal.role");
-  const { selectedSupplier, handleGetSupplierById, handleUpdateSupplier } =
-    useContext(SupplierContext);
+  const {
+    selectedSupplier,
+    existsCnpj,
+    existsCpf,
+    handleGetSupplierById,
+    handleUpdateSupplier,
+    handleValidateCnpj,
+    handleValidateCpf,
+  } = useContext(SupplierContext);
   const [loading, setLoading] = useState<boolean>(false);
   const [updatedSupplier, setUpdatedSupplier] = useState<Supplier>({
     id: selectedSupplier?.id || "",
@@ -45,6 +52,8 @@ function SupplierCompleteInfo() {
   });
   const [invalidPersonalInfo, setInvalidPersonalInfo] =
     useState<boolean>(false);
+  const [invalidCnpj, setInvalidCnpj] = useState<boolean>(false);
+  const [invalidCpf, setInvalidCpf] = useState<boolean>(false);
   const [invalidCompleteName, setInvalidCompleteName] =
     useState<boolean>(false);
   const [invalidShortenedName, setInvalidShortenedName] =
@@ -74,15 +83,27 @@ function SupplierCompleteInfo() {
 
   const [showDisabled, setShowDisabled] = useState<boolean>(true);
 
-  const inputMaskComponent = useRef(null);
-
   const router = useRouter();
 
   async function validateFields() {
-    setInvalidPersonalInfo(
-      (!updatedSupplier.cnpj || updatedSupplier.cnpj === "") &&
-        (!updatedSupplier.cpf || updatedSupplier.cpf === "")
+    await setInvalidCpf(
+      !updatedSupplier.cpf ||
+        updatedSupplier.cpf === "" ||
+        updatedSupplier.cpf.length >= 11
     );
+
+    await setInvalidCnpj(!updatedSupplier.cnpj || updatedSupplier.cnpj === "");
+    setInvalidPersonalInfo(invalidCpf && invalidCnpj);
+    console.log("Validate CPF: ", existsCpf);
+    console.log(
+      "Invalid Personal Info1: ",
+      !updatedSupplier.cnpj || updatedSupplier.cnpj === ""
+    );
+    console.log(
+      "Invalid Personal Info2: ",
+      !updatedSupplier.cpf || updatedSupplier.cpf === ""
+    );
+    console.log("Invalid Personal Info: ", invalidPersonalInfo);
     if (!invalidPersonalInfo) {
       await handleUpdateSupplier(updatedSupplier);
       router.push("/fornecedores");
@@ -139,9 +160,21 @@ function SupplierCompleteInfo() {
     }
   }, [selectedSupplier]);
 
+  useEffect(() => {
+    console.log(updatedSupplier.cnpj.replace(`/[^a-zA-Z0-9\s]/g`, ""));
+    console.log(updatedSupplier.cpf.replace(`/[^a-zA-Z0-9\s]/g`, ""));
+    if (updatedSupplier.cnpj && updatedSupplier.cnpj.length >= 14) {
+      handleValidateCnpj(updatedSupplier.cnpj);
+    }
+    console.log(updatedSupplier.cpf.length);
+    if (updatedSupplier.cpf && updatedSupplier.cpf.length >= 11) {
+      handleValidateCpf(updatedSupplier.cpf);
+    }
+  }, [updatedSupplier.cnpj, updatedSupplier.cpf]);
+
   return (
     <Card className="m-2">
-      <section className="flex flex-column gap-2 p-5 w-full">
+      <section className="flex flex-column gap-1 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
           <h1 className="text-xl m-0">Visualizar Fornecedor</h1>
           {role === "Administrador" && (
@@ -158,7 +191,7 @@ function SupplierCompleteInfo() {
             </Button>
           )}
         </div>
-        <div className="card flex flex-column md:flex-row gap-2 w-11/12">
+        <div className="card flex flex-column md:flex-row gap-1 w-11/12">
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="CNPJ"
@@ -255,7 +288,7 @@ function SupplierCompleteInfo() {
             )}
           </div>
         </div>
-        <div className="card flex flex-column md:flex-row gap-3 w-11/12">
+        <div className="card flex flex-column md:flex-row gap-1 w-11/12">
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="Logradouro"
@@ -346,8 +379,8 @@ function SupplierCompleteInfo() {
             )}
           </div>
         </div>
-        <Divider />
-        <div className="card flex flex-column md:flex-row gap-3 w-11/12">
+        <Divider className="gap-1" />
+        <div className="card flex flex-column md:flex-row gap-1 w-11/12">
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="Nome Vendedor"
@@ -372,13 +405,13 @@ function SupplierCompleteInfo() {
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
-              text="Telefone Vendedor"
+              text="Celular Vendedor I"
               htmlFor="sellerPhone"
               className="font-semibold text-sm"
             />
             <InputMask
-              mask="(99) 9999-9999"
-              placeholder="(99) 9999-9999"
+              mask="(99) 99999-9999"
+              placeholder="(99) 99999-9999"
               onChange={(e) => {
                 setUpdatedSupplier({
                   ...updatedSupplier,
@@ -392,13 +425,13 @@ function SupplierCompleteInfo() {
             {invalidSellerPhone && (
               <Message
                 severity="error"
-                text="Telefone Vendedor é obrigatório"
+                text="Celular Vendedor I é obrigatório"
               />
             )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
-              text="Celular Vendedor"
+              text="Celular Vendedor II"
               htmlFor="sellerMobilePhone"
               className="font-semibold text-sm"
             />
@@ -467,13 +500,13 @@ function SupplierCompleteInfo() {
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
-              text="Telefone Financeiro"
+              text="Celular Financeiro I"
               htmlFor="FinancialPhone"
               className="font-semibold text-sm"
             />
             <InputMask
-              mask="(99) 9999-9999"
-              placeholder="(99) 9999-9999"
+              mask="(99) 99999-9999"
+              placeholder="(99) 99999-9999"
               onChange={(e) => {
                 setUpdatedSupplier({
                   ...updatedSupplier,
@@ -487,13 +520,13 @@ function SupplierCompleteInfo() {
             {invalidFinancialPhone && (
               <Message
                 severity="error"
-                text="Telefone Financeiro é obrigatório"
+                text="Celular Financeiro I é obrigatório"
               />
             )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
-              text="Celular Financeiro"
+              text="Celular Financeiro II"
               htmlFor="FinancialMobilePhone"
               className="font-semibold text-sm"
             />
@@ -544,7 +577,7 @@ function SupplierCompleteInfo() {
           </div>
         </div>
         <Divider />
-        <div className="card flex flex-column md:flex-row gap-3 w-11/12">
+        <div className="card flex flex-column md:flex-row gap-1 w-11/12">
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="Banco 1"

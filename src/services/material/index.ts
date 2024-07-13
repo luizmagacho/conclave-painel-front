@@ -27,8 +27,12 @@ export async function getAllMaterials() {
   return res.data;
 }
 
-export async function postMaterial(material: MaterialDTO) {
-  let res = await api.post(baseUrl, material);
+export async function postMaterial(material: MaterialDTO, isOrder: boolean) {
+  let res = await api.post(baseUrl, material, {
+    params: {
+      isOrder,
+    },
+  });
   return res.status;
 }
 

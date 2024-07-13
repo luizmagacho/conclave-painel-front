@@ -16,12 +16,35 @@ import { Card } from "primereact/card";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Dialog } from "primereact/dialog";
+import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
+import { Message } from "primereact/message";
+import { Toast } from "primereact/toast";
 import { Toolbar } from "primereact/toolbar";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 function OrderCompleteInfo() {
-  const { selectedOrder, handleGetOrderById } = useContext(OrderContext);
+  const router = useRouter();
+  let name;
+  let id;
+  if (typeof window !== "undefined") {
+    name = window.localStorage.getItem("portal.name");
+    id = window.localStorage.getItem("portal.id");
+  }
+  const [invalidListMaterials, setInvalidListMaterials] =
+    useState<boolean>(false);
+  const [listMaterials, setListMaterials] = useState<Material[]>([]);
+  const [selectedMaterials, setSelectedMaterials] = useState<Material[]>([]);
+  const [showAddMaterial, setShowAddMaterial] = useState<boolean>(false);
+  const [invalidConstructionCode, setInvalidConstructionCode] =
+    useState<boolean>(false);
+  const [invalidName, setInvalidName] = useState<boolean>(false);
+  const [invalidQuantity, setInvalidQuantity] = useState<boolean>(false);
+  const [invalidMetricUnit, setInvalidMetricUnit] = useState<boolean>(false);
+  const [selectedConstruction, setSelectedConstruction] =
+    useState<Construction>();
+  const { selectedOrder, handleGetOrderById, handleUpdateOrder } =
+    useContext(OrderContext);
   const [updatedOrder, setUpdatedOrder] = useState<Order>({
     id: null,
     construction: {
@@ -45,6 +68,7 @@ function OrderCompleteInfo() {
     },
     materials: [],
     orderDate: new Date(),
+    orderDateFormatted: "",
     userRequest: "",
     userRequestId: "",
     finish: false,
@@ -54,48 +78,65 @@ function OrderCompleteInfo() {
   const [updatedMaterial, setUpdatedMaterial] = useState<Material>({
     id: "",
     name: "",
-    quantity: "",
+    quantity: null,
     metricUnit: "",
     enabled: false,
   });
-  let name;
-  let id;
   if (typeof window !== "undefined") {
     name = window.localStorage.getItem("portal.name");
     id = window.localStorage.getItem("portal.id");
   }
-  const [listMaterials, setListMaterials] = useState<Material[]>([]);
-  const [selectedMaterials, setSelectedMaterials] = useState<Material[]>([]);
-  const [showAddMaterial, setShowAddMaterial] = useState<boolean>(false);
+  const [newQuantity, setNewQuantity] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [selectedConstruction, setSelectedConstruction] =
-    useState<Construction>();
-  const [invalidName, setInvalidName] = useState<boolean>(false);
-  const [invalidQuantity, setInvalidQuantity] = useState<boolean>(false);
-  const [invalidMetricUnit, setInvalidMetricUnit] = useState<boolean>(false);
   const { constructions } = useContext(ConstructionContext);
+
+  const toast = useRef<Toast>(null);
 
   const [constructionsItems, setConstructionsItems] =
     useState<Construction[]>(constructions);
 
-  const { allMaterials } = useContext(MaterialContext);
+  const { allMaterials, handleGetAllMaterials } = useContext(MaterialContext);
   const [materialsItems, setMaterialsItems] =
     useState<Material[]>(allMaterials);
 
-  const [deleteProductsDialog, setDeleteProductsDialog] =
+  const [deleteMaterialsDialog, setDeleteMaterialsDialog] =
     useState<boolean>(false);
 
   const confirmDeleteSelected = () => {
-    setDeleteProductsDialog(true);
+    setDeleteMaterialsDialog(true);
+  };
+
+  const hideDeleteMaterialsDialog = () => {
+    setDeleteMaterialsDialog(false);
+  };
+
+  const deletedSelectedMaterials = () => {
+    let _materials = listMaterials.filter(
+      (material) => !selectedMaterials.includes(material)
+    );
+    setListMaterials(_materials);
+    setDeleteMaterialsDialog(false);
+    setSelectedMaterials([]);
+    setUpdatedOrder({ ...updatedOrder, materials: _materials });
+    toast.current?.show({
+      severity: "success",
+      summary: "Successful",
+      detail: "Materials Deleted",
+      life: 3000,
+    });
   };
 
   const hideAddDialog = () => {
     setShowAddMaterial(false);
   };
 
-  const [showDisabled, setShowDisabled] = useState<boolean>(true);
+  useEffect(() => {
+    setMaterialsItems(allMaterials);
+  }, [allMaterials]);
 
-  const router = useRouter();
+  useEffect(() => {
+    handleGetAllMaterials();
+  }, []);
 
   useEffect(() => {
     setConstructionsItems(constructions);
@@ -136,6 +177,7 @@ function OrderCompleteInfo() {
     try {
       setUpdatedOrder((prevOrder) => ({
         ...prevOrder,
+        id: selectedOrder?.id || prevOrder.id,
         construction: selectedOrder?.construction || prevOrder.construction,
         materials: selectedOrder?.materials || prevOrder.materials,
         finish: selectedOrder?.finish || prevOrder.finish,
@@ -173,53 +215,81 @@ function OrderCompleteInfo() {
         _filteredMaterials = [...allMaterials];
       } else {
         _filteredMaterials = materialsItems.filter((material) => {
-          return material.name.startsWith(event.query);
+          return material.name
+            .toLocaleUpperCase()
+            .startsWith(event.query.toLocaleUpperCase());
         });
       }
-    });
+      setMaterialsItems(_filteredMaterials);
+    }, 150);
   };
 
   function validateFieldsMaterial() {
     setInvalidName(!updatedMaterial.name || updatedMaterial.name === "");
-    setInvalidQuantity(
-      !updatedMaterial.quantity || updatedMaterial.quantity === ""
-    );
-    setInvalidMetricUnit(
-      !updatedMaterial.metricUnit || updatedMaterial.metricUnit === ""
-    );
-    if (!invalidName && !invalidQuantity && !invalidMetricUnit) {
-      const updatedMaterials = [...allMaterials, updatedMaterial];
+    setInvalidQuantity(!newQuantity);
+    if (!invalidName && !invalidQuantity) {
       setListMaterials([
         ...listMaterials,
         {
           id: updatedMaterial.id,
           name: updatedMaterial.name,
           metricUnit: updatedMaterial.metricUnit,
-          quantity: updatedMaterial.quantity,
+          quantity: newQuantity,
           enabled: updatedMaterial.enabled,
         },
       ]);
       hideAddDialog();
+      setUpdatedMaterial({
+        id: "",
+        name: "",
+        quantity: null,
+        metricUnit: "",
+        enabled: true,
+      });
+      setNewQuantity(null);
     }
   }
 
-  // const updateReviewOrder = () => {
-  //   setUpdatedOrder((prevOrder) => ({
-  //     ...prevOrder,
-  //     construction: selectedConstruction,
-  //     materials: listMaterials,
-  //   }));
-  // };
-
   async function validateFields() {
-    // setInvalidConstructionCode(
-    //   !newOrder.construction?.code || newOrder.construction?.code === ""
-    // );
-    // if (!invalidConstructionCode) {
-    //   await handlePostOrder(newOrder);
-    //   router.push("/pedidos");
-    // }
+    setInvalidConstructionCode(
+      !updatedOrder.construction?.code || updatedOrder.construction?.code === ""
+    );
+    console.log("List Materials: ", updatedOrder);
+    setInvalidListMaterials(!listMaterials || listMaterials.length === 0);
+    if (!invalidConstructionCode && !invalidListMaterials) {
+      await handleUpdateOrder(updatedOrder);
+      router.push("/pedidos");
+    }
   }
+
+  const updatedUpdatedOrder = () => {
+    setUpdatedOrder((prevOrder) => ({
+      ...prevOrder,
+      construction: selectedConstruction || prevOrder.construction,
+      materials: listMaterials || prevOrder.materials,
+    }));
+  };
+
+  useEffect(() => {
+    updatedUpdatedOrder();
+  }, [selectedConstruction, listMaterials]);
+
+  const deleteMaterialsDialogFooter = (
+    <React.Fragment>
+      <Button
+        label="Não"
+        icon="pi pi-times"
+        outlined
+        onClick={hideDeleteMaterialsDialog}
+      />
+      <Button
+        label="Sim"
+        icon="pi pi-check"
+        severity="danger"
+        onClick={deletedSelectedMaterials}
+      />
+    </React.Fragment>
+  );
 
   return (
     <>
@@ -239,10 +309,19 @@ function OrderCompleteInfo() {
                 value={selectedConstruction}
                 suggestions={constructionsItems}
                 completeMethod={constructionSearch}
-                onChange={(e: AutoCompleteChangeEvent) =>
-                  setSelectedConstruction(e.value)
-                }
+                onChange={(e: AutoCompleteChangeEvent) => {
+                  setSelectedConstruction(e.value);
+                  setInvalidConstructionCode(false);
+                }}
+                forceSelection
               />
+              {invalidConstructionCode && (
+                <Message
+                  severity="error"
+                  text="Centro de custo é obrigatório"
+                  className="smaller-text"
+                />
+              )}
             </div>
             <div className="card flex flex-column md:flex-row gap-2 w-full">
               <div className="field flex flex-column gap-2 w-full">
@@ -331,6 +410,13 @@ function OrderCompleteInfo() {
                   style={{ minWidth: "12rem" }}
                 ></Column>
               </DataTable>
+              {invalidListMaterials && (
+                <Message
+                  severity="error"
+                  text="Pelo menos um material é obrigatório"
+                  className="smaller-text"
+                />
+              )}
             </Card>
           </div>
           <div
@@ -374,23 +460,13 @@ function OrderCompleteInfo() {
             <AutoComplete
               type="text"
               field="name"
-              value={selectedMaterials}
+              value={updatedMaterial}
               suggestions={materialsItems}
               completeMethod={materialSearch}
               onChange={(e: AutoCompleteChangeEvent) => {
-                const selectedMaterial = e.value;
-                setSelectedMaterials([...selectedMaterials, selectedMaterial]);
+                setUpdatedMaterial(e.value);
               }}
-            />
-            <InputText
-              type="text"
-              onChange={(e) => {
-                setUpdatedMaterial({
-                  ...updatedMaterial,
-                  name: e.target.value,
-                });
-              }}
-              value={updatedMaterial?.name}
+              forceSelection
             />
           </div>
           <div className="field gap-10">
@@ -401,15 +477,15 @@ function OrderCompleteInfo() {
                 className="font-semibold"
                 required={true}
               />
-              <InputText
-                type="number"
+              <InputNumber
                 onChange={(e) => {
-                  setUpdatedMaterial({
-                    ...updatedMaterial,
-                    quantity: e.target.value,
-                  });
+                  if (e.value) {
+                    setNewQuantity(e.value);
+                  }
+                  setInvalidQuantity(false);
                 }}
-                value={updatedMaterial?.quantity}
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={newQuantity}
               />
             </div>
             <div className="field flex flex-column gap-2">
@@ -428,6 +504,7 @@ function OrderCompleteInfo() {
                   });
                 }}
                 value={updatedMaterial?.metricUnit}
+                disabled
               />
             </div>
           </div>
@@ -445,6 +522,27 @@ function OrderCompleteInfo() {
             label="Salvar"
             severity="danger"
           />
+        </div>
+      </Dialog>
+      <Dialog
+        visible={deleteMaterialsDialog}
+        style={{ width: "32rem" }}
+        breakpoints={{ "960px": "75vw", "641px": "90vw" }}
+        header="Confirmação"
+        modal
+        footer={deleteMaterialsDialogFooter}
+        onHide={hideDeleteMaterialsDialog}
+      >
+        <div className="confirmation-content">
+          <i
+            className="pi pi-exclamation-triangle mr-3"
+            style={{ fontSize: "2rem" }}
+          />
+          {selectedMaterials && (
+            <span>
+              Tem certeza que dejeja excluir os materiais selecionados?
+            </span>
+          )}
         </div>
       </Dialog>
     </>

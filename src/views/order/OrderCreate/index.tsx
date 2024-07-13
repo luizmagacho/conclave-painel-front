@@ -3,6 +3,7 @@ import { ConstructionContext } from "@/context/ConstructionContext";
 import { MaterialContext } from "@/context/MaterialContext";
 import { OrderContext } from "@/context/OrderContext";
 import { Construction, ConstructionDTO } from "@/services/construction/type";
+import { updateMaterial } from "@/services/material";
 import { Material, MaterialDTO } from "@/services/material/type";
 import { OrderDTO } from "@/services/order/type";
 import { Router, useRouter } from "next/router";
@@ -16,9 +17,12 @@ import { Card } from "primereact/card";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Dialog } from "primereact/dialog";
+import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
+import { Message } from "primereact/message";
+import { Toast } from "primereact/toast";
 import { Toolbar } from "primereact/toolbar";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 function OrderCreate() {
   const router = useRouter();
@@ -28,12 +32,13 @@ function OrderCreate() {
     name = window.localStorage.getItem("portal.name");
     id = window.localStorage.getItem("portal.id");
   }
+  const dt = useRef<DataTable<MaterialDTO[]>>(null);
+  const [invalidListMaterials, setInvalidListMaterials] =
+    useState<boolean>(false);
   const [listMaterials, setListMaterials] = useState<MaterialDTO[]>([]);
   const [selectedMaterials, setSelectedMaterials] = useState<MaterialDTO[]>([]);
   const [showAddMaterial, setShowAddMaterial] = useState<boolean>(false);
   const [invalidConstructionCode, setInvalidConstructionCode] =
-    useState<boolean>(false);
-  const [invalidConstructionBranchBank, setInvalidConstructionBranchBank] =
     useState<boolean>(false);
   const [invalidName, setInvalidName] = useState<boolean>(false);
   const [invalidQuantity, setInvalidQuantity] = useState<boolean>(false);
@@ -60,10 +65,14 @@ function OrderCreate() {
   });
   const [newMaterial, setNewMaterial] = useState<MaterialDTO>({
     name: "",
-    quantity: "",
+    quantity: null,
     metricUnit: "",
   });
-  const [deleteProductsDialog, setDeleteProductsDialog] =
+
+  const toast = useRef<Toast>(null);
+
+  const [newQuantity, setNewQuantity] = useState<number | null>(null);
+  const [deleteMaterialsDialog, setDeleteMaterialsDialog] =
     useState<boolean>(false);
 
   const { handlePostOrder } = useContext(OrderContext);
@@ -78,7 +87,7 @@ function OrderCreate() {
     useState<Material[]>(allMaterials);
 
   const confirmDeleteSelected = () => {
-    setDeleteProductsDialog(true);
+    setDeleteMaterialsDialog(true);
   };
 
   useEffect(() => {
@@ -93,13 +102,55 @@ function OrderCreate() {
     handleGetAllMaterials();
   }, []);
 
+  const hideDeleteMaterialsDialog = () => {
+    setDeleteMaterialsDialog(false);
+  };
+
+  const deletedSelectedMaterials = () => {
+    let _materials = listMaterials.filter(
+      (material) => !selectedMaterials.includes(material)
+    );
+    setListMaterials(_materials);
+    setDeleteMaterialsDialog(false);
+    setSelectedMaterials([]);
+    toast.current?.show({
+      severity: "success",
+      summary: "Successful",
+      detail: "Materials Deleted",
+      life: 3000,
+    });
+  };
+
+  const hideAddDialog = () => {
+    setShowAddMaterial(false);
+  };
+
+  useEffect(() => {
+    setMaterialsItems(allMaterials);
+  }, [allMaterials]);
+
+  useEffect(() => {
+    handleGetAllMaterials();
+  }, []);
+
+  useEffect(() => {
+    setConstructionsItems(constructions);
+  }, [constructions]);
+
+  useEffect(() => {
+    setMaterialsItems(allMaterials);
+  }, [allMaterials]);
+
   const rightToolbarTemplate = () => {
     return (
       <div className="flex flex-wrap gap-2">
         <Button
           label="Novo"
           icon="pi pi-plus"
-          onClick={() => setShowAddMaterial(true)}
+          onClick={() => {
+            if (!materialsItems) alert("Cadastre materiais");
+            setShowAddMaterial(true);
+          }}
           severity="success"
         />
         <Button
@@ -133,36 +184,52 @@ function OrderCreate() {
       if (!event.query.trim().length) {
         _filteredMaterials = [...allMaterials];
       } else {
+        console.log("Material Items: ", materialsItems);
         _filteredMaterials = materialsItems.filter((material) => {
           return material.name
             .toLocaleUpperCase()
             .startsWith(event.query.toLocaleUpperCase());
         });
       }
+      console.log("Materiais Filtrados: ", _filteredMaterials);
       setMaterialsItems(_filteredMaterials);
+      if (_filteredMaterials.length === 0) setMaterialsItems(allMaterials);
     }, 150);
   };
 
-  const hideAddDialog = () => {
-    setShowAddMaterial(false);
-  };
-
   function validateFieldsMaterial() {
-    setInvalidName(!newMaterial.name || newMaterial.name === "");
-    setInvalidQuantity(!newMaterial.quantity || newMaterial.quantity === "");
-    setInvalidMetricUnit(
-      !newMaterial.metricUnit || newMaterial.metricUnit === ""
-    );
-    if (!invalidName && !invalidQuantity && !invalidMetricUnit) {
+    setInvalidName(!newMaterial.name || updateMaterial.name === "");
+    setInvalidQuantity(!newQuantity);
+
+    if (!invalidName && !invalidQuantity) {
+      setNewMaterial({ ...newMaterial, name: newMaterial.name });
       setListMaterials([
         ...listMaterials,
         {
           name: newMaterial.name,
           metricUnit: newMaterial.metricUnit,
-          quantity: newMaterial.quantity,
+          quantity: newQuantity,
         },
       ]);
       hideAddDialog();
+      setNewMaterial({
+        name: "",
+        quantity: null,
+        metricUnit: "",
+      });
+      setNewQuantity(null);
+    }
+  }
+
+  async function validateFields() {
+    setInvalidConstructionCode(
+      !newOrder.construction?.code || newOrder.construction?.code === ""
+    );
+    setInvalidListMaterials(!listMaterials || listMaterials.length === 0);
+    console.log(newOrder);
+    if (!invalidConstructionCode && !invalidListMaterials) {
+      await handlePostOrder(newOrder);
+      router.push("/pedidos");
     }
   }
 
@@ -178,15 +245,22 @@ function OrderCreate() {
     updateNewOrder();
   }, [selectedConstruction, listMaterials]);
 
-  async function validateFields() {
-    setInvalidConstructionCode(
-      !newOrder.construction?.code || newOrder.construction?.code === ""
-    );
-    if (!invalidConstructionCode) {
-      await handlePostOrder(newOrder);
-      router.push("/pedidos");
-    }
-  }
+  const deleteMaterialsDialogFooter = (
+    <React.Fragment>
+      <Button
+        label="Não"
+        icon="pi pi-times"
+        outlined
+        onClick={hideDeleteMaterialsDialog}
+      />
+      <Button
+        label="Sim"
+        icon="pi pi-check"
+        severity="danger"
+        onClick={deletedSelectedMaterials}
+      />
+    </React.Fragment>
+  );
 
   return (
     <>
@@ -206,10 +280,19 @@ function OrderCreate() {
                 value={selectedConstruction}
                 suggestions={constructionsItems}
                 completeMethod={constructionSearch}
-                onChange={(e: AutoCompleteChangeEvent) =>
-                  setSelectedConstruction(e.value)
-                }
+                onChange={(e: AutoCompleteChangeEvent) => {
+                  setSelectedConstruction(e.value);
+                  setInvalidConstructionCode(false);
+                }}
+                forceSelection
               />
+              {invalidConstructionCode && (
+                <Message
+                  severity="error"
+                  text="Centro de custo é obrigatório"
+                  className="smaller-text"
+                />
+              )}
             </div>
             <div className="card flex flex-column md:flex-row gap-2 w-full">
               <div className="field flex flex-column gap-2 w-full">
@@ -265,14 +348,17 @@ function OrderCreate() {
               <h3>Cadastrar Materiais</h3>
               <Toolbar className="mb-4" end={rightToolbarTemplate}></Toolbar>
               <DataTable
+                ref={dt}
                 emptyMessage="Nenhum material adicionado"
                 value={listMaterials}
                 rows={10}
-                selection={selectedMaterials}
+                selection={selectedMaterials!}
                 onSelectionChange={(e) => {
+                  console.log(e.value);
                   if (Array.isArray(e.value)) {
                     setSelectedMaterials(e.value);
                   }
+                  console.log(selectedMaterials);
                 }}
                 dataKey="id"
                 paginator
@@ -298,6 +384,13 @@ function OrderCreate() {
                   style={{ minWidth: "12rem" }}
                 ></Column>
               </DataTable>
+              {invalidListMaterials && (
+                <Message
+                  severity="error"
+                  text="Pelo menos um material é obrigatório"
+                  className="smaller-text"
+                />
+              )}
             </Card>
           </div>
           <div
@@ -347,6 +440,7 @@ function OrderCreate() {
               onChange={(e: AutoCompleteChangeEvent) => {
                 setNewMaterial(e.value);
               }}
+              forceSelection
             />
           </div>
           <div className="field gap-2">
@@ -357,13 +451,15 @@ function OrderCreate() {
                 className="font-semibold"
                 required={true}
               />
-              <InputText
-                type="number"
+              <InputNumber
                 onChange={(e) => {
-                  setNewMaterial({ ...newMaterial, quantity: e.target.value });
+                  if (e.value) {
+                    setNewQuantity(e.value);
+                  }
                   setInvalidQuantity(false);
                 }}
-                value={newMaterial?.quantity}
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={newQuantity}
               />
             </div>
             <div className="field flex flex-column gap-2">
@@ -383,6 +479,7 @@ function OrderCreate() {
                   setInvalidMetricUnit(false);
                 }}
                 value={newMaterial?.metricUnit}
+                disabled
               />
             </div>
           </div>
@@ -400,6 +497,27 @@ function OrderCreate() {
             label="Salvar"
             severity="danger"
           />
+        </div>
+      </Dialog>
+      <Dialog
+        visible={deleteMaterialsDialog}
+        style={{ width: "32rem" }}
+        breakpoints={{ "960px": "75vw", "641px": "90vw" }}
+        header="Confirmação"
+        modal
+        footer={deleteMaterialsDialogFooter}
+        onHide={hideDeleteMaterialsDialog}
+      >
+        <div className="confirmation-content">
+          <i
+            className="pi pi-exclamation-triangle mr-3"
+            style={{ fontSize: "2rem" }}
+          />
+          {selectedMaterials && (
+            <span>
+              Tem certeza que dejeja excluir os materiais selecionados?
+            </span>
+          )}
         </div>
       </Dialog>
     </>
