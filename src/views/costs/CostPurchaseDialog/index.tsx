@@ -1,7 +1,9 @@
 import LabelTitle from "@/components/LabelTitle";
 import { ConstructionContext } from "@/context/ConstructionContext";
+import { SupplierContext } from "@/context/SupplierContext";
 import { Construction } from "@/services/construction/type";
 import { Cost } from "@/services/costs/type";
+import { Supplier, SupplierName } from "@/services/supplier/type";
 import { convertStringToDate, formatDateToYYYYMMDD } from "@/util/date";
 import { useRouter } from "next/router";
 import {
@@ -54,11 +56,19 @@ function CostPurchaseDialog({
     userId: data.userId,
     enabled: data.enabled,
     additionalDetails: data.additionalDetails,
+    invoice: data.invoice,
+    numContract: data.numContract,
     updatedAt: data.updatedAt,
     createdAt: data.createdAt,
   });
   const { constructions, handleGetConstructionById, selectedConstruction } =
     useContext(ConstructionContext);
+
+  const [selectedSupplier, setSelectedSupplier] = useState<SupplierName>({
+    shortenedName: data.vendorName,
+  });
+
+  const { suppliers } = useContext(SupplierContext);
 
   const [checkedConstruction, setCheckedConstruction] =
     useState<Construction | null>(selectedConstruction);
@@ -103,6 +113,8 @@ function CostPurchaseDialog({
   const [constructionsItems, setConstructionsItems] =
     useState<Construction[]>(constructions);
 
+  const [suppliersItems, setSuppliersItems] = useState<Supplier[]>(suppliers);
+
   const constructionSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
       let _filteredConstructions;
@@ -114,6 +126,20 @@ function CostPurchaseDialog({
         });
       }
       setConstructionsItems(_filteredConstructions);
+    }, 150);
+  };
+
+  const supplierSearch = (event: AutoCompleteCompleteEvent) => {
+    setTimeout(() => {
+      let _filteredSuppliers;
+      if (!event.query.trim().length) {
+        _filteredSuppliers = [...suppliers];
+      } else {
+        _filteredSuppliers = suppliersItems.filter((supplier) => {
+          return supplier.shortenedName.startsWith(event.query);
+        });
+        setSuppliersItems(_filteredSuppliers);
+      }
     }, 150);
   };
 
@@ -130,6 +156,13 @@ function CostPurchaseDialog({
   useEffect(() => {
     setCheckedConstruction(selectedConstruction);
   }, [selectedConstruction]);
+
+  useEffect(() => {
+    setUpdatedCost((prevCost) => ({
+      ...prevCost,
+      vendorName: selectedSupplier.shortenedName,
+    }));
+  }, [selectedSupplier]);
 
   useEffect(() => {
     handleGetConstructionById(data.centerCostId);
@@ -150,23 +183,26 @@ function CostPurchaseDialog({
             htmlFor="centerCost"
             className="font-semibold"
           />
-          <AutoComplete
-            type="text"
-            field="code"
-            value={checkedConstruction}
-            suggestions={constructionsItems}
-            completeMethod={constructionSearch}
-            onChange={(e: AutoCompleteChangeEvent) =>
-              setCheckedConstruction(e.value)
-            }
-          />
-          {invalidPurchaseDate && (
-            <Message
-              severity="error"
-              text="Data de Custo é obrigatório"
-              className="smaller-text"
+          <div className="card p-fluid">
+            <AutoComplete
+              type="text"
+              field="code"
+              style={{ height: "30px", fontSize: "0.8rem" }}
+              value={checkedConstruction}
+              suggestions={constructionsItems}
+              completeMethod={constructionSearch}
+              onChange={(e: AutoCompleteChangeEvent) =>
+                setCheckedConstruction(e.value)
+              }
             />
-          )}
+            {invalidPurchaseDate && (
+              <Message
+                severity="error"
+                text="Data de Custo é obrigatório"
+                className="smaller-text"
+              />
+            )}
+          </div>
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -240,32 +276,34 @@ function CostPurchaseDialog({
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
             text="Favorecido"
-            htmlFor="vendorName"
+            htmlFor="shortenedName"
             className="font-semibold"
           />
-          <InputText
-            type="text"
-            onChange={(e) => {
-              setUpdatedCost({
-                ...updatedCost,
-                vendorName: e.target.value,
-              });
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedCost?.vendorName}
-          />
-          {invalidVendorName && (
-            <Message
-              severity="error"
-              text="Favorecido é obrigatório"
-              className="smaller-text"
+          <div className="card p-fluid">
+            <AutoComplete
+              type="text"
+              field="shortenedName"
+              style={{ height: "30px", fontSize: "0.8rem" }}
+              value={selectedSupplier}
+              suggestions={suppliersItems}
+              completeMethod={supplierSearch}
+              onChange={(e: AutoCompleteChangeEvent) =>
+                setSelectedSupplier(e.value)
+              }
             />
-          )}
+            {invalidVendorName && (
+              <Message
+                severity="error"
+                text="Favorecido é obrigatório"
+                className="smaller-text"
+              />
+            )}
+          </div>
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Categoria"
-            htmlFor="costCategory"
+            text="Tipo Obra"
+            htmlFor="costType"
             className="font-semibold"
           />
           <InputText
@@ -273,11 +311,11 @@ function CostPurchaseDialog({
             onChange={(e) => {
               setUpdatedCost({
                 ...updatedCost,
-                costCategory: e.target.value,
+                costType: e.target.value,
               });
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedCost?.costCategory}
+            value={updatedCost?.costType}
           />
           {invalidCostCategory && (
             <Message
@@ -331,11 +369,7 @@ function CostPurchaseDialog({
           </div>
         </div>
         <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Memo"
-            htmlFor="additionalDetails"
-            className="font-semibold"
-          />
+          <LabelTitle text="Memo" htmlFor="memo" className="font-semibold" />
           <InputText
             type="text"
             onChange={(e) => {

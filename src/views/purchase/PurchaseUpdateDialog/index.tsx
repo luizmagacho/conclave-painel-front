@@ -268,25 +268,27 @@ function PurchaseUpdateDialog({
             htmlFor="centerCost"
             className="font-semibold"
           />
-          <AutoComplete
-            type="text"
-            field="code"
-            value={selectedConstruction}
-            suggestions={constructionsItems}
-            completeMethod={constructionSearch}
-            onChange={(e: AutoCompleteChangeEvent) =>
-              setSelectedConstruction(e.value)
-            }
-            dropdown
-            style={{ height: "30px", fontSize: "0.75rem" }}
-          />
-          {invalidMaterial && (
-            <Message
-              severity="error"
-              text="Centro de Custo é obrigatório"
-              className="smaller-text"
+          <div className="card p-fluid">
+            <AutoComplete
+              type="text"
+              field="code"
+              value={selectedConstruction}
+              suggestions={constructionsItems}
+              completeMethod={constructionSearch}
+              onChange={(e: AutoCompleteChangeEvent) =>
+                setSelectedConstruction(e.value)
+              }
+              dropdown
+              style={{ height: "30px", fontSize: "0.75rem" }}
             />
-          )}
+            {invalidMaterial && (
+              <Message
+                severity="error"
+                text="Centro de Custo é obrigatório"
+                className="smaller-text"
+              />
+            )}
+          </div>
         </div>
       </div>
       <div className="card flex flex-column md:flex-row gap-3 w-11/12">

@@ -49,6 +49,10 @@ export type SupplierDTO = {
   enabled: boolean;
 };
 
+export type SupplierName = {
+  shortenedName: string;
+};
+
 export type SupplierPaginationParam = {
   size: number;
   page: number;

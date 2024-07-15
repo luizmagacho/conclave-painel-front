@@ -242,6 +242,11 @@ function CostListGeneral() {
           footer={footerTemplate}
         >
           <Column
+            field="invoice"
+            header="Nota Fiscal"
+            className="smaller-text"
+          />
+          <Column
             field="centerCost"
             header="Centro de Custo"
             className="smaller-text"
@@ -281,15 +286,9 @@ function CostListGeneral() {
             className="smaller-text"
           />
           <Column
-            field="paymentDeadlineFormatted"
-            header="Data de Vencimento"
+            field="numContract"
+            header="Contrato"
             className="smaller-text"
-          />
-          <Column
-            field="cleared"
-            header="C"
-            className="smaller-text"
-            body={clearedBodyTemplate}
           />
           <Column header="Opções" body={columnBodyOptions.options} />
         </DataTable>

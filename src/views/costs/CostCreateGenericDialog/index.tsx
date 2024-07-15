@@ -51,6 +51,8 @@ function CostCreateGenericDialog({
     enabled: true,
     additionalDetails: "",
     paymentStatus: false,
+    invoice: "",
+    numContract: "",
   });
   const [selectedConstruction, setSelectedConstruction] =
     useState<Construction>();
@@ -159,23 +161,27 @@ function CostCreateGenericDialog({
             htmlFor="centerCost"
             className="font-semibold"
           />
-          <AutoComplete
-            type="text"
-            field="code"
-            value={selectedConstruction}
-            suggestions={constructionsItems}
-            completeMethod={constructionSearch}
-            onChange={(e: AutoCompleteChangeEvent) =>
-              setSelectedConstruction(e.value)
-            }
-          />
-          {invalidPurchaseDate && (
-            <Message
-              severity="error"
-              text="Data de Custo é obrigatório"
-              className="smaller-text"
+          <div className="card p-fluid">
+            <AutoComplete
+              type="text"
+              field="code"
+              value={selectedConstruction}
+              suggestions={constructionsItems}
+              completeMethod={constructionSearch}
+              onChange={(e: AutoCompleteChangeEvent) =>
+                setSelectedConstruction(e.value)
+              }
+              className="flex-grow" /* Faz o elemento preencher o espaço restante */
+              style={{ height: "30px", fontSize: "0.8rem" }}
             />
-          )}
+            {invalidPurchaseDate && (
+              <Message
+                severity="error"
+                text="Data de Custo é obrigatório"
+                className="smaller-text"
+              />
+            )}
+          </div>
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -194,7 +200,7 @@ function CostCreateGenericDialog({
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Data do Custo"
+            text="Data da Emissão"
             htmlFor="purchaseDate"
             className="font-semibold"
           />
@@ -273,8 +279,8 @@ function CostCreateGenericDialog({
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Categoria"
-            htmlFor="costCategory"
+            text="Tipo de Obra"
+            htmlFor="type"
             className="font-semibold"
           />
           <InputText
@@ -282,16 +288,16 @@ function CostCreateGenericDialog({
             onChange={(e) => {
               setNewCost({
                 ...newCost,
-                costCategory: e.target.value,
+                costType: e.target.value,
               });
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.costCategory}
+            value={newCost?.costType}
           />
           {invalidCostCategory && (
             <Message
               severity="error"
-              text="Categoria é obrigatório"
+              text="Tipo de Obra é obrigatório"
               className="smaller-text"
             />
           )}
@@ -316,6 +322,7 @@ function CostCreateGenericDialog({
                 setNewCost({
                   ...newCost,
                   workerValue: e.value * 100,
+                  materialValue: e.value * 100,
                   inssValue: e.value * 100 * 0.11,
                 });
               }
@@ -347,6 +354,7 @@ function CostCreateGenericDialog({
                 setNewCost({ ...newCost, materialValue: e.value * 100 });
               }
             }}
+            disabled
           />
           {invalidWorkerValue && (
             <Message
@@ -387,49 +395,8 @@ function CostCreateGenericDialog({
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Confirmação de Pagamento"
-            htmlFor="paymentStatus"
-            className="font-semibold"
-          />
-          <div className="flex align-items-center gap-2 w-full a">
-            <div className="flex">
-              <RadioButton
-                value={true}
-                name="Sim"
-                onChange={(e) =>
-                  setNewCost({
-                    ...newCost,
-                    paymentStatus: e.value,
-                  })
-                }
-                checked={newCost.paymentStatus === true}
-              />
-              <label htmlFor="option1" className="ml-2">
-                Sim
-              </label>
-            </div>
-            <div className="flex">
-              <RadioButton
-                value={false}
-                name="Não"
-                onChange={(e) => {
-                  setNewCost({
-                    ...newCost,
-                    paymentStatus: e.value,
-                  });
-                }}
-                checked={newCost.paymentStatus === false}
-              />
-              <label htmlFor="option2" className="ml-2">
-                Não
-              </label>
-            </div>
-          </div>
-        </div>
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Memo"
-            htmlFor="additionalDetails"
+            text="Nota Fiscal"
+            htmlFor="nf"
             className="font-semibold"
           />
           <InputText
@@ -437,11 +404,29 @@ function CostCreateGenericDialog({
             onChange={(e) => {
               setNewCost({
                 ...newCost,
-                additionalDetails: e.target.value,
+                invoice: e.target.value,
               });
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.additionalDetails}
+            value={newCost?.invoice}
+          />
+        </div>
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Contrato"
+            htmlFor="contreact"
+            className="font-semibold"
+          />
+          <InputText
+            type="text"
+            onChange={(e) => {
+              setNewCost({
+                ...newCost,
+                numContract: e.target.value,
+              });
+            }}
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={newCost?.numContract}
           />
         </div>
       </div>

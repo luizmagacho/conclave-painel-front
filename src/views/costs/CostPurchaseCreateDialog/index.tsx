@@ -1,7 +1,9 @@
 import LabelTitle from "@/components/LabelTitle";
 import { ConstructionContext } from "@/context/ConstructionContext";
+import { SupplierContext } from "@/context/SupplierContext";
 import { Construction } from "@/services/construction/type";
 import { CostDTO } from "@/services/costs/type";
+import { Supplier, SupplierName } from "@/services/supplier/type";
 import { formatDateToYYYYMMDD } from "@/util/date";
 import { useRouter } from "next/router";
 import {
@@ -12,7 +14,6 @@ import {
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
-import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { RadioButton } from "primereact/radiobutton";
@@ -50,9 +51,12 @@ function CostPurchaseCreateDialog({
     enabled: true,
     additionalDetails: "",
     paymentStatus: false,
+    invoice: "",
+    numContract: "",
   });
   const [selectedConstruction, setSelectedConstruction] =
     useState<Construction>();
+  const [selectedSupplier, setSelectedSupplier] = useState<SupplierName>();
   const [newPurchaseDate, setNewPurchaseDate] = useState<Date | null>(null);
   const [invalidPurchaseDate, setInvalidPurchaseDate] =
     useState<boolean>(false);
@@ -87,8 +91,12 @@ function CostPurchaseCreateDialog({
 
   const { constructions } = useContext(ConstructionContext);
 
+  const { suppliers } = useContext(SupplierContext);
+
   const [constructionsItems, setConstructionsItems] =
     useState<Construction[]>(constructions);
+
+  const [suppliersItems, setSuppliersItems] = useState<Supplier[]>(suppliers);
 
   const constructionSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
@@ -104,6 +112,20 @@ function CostPurchaseCreateDialog({
     }, 150);
   };
 
+  const supplierSearch = (event: AutoCompleteCompleteEvent) => {
+    setTimeout(() => {
+      let _filteredSuppliers;
+      if (!event.query.trim().length) {
+        _filteredSuppliers = [...suppliers];
+      } else {
+        _filteredSuppliers = suppliersItems.filter((supplier) => {
+          return supplier.shortenedName.startsWith(event.query);
+        });
+        setSuppliersItems(_filteredSuppliers);
+      }
+    }, 150);
+  };
+
   useEffect(() => {
     setNewCost((prevCost) => ({
       ...prevCost,
@@ -113,6 +135,13 @@ function CostPurchaseCreateDialog({
       localBank: selectedConstruction?.local || prevCost.localBank,
     }));
   }, [selectedConstruction]);
+
+  useEffect(() => {
+    setNewCost((prevCost) => ({
+      ...prevCost,
+      vendorName: selectedSupplier?.shortenedName || prevCost.vendorName,
+    }));
+  }, [selectedSupplier]);
 
   return (
     <Dialog
@@ -129,23 +158,25 @@ function CostPurchaseCreateDialog({
             htmlFor="centerCost"
             className="font-semibold"
           />
-          <AutoComplete
-            type="text"
-            field="code"
-            value={selectedConstruction}
-            suggestions={constructionsItems}
-            completeMethod={constructionSearch}
-            onChange={(e: AutoCompleteChangeEvent) =>
-              setSelectedConstruction(e.value)
-            }
-          />
-          {invalidPurchaseDate && (
-            <Message
-              severity="error"
-              text="Data de Custo é obrigatório"
-              className="smaller-text"
+          <div className="card p-fluid">
+            <AutoComplete
+              type="text"
+              field="code"
+              value={selectedConstruction}
+              suggestions={constructionsItems}
+              completeMethod={constructionSearch}
+              onChange={(e: AutoCompleteChangeEvent) =>
+                setSelectedConstruction(e.value)
+              }
             />
-          )}
+            {invalidPurchaseDate && (
+              <Message
+                severity="error"
+                text="Data de Custo é obrigatório"
+                className="smaller-text"
+              />
+            )}
+          </div>
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -222,24 +253,26 @@ function CostPurchaseCreateDialog({
             htmlFor="vendorName"
             className="font-semibold"
           />
-          <InputText
-            type="text"
-            onChange={(e) => {
-              setNewCost({
-                ...newCost,
-                vendorName: e.target.value,
-              });
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.vendorName}
-          />
-          {invalidVendorName && (
-            <Message
-              severity="error"
-              text="Favorecido é obrigatório"
-              className="smaller-text"
+          <div className="card p-fluid">
+            <AutoComplete
+              type="text"
+              field="shortenedName"
+              style={{ height: "30px", fontSize: "0.8rem" }}
+              value={selectedSupplier}
+              suggestions={suppliersItems}
+              completeMethod={supplierSearch}
+              onChange={(e: AutoCompleteChangeEvent) =>
+                setSelectedSupplier(e.value)
+              }
             />
-          )}
+            {invalidVendorName && (
+              <Message
+                severity="error"
+                text="Favorecido é obrigatório"
+                className="smaller-text"
+              />
+            )}
+          </div>
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle

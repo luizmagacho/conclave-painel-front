@@ -20,6 +20,8 @@ export type Cost = {
   userId: string;
   enabled: boolean;
   additionalDetails: string;
+  invoice: string;
+  numContract: string;
   paymentStatus: boolean;
   createdAt: Date | null;
   updatedAt: Date | null;
@@ -42,6 +44,8 @@ export type CostDTO = {
   totalAmount: number | null;
   valueRemas: number | null;
   userId: string;
+  invoice: string;
+  numContract: string;
   enabled: boolean;
   additionalDetails: string;
   paymentStatus: boolean;
