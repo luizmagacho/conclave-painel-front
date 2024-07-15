@@ -42,6 +42,8 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
     enabled: true,
     additionalDetails: "",
     paymentStatus: false,
+    invoice: "",
+    numContract: "",
   });
   const [newPurchaseDate, setNewPurchaseDate] = useState<Date | null>(null);
   const [invalidPurchaseDate, setInvalidPurchaseDate] =

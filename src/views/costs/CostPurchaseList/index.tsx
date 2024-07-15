@@ -107,9 +107,23 @@ function CostPurchaseList() {
     setCenterCostSearch(centerCost);
   }
 
+  const priceTotalValueBodyTemplate = (cost: Cost) => {
+    return formatCurrency(cost.totalAmount || null);
+  };
+
   useEffect(() => {
     handleGetCosts();
   }, []);
+
+  const formatCurrency = (value: number | null) => {
+    if (!value) {
+      return "-";
+    }
+    return (value / 100).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+  };
 
   return (
     <>
@@ -157,11 +171,7 @@ function CostPurchaseList() {
             header="Centro de Custo"
             className="smaller-text"
           />
-          <Column
-            field="purchaseDateFormatted"
-            header="Data do Custo"
-            className="smaller-text"
-          />
+
           <Column
             field="vendorName"
             header="Favorecido"
@@ -170,6 +180,18 @@ function CostPurchaseList() {
           <Column
             field="paymentDeadlineFormatted"
             header="Data de Vencimento"
+            className="smaller-text"
+          />
+
+          <Column
+            field="costType"
+            header="Categoria"
+            className="smaller-text"
+          />
+          <Column
+            field="totalAmount"
+            body={priceTotalValueBodyTemplate}
+            header="Valor"
             className="smaller-text"
           />
           <Column

@@ -51,6 +51,8 @@ function CostUpdateDialog({
     userId: data.userId,
     enabled: data.enabled,
     additionalDetails: data.additionalDetails,
+    invoice: data.invoice,
+    numContract: data.numContract,
     updatedAt: data.updatedAt,
     createdAt: data.createdAt,
   });
