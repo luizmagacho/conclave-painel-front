@@ -81,7 +81,8 @@ function ConstructionList() {
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
   const [showReactiveDialog, setShowReactiveDialog] = useState<boolean>(false);
   const [codeSearch, setCodeSearch] = useState<string>("");
-  const [bankBranchSearch, setbankBranchSearch] = useState<string>("");
+  const [bankBranchSearch, setBankBranchSearch] = useState<string>("");
+  const [localBankSearch, setLocalBankSearch] = useState<string>("");
   const [optionType, setOptionType] = useState<OptionType>({
     type: "Code",
   });
@@ -236,13 +237,33 @@ function ConstructionList() {
   }
 
   function onCodeSearch(code: string) {
-    handleGetConstructions(0, code, bankBranchSearch);
-    handleGetConstructionsNotEnabled(0, code, bankBranchSearch);
+    handleGetConstructions(0, code, bankBranchSearch, localBankSearch);
+    handleGetConstructionsNotEnabled(
+      0,
+      code,
+      bankBranchSearch,
+      localBankSearch
+    );
   }
 
   function onBankBranchSearch(bankBranch: string) {
-    handleGetConstructions(0, codeSearch, bankBranch);
-    handleGetConstructionsNotEnabled(0, codeSearch, bankBranch);
+    handleGetConstructions(0, codeSearch, bankBranch, localBankSearch);
+    handleGetConstructionsNotEnabled(
+      0,
+      codeSearch,
+      bankBranch,
+      localBankSearch
+    );
+  }
+
+  function onLocalBankSearch(localBank: string) {
+    handleGetConstructions(0, codeSearch, bankBranchSearch, localBank);
+    handleGetConstructionsNotEnabled(
+      0,
+      codeSearch,
+      bankBranchSearch,
+      localBank
+    );
   }
 
   function onChangeCodeSearch(code: string) {
@@ -250,53 +271,67 @@ function ConstructionList() {
   }
 
   function onChangeBankBranchSearch(bankBranch: string) {
-    setbankBranchSearch(bankBranch);
+    setBankBranchSearch(bankBranch);
+  }
+
+  function onChangeLocalBankSearch(localBank: string) {
+    setLocalBankSearch(localBank);
   }
 
   return (
     <>
       <section className="flex flex-column gap-2 p-5 w-full">
         <h1 className="m-0">Centros de Custos</h1>
-        <div className="flex align-items-center justify-start w-full gap-1">
-          <>
-            <div className="field flex flex-column gap-1">
-              <LabelTitle
-                text="Centro de Custo"
-                htmlFor="centerCost"
-                className="font-semibold smaller-text"
-              />
-              <InputSearch
-                onSearch={onCodeSearch}
-                onChange={onChangeCodeSearch}
-                inputType={optionType.type}
-              />
-            </div>
-            <div className="field flex flex-column gap-1">
-              <LabelTitle
-                text="Agência"
-                htmlFor="bankBranch"
-                className="font-semibold smaller-text"
-              />
-              <InputSearch
-                onSearch={onBankBranchSearch}
-                onChange={onChangeBankBranchSearch}
-                inputType={optionType.type}
-              />
-            </div>
-            {role === "Administrador" && (
-              <Button
-                style={{
-                  backgroundColor: "var(--cor-primaria)",
-                  border: "1px solid var(--cor-primaria)",
-                }}
-                onClick={() => {
-                  setShowCreateDialog(true);
-                }}
-              >
-                Adicionar
-              </Button>
-            )}
-          </>
+        {role === "Administrador" && (
+          <Button
+            style={{
+              backgroundColor: "var(--cor-primaria)",
+              border: "1px solid var(--cor-primaria)",
+            }}
+            onClick={() => {
+              setShowCreateDialog(true);
+            }}
+          >
+            Adicionar
+          </Button>
+        )}
+        <div className="card flex flex-column md:flex-row gap-2 w-11/12">
+          <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="Centro de Custo"
+              htmlFor="centerCost"
+              className="font-semibold smaller-text"
+            />
+            <InputSearch
+              onSearch={onCodeSearch}
+              onChange={onChangeCodeSearch}
+              inputType={optionType.type}
+            />
+          </div>
+          <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="Agência"
+              htmlFor="bankBranch"
+              className="font-semibold smaller-text"
+            />
+            <InputSearch
+              onSearch={onBankBranchSearch}
+              onChange={onChangeBankBranchSearch}
+              inputType={optionType.type}
+            />
+          </div>
+          <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="Local"
+              htmlFor="localBank"
+              className="font-semibold smaller-text"
+            />
+            <InputSearch
+              onSearch={onLocalBankSearch}
+              onChange={onChangeLocalBankSearch}
+              inputType={optionType.type}
+            />
+          </div>
         </div>
         <TabView className="w-full smaller-text">
           <TabPanel header="Ativo">

@@ -25,12 +25,14 @@ interface ConstructionContextProps {
   handleGetConstructions: (
     page?: number,
     code?: string,
-    bankBranch?: string
+    bankBranch?: string,
+    localBank?: string
   ) => Promise<void>;
   handleGetConstructionsNotEnabled: (
     page?: number,
     code?: string,
-    bankBranch?: string
+    bankBranch?: string,
+    localBank?: string
   ) => Promise<void>;
   handleGetConstructionById: (id: string) => Promise<void>;
   handlePostConstruction: (construction: ConstructionDTO) => Promise<void>;
@@ -65,7 +67,8 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
   async function handleGetConstructions(
     page: number = 0,
     code: string = "",
-    bankBranch: string = ""
+    bankBranch: string = "",
+    localBank: string = ""
   ) {
     setLoading(true);
 
@@ -75,6 +78,7 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
         size: 10,
         code,
         bankBranch,
+        localBank,
       });
       setBufferedConstructions(content || []);
       setConstructions(content || []);
@@ -89,7 +93,8 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
   async function handleGetConstructionsNotEnabled(
     page: number = 0,
     code: string = "",
-    bankBranch: string = ""
+    bankBranch: string = "",
+    localBank: string = ""
   ) {
     setLoading(true);
 
@@ -99,6 +104,7 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
         size: 10,
         code,
         bankBranch,
+        localBank,
       });
       setConstructionsNotEnabled(content || []);
       setTotalElementsNotEnabled(totalElements);
