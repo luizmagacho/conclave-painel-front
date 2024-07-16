@@ -4,6 +4,7 @@ import {
   getConstructions,
   getConstructionsNotEnabled,
   postConstruction,
+  reactiveConstruction,
   updateConstruction,
 } from "@/services/construction";
 import { Construction, ConstructionDTO } from "@/services/construction/type";
@@ -35,6 +36,7 @@ interface ConstructionContextProps {
   handlePostConstruction: (construction: ConstructionDTO) => Promise<void>;
   handleUpdateConstruction: (construction: Construction) => Promise<void>;
   handleDeleteConstruction: (constructionId: string) => Promise<void>;
+  handleReactiveConstruction: (constructionId: string) => Promise<void>;
 }
 
 export const ConstructionContext = createContext(
@@ -151,6 +153,18 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
     }
   }
 
+  async function handleReactiveConstruction(constructionId: string) {
+    setLoading(true);
+
+    try {
+      const resp = await reactiveConstruction(constructionId);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     handleGetConstructions();
     handleGetConstructionsNotEnabled();
@@ -171,6 +185,7 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
         handlePostConstruction,
         handleUpdateConstruction,
         handleDeleteConstruction,
+        handleReactiveConstruction,
       }}
     >
       {children}

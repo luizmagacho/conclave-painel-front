@@ -14,6 +14,7 @@ import Cookies from "js-cookie";
 import { TabPanel, TabView } from "primereact/tabview";
 import ConstructionDeleteDialog from "../ConstructionDeleteDialog";
 import LabelTitle from "@/components/LabelTitle";
+import ConstructionReactiveDialog from "../ConstructionReactiveDialog";
 
 interface Options {
   icon?: string;
@@ -74,8 +75,11 @@ function ConstructionList() {
   );
   const [currDeleteConstruction, setCurrDeleteConstruction] =
     useState<Construction | null>(null);
+  const [currReactiveConstruction, setCurrReactiveConstruction] =
+    useState<Construction | null>(null);
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
+  const [showReactiveDialog, setShowReactiveDialog] = useState<boolean>(false);
   const [codeSearch, setCodeSearch] = useState<string>("");
   const [bankBranchSearch, setbankBranchSearch] = useState<string>("");
   const [optionType, setOptionType] = useState<OptionType>({
@@ -95,6 +99,7 @@ function ConstructionList() {
     handlePostConstruction,
     handleUpdateConstruction,
     handleDeleteConstruction,
+    handleReactiveConstruction,
   } = useContext(ConstructionContext);
 
   const toast = useRef<Toast>(null);
@@ -133,6 +138,11 @@ function ConstructionList() {
       label: "Custos",
       onclick: openCosts,
     },
+    {
+      ariaLabel: "Reativar",
+      label: "Reativar",
+      onclick: openCosts,
+    },
   ];
 
   const columnBodyOptions = {
@@ -160,13 +170,29 @@ function ConstructionList() {
     setShowDeleteDialog(true);
   }
 
+  function openReactiveDialog(construction: Construction) {
+    setCurrReactiveConstruction(construction);
+    setShowReactiveDialog(true);
+  }
+
   function closeDeleteDialog() {
     setCurrDeleteConstruction(null);
     setShowDeleteDialog((showDeleteDialog) => !showDeleteDialog);
   }
 
+  function closeReactiveDialog() {
+    setCurrReactiveConstruction(null);
+    setShowReactiveDialog((showReactiveDialog) => !showReactiveDialog);
+  }
+
   async function onDeleteConstruction(constructionId: string) {
     await handleDeleteConstruction(constructionId);
+    handleGetConstructions(page);
+    handleGetConstructionsNotEnabled(page);
+  }
+
+  async function onReactiveConstruction(constructionId: string) {
+    await handleReactiveConstruction(constructionId);
     handleGetConstructions(page);
     handleGetConstructionsNotEnabled(page);
   }
@@ -369,6 +395,14 @@ function ConstructionList() {
           data={currDeleteConstruction}
           onDelete={onDeleteConstruction}
           onHide={closeDeleteDialog}
+        />
+      )}
+      {currReactiveConstruction && (
+        <ConstructionReactiveDialog
+          visible={showReactiveDialog}
+          data={currReactiveConstruction}
+          onReactive={onDeleteConstruction}
+          onHide={closeReactiveDialog}
         />
       )}
     </>

@@ -68,3 +68,8 @@ export async function deleteConstruction(constructionId: string) {
   let res = await api.delete(`${baseUrl}/${constructionId}`);
   return res.status;
 }
+
+export async function reactiveConstruction(constructionId: string) {
+  let res = await api.patch(`${baseUrl}/${constructionId}`);
+  return res.status;
+}
