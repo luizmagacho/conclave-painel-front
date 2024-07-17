@@ -94,16 +94,6 @@ function SupplierCompleteInfo() {
 
     await setInvalidCnpj(!updatedSupplier.cnpj || updatedSupplier.cnpj === "");
     setInvalidPersonalInfo(invalidCpf && invalidCnpj);
-    console.log("Validate CPF: ", existsCpf);
-    console.log(
-      "Invalid Personal Info1: ",
-      !updatedSupplier.cnpj || updatedSupplier.cnpj === ""
-    );
-    console.log(
-      "Invalid Personal Info2: ",
-      !updatedSupplier.cpf || updatedSupplier.cpf === ""
-    );
-    console.log("Invalid Personal Info: ", invalidPersonalInfo);
     if (!invalidPersonalInfo) {
       await handleUpdateSupplier(updatedSupplier);
       router.push("/fornecedores");
@@ -159,18 +149,6 @@ function SupplierCompleteInfo() {
       setLoading(false);
     }
   }, [selectedSupplier]);
-
-  useEffect(() => {
-    console.log(updatedSupplier.cnpj.replace(`/[^a-zA-Z0-9\s]/g`, ""));
-    console.log(updatedSupplier.cpf.replace(`/[^a-zA-Z0-9\s]/g`, ""));
-    if (updatedSupplier.cnpj && updatedSupplier.cnpj.length >= 14) {
-      handleValidateCnpj(updatedSupplier.cnpj);
-    }
-    console.log(updatedSupplier.cpf.length);
-    if (updatedSupplier.cpf && updatedSupplier.cpf.length >= 11) {
-      handleValidateCpf(updatedSupplier.cpf);
-    }
-  }, [updatedSupplier.cnpj, updatedSupplier.cpf]);
 
   return (
     <Card className="m-2">

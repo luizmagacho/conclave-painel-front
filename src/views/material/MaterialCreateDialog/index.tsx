@@ -31,14 +31,11 @@ function MaterialCreateDialog({
   function validateFields() {
     setInvalidName(!newMaterial.name || newMaterial.name === "");
     setInvalidQuantity(newMaterial.quantity === null);
-    console.log(!newMaterial.quantity);
-    console.log(newMaterial.quantity === null);
 
     setInvalidMetricUnit(
       !newMaterial.metricUnit || newMaterial.metricUnit === ""
     );
     if (!invalidName && !invalidQuantity && !invalidMetricUnit) {
-      console.log(newMaterial);
       onCreate(newMaterial);
       onHide();
     }

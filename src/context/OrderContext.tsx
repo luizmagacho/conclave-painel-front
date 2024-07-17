@@ -77,7 +77,6 @@ export const OrderProvider = ({ children }: ProviderProps) => {
 
   async function handleGetOrderById(orderId: string) {
     setLoading(true);
-    console.log(orderId);
     try {
       const order = await getOrderById(orderId);
       await setSelectedOrder(order);

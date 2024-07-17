@@ -85,18 +85,8 @@ function SupplierCreate() {
 
     await setInvalidCnpj(!newSupplier.cnpj || newSupplier.cnpj === "");
     setInvalidPersonalInfo(invalidCpf && invalidCnpj);
-    console.log("Validate CPF: ", existsCpf);
-    console.log(
-      "Invalid Personal Info1: ",
-      !newSupplier.cnpj || newSupplier.cnpj === ""
-    );
-    console.log(
-      "Invalid Personal Info2: ",
-      !newSupplier.cpf || newSupplier.cpf === ""
-    );
-    console.log("Invalid Personal Info: ", invalidPersonalInfo);
-    if (!invalidPersonalInfo) {
-      const resp = await handlePostSupplier(newSupplier);
+    if (!invalidPersonalInfo && !existsCnpj && !existsCpf) {
+      await handlePostSupplier(newSupplier);
       if (postStatus === 201) {
         await setShowToast(true);
         await showSuccessToast("Fornecedor criado com sucesso");
@@ -105,17 +95,23 @@ function SupplierCreate() {
     }
   }
 
-  useEffect(() => {
-    console.log(newSupplier.cnpj.replace(`/[^a-zA-Z0-9\s]/g`, ""));
-    console.log(newSupplier.cpf.replace(`/[^a-zA-Z0-9\s]/g`, ""));
-    if (newSupplier.cnpj && newSupplier.cnpj.length >= 14) {
+  const validateCnpj = () => {
+    if (
+      newSupplier.cnpj &&
+      newSupplier.cnpj.replaceAll("[^0-9]", "").length >= 18
+    ) {
       handleValidateCnpj(newSupplier.cnpj);
     }
-    console.log(newSupplier.cpf.length);
-    if (newSupplier.cpf && newSupplier.cpf.length >= 11) {
+  };
+
+  const validateCpf = () => {
+    if (
+      newSupplier.cpf &&
+      newSupplier.cpf.replaceAll("[^0-9]", "").length >= 14
+    ) {
       handleValidateCpf(newSupplier.cpf);
     }
-  }, [newSupplier.cnpj, newSupplier.cpf]);
+  };
 
   const toast = useRef<Toast>(null);
 
@@ -141,9 +137,13 @@ function SupplierCreate() {
                 });
               }}
               value={newSupplier?.cnpj}
+              onBlur={validateCnpj}
             />
             {invalidPersonalInfo && (
               <Message severity="error" text="Cpf ou Cnpj é obrigatório" />
+            )}
+            {existsCnpj && (
+              <Message severity="error" text="Cnpj já existente" />
             )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
@@ -163,10 +163,12 @@ function SupplierCreate() {
                 });
               }}
               value={newSupplier?.cpf}
+              onBlur={validateCpf}
             />
             {invalidPersonalInfo && (
               <Message severity="error" text="Cpf ou Cnpj é obrigatório" />
             )}
+            {existsCpf && <Message severity="error" text="Cpf já existente" />}
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
