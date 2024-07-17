@@ -254,7 +254,6 @@ function OrderCompleteInfo() {
     setInvalidConstructionCode(
       !updatedOrder.construction?.code || updatedOrder.construction?.code === ""
     );
-    console.log("List Materials: ", updatedOrder);
     setInvalidListMaterials(!listMaterials || listMaterials.length === 0);
     if (!invalidConstructionCode && !invalidListMaterials) {
       await handleUpdateOrder(updatedOrder);

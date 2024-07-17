@@ -184,14 +184,12 @@ function OrderCreate() {
       if (!event.query.trim().length) {
         _filteredMaterials = [...allMaterials];
       } else {
-        console.log("Material Items: ", materialsItems);
         _filteredMaterials = materialsItems.filter((material) => {
           return material.name
             .toLocaleUpperCase()
             .startsWith(event.query.toLocaleUpperCase());
         });
       }
-      console.log("Materiais Filtrados: ", _filteredMaterials);
       setMaterialsItems(_filteredMaterials);
       if (_filteredMaterials.length === 0) setMaterialsItems(allMaterials);
     }, 150);
@@ -226,7 +224,6 @@ function OrderCreate() {
       !newOrder.construction?.code || newOrder.construction?.code === ""
     );
     setInvalidListMaterials(!listMaterials || listMaterials.length === 0);
-    console.log(newOrder);
     if (!invalidConstructionCode && !invalidListMaterials) {
       await handlePostOrder(newOrder);
       router.push("/pedidos");
@@ -354,11 +351,9 @@ function OrderCreate() {
                 rows={10}
                 selection={selectedMaterials!}
                 onSelectionChange={(e) => {
-                  console.log(e.value);
                   if (Array.isArray(e.value)) {
                     setSelectedMaterials(e.value);
                   }
-                  console.log(selectedMaterials);
                 }}
                 dataKey="id"
                 paginator

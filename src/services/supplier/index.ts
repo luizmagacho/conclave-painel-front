@@ -49,11 +49,19 @@ export async function deleteSupplier(supplierId: string) {
 }
 
 export async function validateCpf(cpf: string) {
-  let res = await api.get(`${baseUrl}/validate-cpf/${cpf}`);
+  let res = await api.get(`${baseUrl}/validate-cpf`, {
+    params: {
+      cpf,
+    },
+  });
   return res.data;
 }
 
 export async function validateCnpj(cnpj: string) {
-  let res = await api.get(`${baseUrl}/validate-cnpj/${cnpj}`);
+  let res = await api.get(`${baseUrl}/validate-cnpj`, {
+    params: {
+      cnpj,
+    },
+  });
   return res.data;
 }
