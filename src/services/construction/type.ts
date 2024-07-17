@@ -10,7 +10,7 @@ export type Construction = {
   isCad: string;
   openingDate: string;
   openingDateFormatted?: string;
-  closedDate: string;
+  closedDate: string | null;
   closedDateFormatted?: string;
   totalBilled: number;
   totalRemas: number;
