@@ -51,7 +51,7 @@ function ConstructionUpdateDialog({
     convertStringToDate(data.openingDate)
   );
   const [newClosedDate, setNewClosedDate] = useState<Date | null>(
-    convertStringToDate(data.closedDate)
+    convertStringToDate(data.closedDate || "")
   );
   const [invalidCode, setInvalidCode] = useState<boolean>(false);
   const [invalidClient, setInvalidClient] = useState<boolean>(false);
@@ -70,8 +70,7 @@ function ConstructionUpdateDialog({
       ...prevConstruction,
       openingDate:
         formatDateToYYYYMMDD(newOpeningDate) || prevConstruction.openingDate,
-      closedDate:
-        formatDateToYYYYMMDD(newClosedDate) || prevConstruction.closedDate,
+      closedDate: formatDateToYYYYMMDD(newClosedDate),
     }));
   }, [newOpeningDate, newClosedDate]);
 

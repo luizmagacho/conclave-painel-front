@@ -158,7 +158,7 @@ function ConstructionList() {
 
   async function onUpdateConstruction(construction: Construction) {
     await handleUpdateConstruction(construction);
-    handleGetConstructions();
+    handleGetConstructions(page, codeSearch, bankBranchSearch, localBankSearch);
   }
 
   function openDialog(construction: Construction) {
@@ -188,14 +188,24 @@ function ConstructionList() {
 
   async function onDeleteConstruction(constructionId: string) {
     await handleDeleteConstruction(constructionId);
-    handleGetConstructions(page);
-    handleGetConstructionsNotEnabled(page);
+    handleGetConstructions(page, codeSearch, bankBranchSearch, localBankSearch);
+    handleGetConstructionsNotEnabled(
+      page,
+      codeSearch,
+      bankBranchSearch,
+      localBankSearch
+    );
   }
 
   async function onReactiveConstruction(constructionId: string) {
     await handleReactiveConstruction(constructionId);
-    handleGetConstructions(page);
-    handleGetConstructionsNotEnabled(page);
+    handleGetConstructions(page, codeSearch, bankBranchSearch, localBankSearch);
+    handleGetConstructionsNotEnabled(
+      page,
+      codeSearch,
+      bankBranchSearch,
+      localBankSearch
+    );
   }
 
   function closeDialog() {
@@ -215,7 +225,7 @@ function ConstructionList() {
 
   async function onCreateConstruction(construction: ConstructionDTO) {
     await handlePostConstruction(construction);
-    handleGetConstructions(page);
+    handleGetConstructions(page, codeSearch, bankBranchSearch, localBankSearch);
   }
 
   function closeCreateDialog() {
@@ -436,7 +446,7 @@ function ConstructionList() {
         <ConstructionReactiveDialog
           visible={showReactiveDialog}
           data={currReactiveConstruction}
-          onReactive={onDeleteConstruction}
+          onReactive={onReactiveConstruction}
           onHide={closeReactiveDialog}
         />
       )}
