@@ -171,6 +171,11 @@ function CostPurchaseList() {
             header="Centro de Custo"
             className="smaller-text"
           />
+          <Column
+            field="localBank"
+            header="Local da Agência"
+            className="smaller-text"
+          />
 
           <Column
             field="vendorName"

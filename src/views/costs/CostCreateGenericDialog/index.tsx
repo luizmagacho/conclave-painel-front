@@ -171,7 +171,7 @@ function CostCreateGenericDialog({
               onChange={(e: AutoCompleteChangeEvent) =>
                 setSelectedConstruction(e.value)
               }
-              className="flex-grow" /* Faz o elemento preencher o espaço restante */
+              className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
               style={{ height: "30px", fontSize: "0.8rem" }}
             />
             {invalidPurchaseDate && (
