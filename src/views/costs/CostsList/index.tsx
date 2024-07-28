@@ -134,6 +134,10 @@ function CostList() {
     );
   };
 
+  const priceTotalValueBodyTemplate = (cost: Cost) => {
+    return formatCurrency(cost.totalAmount || null);
+  };
+
   const priceWorkerValueBodyTemplate = (cost: Cost) => {
     return formatCurrency(cost.workerValue || null);
   };
@@ -148,17 +152,6 @@ function CostList() {
 
   const priceInssValueBodyTemplate = (cost: Cost) => {
     return formatCurrency(cost.inssValue || null);
-  };
-
-  const clearedBodyTemplate = (cost: Cost) => {
-    return (
-      <i
-        className={classNames("pi", {
-          "true-icon pi-check-circle": cost.paymentStatus,
-          "false-icon pi-times-circle": !cost.paymentStatus,
-        })}
-      ></i>
-    );
   };
 
   return (
@@ -209,37 +202,65 @@ function CostList() {
           size="small"
           footer={footerTemplate}
         >
-          <Column field="purchaseDateFormatted" header="Data do Custo" />
-          <Column field="vendorName" header="Favorecido" />
           <Column
-            field="workerValue"
-            header="Valor da Mão de Obra"
-            body={priceWorkerValueBodyTemplate}
+            field="centerCost"
+            header="Centro de Custo"
+            className="smaller-text"
           />
           <Column
-            field="materialValue"
-            header="Valor da Material"
-            body={priceMaterialValueBodyTemplate}
+            field="bankBranchLocalBank"
+            header="Agência"
+            className="smaller-text"
           />
+          <Column
+            field="typeCenterCost"
+            header="Tipo de Obra"
+            className="smaller-text"
+          />
+          <Column
+            field="issueDateFormatted"
+            header="Data da Emissão"
+            className="smaller-text"
+          />
+          <Column
+            field="receiptDateFormatted"
+            header="Data do Recebimento"
+            className="smaller-text"
+          />
+          <Column field="payer" header="Tomador" className="smaller-text" />
           <Column
             field="totalAmount"
             header="Valor Total"
-            body={priceTotalAmountBodyTemplate}
+            body={priceTotalValueBodyTemplate}
+            className="smaller-text"
+          />
+          <Column
+            field="workerValue"
+            header="Valor Mão de Obra"
+            body={priceWorkerValueBodyTemplate}
+            className="smaller-text"
+          />
+          <Column
+            field="materialValue"
+            header="Valor Material"
+            body={priceMaterialValueBodyTemplate}
+            className="smaller-text"
           />
           <Column
             field="inssValue"
-            header="Valor do INSS"
+            header="INSS"
             body={priceInssValueBodyTemplate}
-          />
-          <Column
-            field="paymentDeadlineFormatted"
-            header="Data de Vencimento"
-          />
-          <Column
-            field="cleared"
-            header="C"
             className="smaller-text"
-            body={clearedBodyTemplate}
+          />
+          <Column
+            field="invoice"
+            header="Nota Fiscal"
+            className="smaller-text"
+          />
+          <Column
+            field="numContract"
+            header="Contrato"
+            className="smaller-text"
           />
           <Column header="Opções" body={columnBodyOptions.options} />
         </DataTable>

@@ -1,9 +1,9 @@
 import { AuthProvider } from "@/context/AuthContext";
 import { ConstructionProvider } from "@/context/ConstructionContext";
-import { CostProvider } from "@/context/CostContext";
+import { OutstandingInvoicesProvider } from "@/context/OutstandingInvoiceContext";
 import { SupplierProvider } from "@/context/SupplierContext";
 import { DefaultLayout } from "@/layouts";
-import CostPurchaseList from "@/views/costs/CostPurchaseList";
+import OutstandingInvoicesList from "@/views/outstandingInvoices/OutstandingInvoicesList";
 
 export default function CostPurchase(): JSX.Element {
   return (
@@ -11,9 +11,9 @@ export default function CostPurchase(): JSX.Element {
       <AuthProvider>
         <SupplierProvider>
           <ConstructionProvider>
-            <CostProvider>
-              <CostPurchaseList />
-            </CostProvider>
+            <OutstandingInvoicesProvider>
+              <OutstandingInvoicesList />
+            </OutstandingInvoicesProvider>
           </ConstructionProvider>
         </SupplierProvider>
       </AuthProvider>

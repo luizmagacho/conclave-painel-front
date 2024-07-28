@@ -3,6 +3,7 @@ import { ConstructionContext } from "@/context/ConstructionContext";
 import { SupplierContext } from "@/context/SupplierContext";
 import { Construction } from "@/services/construction/type";
 import { Cost } from "@/services/costs/type";
+import { OutstandingInvoices } from "@/services/outstanding-invoices/type";
 import { Supplier, SupplierName } from "@/services/supplier/type";
 import { convertStringToDate, formatDateToYYYYMMDD } from "@/util/date";
 import { useRouter } from "next/router";
@@ -14,53 +15,49 @@ import {
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
+import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { RadioButton } from "primereact/radiobutton";
 import { useContext, useEffect, useState } from "react";
 
-interface CostPurchaseDialog {
+interface OutstandingInvoicesDialog {
   visible: boolean;
   onHide: () => void;
-  onUpdate: (cost: Cost) => void;
-  data: Cost;
+  onUpdate: (outstandingInvoices: OutstandingInvoices) => void;
+  data: OutstandingInvoices;
 }
 
-function CostPurchaseDialog({
+function OutstandingInvoicesDialog({
   visible,
   onHide,
   onUpdate,
   data,
-}: CostPurchaseDialog) {
+}: OutstandingInvoicesDialog) {
   const router = useRouter();
-  const [updatedCost, setUpdatedCost] = useState<Cost>({
-    id: data.id,
-    name: data.name,
-    centerCost: data.centerCost,
-    centerCostId: data.centerCostId,
-    purchaseDate: data.purchaseDate,
-    purchaseDateFormatted: data.purchaseDateFormatted,
-    paymentDeadline: data.paymentDeadline,
-    paymentDeadlineFormatted: data.paymentDeadlineFormatted,
-    bankBranch: data.bankBranch,
-    localBank: data.localBank,
-    costType: data.costType,
-    costCategory: data.costCategory,
-    workerValue: data.workerValue,
-    materialValue: data.materialValue,
-    inssValue: data.inssValue,
-    valueRemas: data.valueRemas,
-    paymentStatus: data.paymentStatus,
-    totalAmount: data.totalAmount,
-    vendorName: data.vendorName,
-    userId: data.userId,
-    enabled: data.enabled,
-    additionalDetails: data.additionalDetails,
-    invoice: data.invoice,
-    numContract: data.numContract,
-    updatedAt: data.updatedAt,
-    createdAt: data.createdAt,
-  });
+  const [updatedOutstandingInvoices, setUpdatedOutstandingInvoices] =
+    useState<OutstandingInvoices>({
+      id: data.id,
+      name: data.name,
+      centerCost: data.centerCost,
+      centerCostId: data.centerCostId,
+      purchaseDate: data.purchaseDate,
+      purchaseDateFormatted: data.purchaseDateFormatted,
+      paymentDeadline: data.paymentDeadline,
+      paymentDeadlineFormatted: data.paymentDeadlineFormatted,
+      bankBranch: data.bankBranch,
+      localBank: data.localBank,
+      costType: data.costType,
+      costCategory: data.costCategory,
+      paymentStatus: data.paymentStatus,
+      totalAmount: data.totalAmount,
+      vendorName: data.vendorName,
+      userId: data.userId,
+      enabled: data.enabled,
+      additionalDetails: data.additionalDetails,
+      updatedAt: data.updatedAt,
+      createdAt: data.createdAt,
+    });
   const { constructions, handleGetConstructionById, selectedConstruction } =
     useContext(ConstructionContext);
 
@@ -75,8 +72,7 @@ function CostPurchaseDialog({
   const [updatedPurchaseDate, setUpdatedPurchaseDate] = useState<Date | null>(
     convertStringToDate(data.purchaseDate)
   );
-  const [invalidPurchaseDate, setInvalidPurchaseDate] =
-    useState<boolean>(false);
+  const [invalidTotalAmount, setInvalidTotalAmount] = useState<boolean>(false);
   const [updatedPaymentDeadline, setUpdatedPaymentDeadline] =
     useState<Date | null>(convertStringToDate(data.paymentDeadline));
   const [invalidPaymentDeadline, setInvalidPaymentDeadline] =
@@ -84,28 +80,42 @@ function CostPurchaseDialog({
   const [invalidVendorName, setInvalidVendorName] = useState<boolean>(false);
   const [invalidCostCategory, setInvalidCostCategory] =
     useState<boolean>(false);
+  const [invalidCenterCost, setInvalidCenterCost] = useState<boolean>(false);
 
   useEffect(() => {
-    setUpdatedCost((prevCost) => ({
-      ...prevCost,
+    setUpdatedOutstandingInvoices((prevOutstandingInvoices) => ({
+      ...prevOutstandingInvoices,
       purchaseDate:
-        formatDateToYYYYMMDD(updatedPurchaseDate) || prevCost.purchaseDate,
+        formatDateToYYYYMMDD(updatedPurchaseDate) ||
+        prevOutstandingInvoices.purchaseDate,
       paymentDeadline:
         formatDateToYYYYMMDD(updatedPaymentDeadline) ||
-        prevCost.paymentDeadline,
+        prevOutstandingInvoices.paymentDeadline,
     }));
   }, [updatedPurchaseDate, updatedPaymentDeadline]);
 
   async function validateFields() {
     const userId = await localStorage.getItem("portal.id");
-    setUpdatedCost({ ...updatedCost, userId: userId || "" });
+    setUpdatedOutstandingInvoices({
+      ...updatedOutstandingInvoices,
+      userId: userId || "",
+    });
     setInvalidVendorName(
-      !updatedCost.vendorName || updatedCost.vendorName === ""
+      !updatedOutstandingInvoices.vendorName ||
+        updatedOutstandingInvoices.vendorName === ""
     );
-    setInvalidPurchaseDate(!updatedPurchaseDate);
+    setInvalidTotalAmount(
+      !updatedOutstandingInvoices.totalAmount ||
+        updatedOutstandingInvoices.totalAmount >= 0
+    );
 
-    if (!invalidPurchaseDate && !invalidVendorName) {
-      onUpdate(updatedCost);
+    setInvalidCenterCost(
+      !updatedOutstandingInvoices.centerCost ||
+        updatedOutstandingInvoices.centerCost === ""
+    );
+
+    if (!invalidTotalAmount && !invalidVendorName && !invalidCenterCost) {
+      onUpdate(updatedOutstandingInvoices);
       onHide();
     }
   }
@@ -144,12 +154,16 @@ function CostPurchaseDialog({
   };
 
   useEffect(() => {
-    setUpdatedCost((prevCost) => ({
-      ...prevCost,
-      centerCostId: checkedConstruction?.id || prevCost.centerCostId,
-      centerCost: checkedConstruction?.code || prevCost.centerCost,
-      bankBranch: checkedConstruction?.bankBranch || prevCost.bankBranch,
-      localBank: checkedConstruction?.local || prevCost.localBank,
+    setUpdatedOutstandingInvoices((prevOutstandingInvoices) => ({
+      ...prevOutstandingInvoices,
+      centerCostId:
+        checkedConstruction?.id || prevOutstandingInvoices.centerCostId,
+      centerCost:
+        checkedConstruction?.code || prevOutstandingInvoices.centerCost,
+      bankBranch:
+        checkedConstruction?.bankBranch || prevOutstandingInvoices.bankBranch,
+      localBank:
+        checkedConstruction?.local || prevOutstandingInvoices.localBank,
     }));
   }, [checkedConstruction]);
 
@@ -158,8 +172,8 @@ function CostPurchaseDialog({
   }, [selectedConstruction]);
 
   useEffect(() => {
-    setUpdatedCost((prevCost) => ({
-      ...prevCost,
+    setUpdatedOutstandingInvoices((prevOutstandingInvoices) => ({
+      ...prevOutstandingInvoices,
       vendorName: selectedSupplier.shortenedName,
     }));
   }, [selectedSupplier]);
@@ -167,6 +181,14 @@ function CostPurchaseDialog({
   useEffect(() => {
     handleGetConstructionById(data.centerCostId);
   }, []);
+
+  const formatCurrency = (value: number | null) => {
+    if (value) {
+      return value / 100;
+    }
+
+    return null;
+  };
 
   return (
     <Dialog
@@ -195,10 +217,10 @@ function CostPurchaseDialog({
                 setCheckedConstruction(e.value)
               }
             />
-            {invalidPurchaseDate && (
+            {invalidCenterCost && (
               <Message
                 severity="error"
-                text="Data de Custo é obrigatório"
+                text="Centro de Custo é obrigatório"
                 className="smaller-text"
               />
             )}
@@ -213,38 +235,41 @@ function CostPurchaseDialog({
           <InputText
             type="text"
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedCost?.localBank}
+            value={updatedOutstandingInvoices?.localBank}
             disabled
           />
         </div>
       </div>
+
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Data do Custo"
-            htmlFor="purchaseDate"
+            text="Favorecido"
+            htmlFor="shortenedName"
             className="font-semibold"
           />
-          <Calendar
-            id="buttondisplay"
-            onChange={(e) => {
-              setUpdatedPurchaseDate(e.value || null);
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedPurchaseDate}
-            locale="pt"
-            className="ui-state-default"
-            dateFormat="dd/mm/yy"
-            showIcon
-          />
-          {invalidPurchaseDate && (
-            <Message
-              severity="error"
-              text="Data de Custo é obrigatório"
-              className="smaller-text"
+          <div className="card p-fluid">
+            <AutoComplete
+              type="text"
+              field="shortenedName"
+              style={{ height: "30px", fontSize: "0.8rem" }}
+              value={selectedSupplier}
+              suggestions={suppliersItems}
+              completeMethod={supplierSearch}
+              onChange={(e: AutoCompleteChangeEvent) =>
+                setSelectedSupplier(e.value)
+              }
             />
-          )}
+            {invalidVendorName && (
+              <Message
+                severity="error"
+                text="Favorecido é obrigatório"
+                className="smaller-text"
+              />
+            )}
+          </div>
         </div>
+
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
             text="Data do Vencimento"
@@ -275,30 +300,33 @@ function CostPurchaseDialog({
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Favorecido"
-            htmlFor="shortenedName"
+            text="Valor"
+            htmlFor="totalAmount"
             className="font-semibold"
           />
-          <div className="card p-fluid">
-            <AutoComplete
-              type="text"
-              field="shortenedName"
-              style={{ height: "30px", fontSize: "0.8rem" }}
-              value={selectedSupplier}
-              suggestions={suppliersItems}
-              completeMethod={supplierSearch}
-              onChange={(e: AutoCompleteChangeEvent) =>
-                setSelectedSupplier(e.value)
+          <InputNumber
+            inputId="currency-br"
+            mode="currency"
+            locale="pt-BR"
+            currency="BRL"
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={formatCurrency(updatedOutstandingInvoices?.totalAmount)}
+            onChange={(e) => {
+              if (e.value) {
+                setUpdatedOutstandingInvoices({
+                  ...updatedOutstandingInvoices,
+                  totalAmount: e.value * 100,
+                });
               }
+            }}
+          />
+          {invalidTotalAmount && (
+            <Message
+              severity="error"
+              text="Valor é obrigatório"
+              className="smaller-text"
             />
-            {invalidVendorName && (
-              <Message
-                severity="error"
-                text="Favorecido é obrigatório"
-                className="smaller-text"
-              />
-            )}
-          </div>
+          )}
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -309,13 +337,13 @@ function CostPurchaseDialog({
           <InputText
             type="text"
             onChange={(e) => {
-              setUpdatedCost({
-                ...updatedCost,
+              setUpdatedOutstandingInvoices({
+                ...updatedOutstandingInvoices,
                 costType: e.target.value,
               });
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedCost?.costType}
+            value={updatedOutstandingInvoices?.costType}
           />
           {invalidCostCategory && (
             <Message
@@ -339,12 +367,12 @@ function CostPurchaseDialog({
                 value={true}
                 name="Sim"
                 onChange={(e) =>
-                  setUpdatedCost({
-                    ...updatedCost,
+                  setUpdatedOutstandingInvoices({
+                    ...updatedOutstandingInvoices,
                     paymentStatus: e.value,
                   })
                 }
-                checked={updatedCost.paymentStatus === true}
+                checked={updatedOutstandingInvoices.paymentStatus === true}
               />
               <label htmlFor="option1" className="ml-2">
                 Sim
@@ -355,12 +383,12 @@ function CostPurchaseDialog({
                 value={false}
                 name="Não"
                 onChange={(e) => {
-                  setUpdatedCost({
-                    ...updatedCost,
+                  setUpdatedOutstandingInvoices({
+                    ...updatedOutstandingInvoices,
                     paymentStatus: e.value,
                   });
                 }}
-                checked={updatedCost.paymentStatus === false}
+                checked={updatedOutstandingInvoices.paymentStatus === false}
               />
               <label htmlFor="option2" className="ml-2">
                 Não
@@ -373,13 +401,13 @@ function CostPurchaseDialog({
           <InputText
             type="text"
             onChange={(e) => {
-              setUpdatedCost({
-                ...updatedCost,
+              setUpdatedOutstandingInvoices({
+                ...updatedOutstandingInvoices,
                 additionalDetails: e.target.value,
               });
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedCost?.additionalDetails}
+            value={updatedOutstandingInvoices?.additionalDetails}
           />
         </div>
       </div>
@@ -396,4 +424,4 @@ function CostPurchaseDialog({
   );
 }
 
-export default CostPurchaseDialog;
+export default OutstandingInvoicesDialog;

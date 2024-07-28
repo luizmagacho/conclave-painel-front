@@ -2,7 +2,7 @@ import LabelTitle from "@/components/LabelTitle";
 import { ConstructionContext } from "@/context/ConstructionContext";
 import { SupplierContext } from "@/context/SupplierContext";
 import { Construction } from "@/services/construction/type";
-import { CostDTO } from "@/services/costs/type";
+import { OutstandingInvoicesDTO } from "@/services/outstanding-invoices/type";
 import { Supplier, SupplierName } from "@/services/supplier/type";
 import { formatDateToYYYYMMDD } from "@/util/date";
 import { useRouter } from "next/router";
@@ -14,77 +14,92 @@ import {
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
+import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { RadioButton } from "primereact/radiobutton";
 import { useContext, useEffect, useState } from "react";
 
-interface CostPurchaseCreateDialog {
+interface OutstandingInvoicesCreateDialog {
   visible: boolean;
   onHide: () => void;
-  onCreate: (cost: CostDTO) => void;
+  onCreate: (OutstandingInvoices: OutstandingInvoicesDTO) => void;
 }
 
-function CostPurchaseCreateDialog({
+function OutstandingInvoicesCreateDialog({
   visible,
   onCreate,
   onHide,
-}: CostPurchaseCreateDialog) {
+}: OutstandingInvoicesCreateDialog) {
   const router = useRouter();
-  const [newCost, setNewCost] = useState<CostDTO>({
-    name: "",
-    vendorName: "",
-    centerCost: "",
-    centerCostId: "",
-    bankBranch: "",
-    costType: "",
-    costCategory: "",
-    localBank: "",
-    purchaseDate: "",
-    paymentDeadline: "",
-    workerValue: null,
-    materialValue: null,
-    inssValue: null,
-    totalAmount: null,
-    valueRemas: null,
-    userId: localStorage.getItem("portal.id") as string,
-    enabled: true,
-    additionalDetails: "",
-    paymentStatus: false,
-    invoice: "",
-    numContract: "",
-  });
+  const [newOutstandingInvoices, setNewOutstandingInvoices] =
+    useState<OutstandingInvoicesDTO>({
+      name: "",
+      vendorName: "",
+      centerCost: "",
+      centerCostId: "",
+      bankBranch: "",
+      costType: "",
+      costCategory: "",
+      localBank: "",
+      purchaseDate: "",
+      paymentDeadline: "",
+      totalAmount: null,
+      userId: localStorage.getItem("portal.id") as string,
+      enabled: true,
+      additionalDetails: "",
+      paymentStatus: false,
+    });
   const [selectedConstruction, setSelectedConstruction] =
     useState<Construction>();
   const [selectedSupplier, setSelectedSupplier] = useState<SupplierName>();
   const [newPurchaseDate, setNewPurchaseDate] = useState<Date | null>(null);
-  const [invalidPurchaseDate, setInvalidPurchaseDate] =
-    useState<boolean>(false);
+
   const [newPaymentDeadline, setNewPaymentDeadline] = useState<Date | null>(
     null
   );
   const [invalidPaymentDeadline, setInvalidPaymentDeadline] =
     useState<boolean>(false);
   const [invalidVendorName, setInvalidVendorName] = useState<boolean>(false);
-  const [invalidCostCategory, setInvalidCostCategory] =
-    useState<boolean>(false);
+  const [invalidTotalAmount, setInvalidTotalAmount] = useState<boolean>(false);
+  const [invalidCenterCost, setInvalidCenterCost] = useState<boolean>(false);
+  const [
+    invalidOutstandingInvoicesCategory,
+    setInvalidOutstandingInvoicesCategory,
+  ] = useState<boolean>(false);
   useEffect(() => {
-    setNewCost((prevCost) => ({
-      ...prevCost,
+    setNewOutstandingInvoices((prevOutstandingInvoices) => ({
+      ...prevOutstandingInvoices,
       purchaseDate:
-        formatDateToYYYYMMDD(newPurchaseDate) || prevCost.purchaseDate,
+        formatDateToYYYYMMDD(newPurchaseDate) ||
+        prevOutstandingInvoices.purchaseDate,
+      paymentDeadline:
+        formatDateToYYYYMMDD(newPaymentDeadline) ||
+        prevOutstandingInvoices.paymentDeadline,
     }));
-  }, [newPurchaseDate]);
+  }, [newPurchaseDate, newPaymentDeadline]);
 
   async function validateFields() {
     const userId = await localStorage.getItem("portal.id");
-    setNewCost({ ...newCost, userId: userId || "" });
-    setInvalidVendorName(!newCost.vendorName || newCost.vendorName === "");
+    setNewOutstandingInvoices({
+      ...newOutstandingInvoices,
+      userId: userId || "",
+    });
+    setInvalidVendorName(
+      !newOutstandingInvoices.vendorName ||
+        newOutstandingInvoices.vendorName === ""
+    );
+    setInvalidTotalAmount(!newOutstandingInvoices.totalAmount);
 
-    setInvalidPurchaseDate(!newPurchaseDate);
+    setInvalidCenterCost(
+      !newOutstandingInvoices.centerCost ||
+        newOutstandingInvoices.centerCost === ""
+    );
 
-    if (!invalidPurchaseDate && !invalidVendorName) {
-      onCreate(newCost);
+    console.log(newOutstandingInvoices);
+
+    if (!invalidTotalAmount && !invalidVendorName && !invalidCenterCost) {
+      onCreate(newOutstandingInvoices);
       onHide();
     }
   }
@@ -119,7 +134,9 @@ function CostPurchaseCreateDialog({
         _filteredSuppliers = [...suppliers];
       } else {
         _filteredSuppliers = suppliersItems.filter((supplier) => {
-          return supplier.shortenedName.startsWith(event.query);
+          return supplier.shortenedName
+            .toUpperCase()
+            .startsWith(event.query.toUpperCase());
         });
         setSuppliersItems(_filteredSuppliers);
       }
@@ -127,25 +144,38 @@ function CostPurchaseCreateDialog({
   };
 
   useEffect(() => {
-    setNewCost((prevCost) => ({
-      ...prevCost,
-      centerCostId: selectedConstruction?.id || prevCost.centerCostId,
-      centerCost: selectedConstruction?.code || prevCost.centerCost,
-      bankBranch: selectedConstruction?.bankBranch || prevCost.bankBranch,
-      localBank: selectedConstruction?.local || prevCost.localBank,
+    setNewOutstandingInvoices((prevOutstandingInvoices) => ({
+      ...prevOutstandingInvoices,
+      centerCostId:
+        selectedConstruction?.id || prevOutstandingInvoices.centerCostId,
+      centerCost:
+        selectedConstruction?.code || prevOutstandingInvoices.centerCost,
+      bankBranch:
+        selectedConstruction?.bankBranch || prevOutstandingInvoices.bankBranch,
+      localBank:
+        selectedConstruction?.local || prevOutstandingInvoices.localBank,
     }));
   }, [selectedConstruction]);
 
   useEffect(() => {
-    setNewCost((prevCost) => ({
-      ...prevCost,
-      vendorName: selectedSupplier?.shortenedName || prevCost.vendorName,
+    setNewOutstandingInvoices((prevOutstandingInvoices) => ({
+      ...prevOutstandingInvoices,
+      vendorName:
+        selectedSupplier?.shortenedName || prevOutstandingInvoices.vendorName,
     }));
   }, [selectedSupplier]);
 
+  const formatCurrency = (value: number | null) => {
+    if (value) {
+      return value / 100;
+    }
+
+    return null;
+  };
+
   return (
     <Dialog
-      header="Adicionar Novo Custo"
+      header="Adicionar Nova Conta a Pagar"
       visible={visible}
       onHide={onHide}
       className="w-60rem"
@@ -155,7 +185,7 @@ function CostPurchaseCreateDialog({
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
             text="Centro de Custo"
-            htmlFor="centerCost"
+            htmlFor="centerOutstandingInvoices"
             className="font-semibold"
           />
           <div className="card p-fluid">
@@ -169,10 +199,10 @@ function CostPurchaseCreateDialog({
                 setSelectedConstruction(e.value)
               }
             />
-            {invalidPurchaseDate && (
+            {invalidCenterCost && (
               <Message
                 severity="error"
-                text="Data de Custo é obrigatório"
+                text="Centro de Custo é obrigatório"
                 className="smaller-text"
               />
             )}
@@ -187,63 +217,9 @@ function CostPurchaseCreateDialog({
           <InputText
             type="text"
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.localBank}
+            value={newOutstandingInvoices?.localBank}
             disabled
           />
-        </div>
-      </div>
-      <div className="card flex flex-column md:flex-row gap-3 w-full">
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Data do Custo"
-            htmlFor="purchaseDate"
-            className="font-semibold"
-          />
-          <Calendar
-            id="buttondisplay"
-            onChange={(e) => {
-              setNewPurchaseDate(e.value || null);
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newPurchaseDate}
-            locale="pt"
-            className="ui-state-default"
-            dateFormat="dd/mm/yy"
-            showIcon
-          />
-          {invalidPurchaseDate && (
-            <Message
-              severity="error"
-              text="Data de Custo é obrigatório"
-              className="smaller-text"
-            />
-          )}
-        </div>
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Data do Vencimento"
-            htmlFor="paymentDeadline"
-            className="font-semibold"
-          />
-          <Calendar
-            id="buttondisplay"
-            onChange={(e) => {
-              setNewPaymentDeadline(e.value || null);
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newPaymentDeadline}
-            locale="pt"
-            className="ui-state-default"
-            dateFormat="dd/mm/yy"
-            showIcon
-          />
-          {invalidPaymentDeadline && (
-            <Message
-              severity="error"
-              text="Data de Vencimento é obrigatório"
-              className="smaller-text"
-            />
-          )}
         </div>
       </div>
       <div className="card flex flex-column md:flex-row gap-3 w-full">
@@ -276,22 +252,80 @@ function CostPurchaseCreateDialog({
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
+            text="Data do Vencimento"
+            htmlFor="paymentDeadline"
+            className="font-semibold"
+          />
+          <Calendar
+            id="buttondisplay"
+            onChange={(e) => {
+              setNewPaymentDeadline(e.value || null);
+            }}
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={newPaymentDeadline}
+            locale="pt"
+            className="ui-state-default"
+            dateFormat="dd/mm/yy"
+            showIcon
+          />
+          {invalidPaymentDeadline && (
+            <Message
+              severity="error"
+              text="Data de Vencimento é obrigatório"
+              className="smaller-text"
+            />
+          )}
+        </div>
+      </div>
+      <div className="card flex flex-column md:flex-row gap-3 w-full">
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Valor"
+            htmlFor="totalAmount"
+            className="font-semibold"
+          />
+          <InputNumber
+            inputId="currency-br"
+            mode="currency"
+            locale="pt-BR"
+            currency="BRL"
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={formatCurrency(newOutstandingInvoices?.totalAmount)}
+            onChange={(e) => {
+              if (e.value) {
+                setNewOutstandingInvoices({
+                  ...newOutstandingInvoices,
+                  totalAmount: e.value * 100,
+                });
+              }
+            }}
+          />
+          {invalidTotalAmount && (
+            <Message
+              severity="error"
+              text="Valor é obrigatório"
+              className="smaller-text"
+            />
+          )}
+        </div>
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
             text="Categoria"
-            htmlFor="costCategory"
+            htmlFor="OutstandingInvoicesCategory"
             className="font-semibold"
           />
           <InputText
             type="text"
             onChange={(e) => {
-              setNewCost({
-                ...newCost,
+              setNewOutstandingInvoices({
+                ...newOutstandingInvoices,
                 costCategory: e.target.value,
               });
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.costCategory}
+            value={newOutstandingInvoices?.costCategory}
           />
-          {invalidCostCategory && (
+          {invalidOutstandingInvoicesCategory && (
             <Message
               severity="error"
               text="Categoria é obrigatório"
@@ -313,12 +347,12 @@ function CostPurchaseCreateDialog({
                 value={true}
                 name="Sim"
                 onChange={(e) =>
-                  setNewCost({
-                    ...newCost,
+                  setNewOutstandingInvoices({
+                    ...newOutstandingInvoices,
                     paymentStatus: e.value,
                   })
                 }
-                checked={newCost.paymentStatus === true}
+                checked={newOutstandingInvoices.paymentStatus === true}
               />
               <label htmlFor="option1" className="ml-2">
                 Sim
@@ -329,12 +363,12 @@ function CostPurchaseCreateDialog({
                 value={false}
                 name="Não"
                 onChange={(e) => {
-                  setNewCost({
-                    ...newCost,
+                  setNewOutstandingInvoices({
+                    ...newOutstandingInvoices,
                     paymentStatus: e.value,
                   });
                 }}
-                checked={newCost.paymentStatus === false}
+                checked={newOutstandingInvoices.paymentStatus === false}
               />
               <label htmlFor="option2" className="ml-2">
                 Não
@@ -351,13 +385,13 @@ function CostPurchaseCreateDialog({
           <InputText
             type="text"
             onChange={(e) => {
-              setNewCost({
-                ...newCost,
+              setNewOutstandingInvoices({
+                ...newOutstandingInvoices,
                 additionalDetails: e.target.value,
               });
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.additionalDetails}
+            value={newOutstandingInvoices?.additionalDetails}
           />
         </div>
       </div>
@@ -374,4 +408,4 @@ function CostPurchaseCreateDialog({
   );
 }
 
-export default CostPurchaseCreateDialog;
+export default OutstandingInvoicesCreateDialog;
