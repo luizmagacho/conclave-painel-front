@@ -1,8 +1,14 @@
 import LabelTitle from "@/components/LabelTitle";
 import { ConstructionContext } from "@/context/ConstructionContext";
+import { Construction } from "@/services/construction/type";
 import { Cost } from "@/services/costs/type";
 import { convertStringToDate, formatDateToYYYYMMDD } from "@/util/date";
 import { useRouter } from "next/router";
+import {
+  AutoComplete,
+  AutoCompleteChangeEvent,
+  AutoCompleteCompleteEvent,
+} from "primereact/autocomplete";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
@@ -27,69 +33,80 @@ function CostUpdateDialog({
 }: CostUpdateDialog) {
   const router = useRouter();
   const { id } = router.query;
-  const { selectedConstruction } = useContext(ConstructionContext);
   const [updatedCost, setUpdatedCost] = useState<Cost>({
     id: data.id,
-    name: data.name,
     centerCost: data.centerCost,
     centerCostId: data.centerCostId,
-    purchaseDate: data.purchaseDate,
-    purchaseDateFormatted: data.purchaseDateFormatted,
-    paymentDeadline: data.paymentDeadline,
-    paymentDeadlineFormatted: data.paymentDeadlineFormatted,
-    bankBranch: data.bankBranch,
-    localBank: data.localBank,
-    costType: data.costType,
-    costCategory: data.costCategory,
+    bankBranchLocalBank: data.bankBranchLocalBank,
+    typeCenterCost: data.typeCenterCost,
+    issueDate: data.issueDate,
+    issueDateFormatted: data.issueDateFormatted,
+    receiptDate: data.receiptDate,
+    receiptDateFormatted: data.receiptDateFormatted,
     workerValue: data.workerValue,
     materialValue: data.materialValue,
     inssValue: data.inssValue,
     valueRemas: data.valueRemas,
-    paymentStatus: data.paymentStatus,
     totalAmount: data.totalAmount,
-    vendorName: data.vendorName,
+    payer: data.payer,
     userId: data.userId,
     enabled: data.enabled,
-    additionalDetails: data.additionalDetails,
     invoice: data.invoice,
     numContract: data.numContract,
     updatedAt: data.updatedAt,
     createdAt: data.createdAt,
   });
-  const [updatedPurchaseDate, setUpdatedPurchaseDate] = useState<Date | null>(
-    convertStringToDate(data.purchaseDate)
+  const [selectedConstruction, setSelectedConstruction] =
+    useState<Construction>();
+  const [updatedIssueDate, setUpdatedIssueDate] = useState<Date | null>(
+    convertStringToDate(data.issueDate)
   );
-  const [invalidPurchaseDate, setInvalidPurchaseDate] =
-    useState<boolean>(false);
-  const [updatedPaymentDeadline, setUpdatedPaymentDeadline] =
-    useState<Date | null>(convertStringToDate(data.paymentDeadline));
-  const [invalidPaymentDeadline, setInvalidPaymentDeadline] =
-    useState<boolean>(false);
-  const [invalidVendorName, setInvalidVendorName] = useState<boolean>(false);
+  const [invalidIssueDate, setInvalidIssueDate] = useState<boolean>(false);
+  const [updatedReceiptDate, setUpdatedReceiptDate] = useState<Date | null>(
+    convertStringToDate(data.receiptDate)
+  );
+  const [invalidReceiptDate, setInvalidReceiptDate] = useState<boolean>(false);
+  const [invalidPayer, setInvalidPayer] = useState<boolean>(false);
   const [invalidWorkerValue, setInvalidWorkerValue] = useState<boolean>(false);
   const [invalidMaterialValue, setInvalidMaterialValue] =
     useState<boolean>(false);
   const [invalidValueRemas, setInvalidValueRemas] = useState<boolean>(false);
-  const [invalidCostCategory, setInvalidCostCategory] =
+  const [invalidTypeCenterCost, setInvalidTypeCenterCost] =
     useState<boolean>(false);
 
+  const { constructions } = useContext(ConstructionContext);
+
+  const [constructionsItems, setConstructionsItems] =
+    useState<Construction[]>(constructions);
+
+  const constructionSearch = (event: AutoCompleteCompleteEvent) => {
+    setTimeout(() => {
+      let _filteredConstructions;
+      if (!event.query.trim().length) {
+        _filteredConstructions = [...constructions];
+      } else {
+        _filteredConstructions = constructionsItems.filter((construction) => {
+          return construction.code.startsWith(event.query);
+        });
+      }
+      setConstructionsItems(_filteredConstructions);
+    }, 150);
+  };
+
   useEffect(() => {
+    console.log(updatedReceiptDate);
     setUpdatedCost((prevCost) => ({
       ...prevCost,
-      purchaseDate:
-        formatDateToYYYYMMDD(updatedPurchaseDate) || prevCost.purchaseDate,
-      paymentDeadline:
-        formatDateToYYYYMMDD(updatedPaymentDeadline) ||
-        prevCost.paymentDeadline,
+      issueDate: formatDateToYYYYMMDD(updatedIssueDate) || prevCost.issueDate,
+      receiptDate:
+        formatDateToYYYYMMDD(updatedReceiptDate) || prevCost.receiptDate,
     }));
-  }, [updatedPurchaseDate, updatedPaymentDeadline]);
+  }, [updatedIssueDate, updatedReceiptDate]);
 
   async function validateFields() {
     const userId = await localStorage.getItem("portal.id");
     setUpdatedCost({ ...updatedCost, userId: userId || "" });
-    setInvalidVendorName(
-      !updatedCost.vendorName || updatedCost.vendorName === ""
-    );
+    setInvalidPayer(!updatedCost.payer || updatedCost.payer === "");
     setInvalidWorkerValue(
       !updatedCost.workerValue || updatedCost.workerValue === null
     );
@@ -99,11 +116,11 @@ function CostUpdateDialog({
     setInvalidValueRemas(
       !updatedCost.valueRemas || updatedCost.valueRemas === null
     );
-    setInvalidPurchaseDate(!updatedPurchaseDate);
+    setInvalidIssueDate(!updatedIssueDate);
 
     if (
-      !invalidPurchaseDate &&
-      !invalidVendorName &&
+      !invalidIssueDate &&
+      !invalidPayer &&
       !invalidWorkerValue &&
       !invalidMaterialValue
     ) {
@@ -130,6 +147,29 @@ function CostUpdateDialog({
     }
   }, [updatedCost.workerValue, updatedCost.materialValue]);
 
+  useEffect(() => {
+    const fetchConstruction = async () => {
+      const relatedConstruction = constructions.find(
+        (construction) => construction.id === data.centerCostId // Substitua por ID relacionado
+      );
+      setSelectedConstruction(relatedConstruction);
+    };
+    fetchConstruction();
+  }, []);
+
+  useEffect(() => {
+    setUpdatedCost((prevCost) => ({
+      ...prevCost,
+      centerCostId: selectedConstruction?.id || prevCost.centerCostId,
+      centerCost: selectedConstruction?.code || prevCost.centerCost,
+      bankBranchLocalBank: selectedConstruction?.bankBranch
+        ? `${selectedConstruction?.bankBranch} - ${selectedConstruction?.local}`
+        : "" || prevCost.bankBranchLocalBank,
+      typeCenterCost: selectedConstruction?.service || prevCost.typeCenterCost,
+      payer: selectedConstruction?.client || prevCost.payer,
+    }));
+  }, [selectedConstruction]);
+
   return (
     <Dialog
       header="Editar Custo"
@@ -141,23 +181,120 @@ function CostUpdateDialog({
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
+            text="Centro de Custo"
+            htmlFor="centerCost"
+            className="font-semibold"
+          />
+          <div className="card p-fluid">
+            <AutoComplete
+              type="text"
+              field="code"
+              value={selectedConstruction}
+              suggestions={constructionsItems}
+              completeMethod={constructionSearch}
+              onChange={(e: AutoCompleteChangeEvent) =>
+                setSelectedConstruction(e.value)
+              }
+              className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
+              style={{ height: "30px", fontSize: "0.8rem" }}
+            />
+            {invalidIssueDate && (
+              <Message
+                severity="error"
+                text="Data de Custo é obrigatório"
+                className="smaller-text"
+              />
+            )}
+          </div>
+        </div>
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Agência"
+            htmlFor="bankBranchLocalBank"
+            className="font-semibold"
+          />
+          <InputText
+            type="text"
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={updatedCost?.bankBranchLocalBank}
+            disabled
+          />
+        </div>
+      </div>
+      <div className="card flex flex-column md:flex-row gap-3 w-full">
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Tomador"
+            htmlFor="Payer"
+            className="font-semibold"
+          />
+          <InputText
+            type="text"
+            onChange={(e) => {
+              setUpdatedCost({
+                ...updatedCost,
+                payer: e.target.value,
+              });
+            }}
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={updatedCost?.payer}
+            disabled
+          />
+          {invalidPayer && (
+            <Message
+              severity="error"
+              text="Tomador é obrigatório"
+              className="smaller-text"
+            />
+          )}
+        </div>
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Tipo de Obra"
+            htmlFor="typeCenterCost"
+            className="font-semibold"
+          />
+          <InputText
+            type="text"
+            onChange={(e) => {
+              setUpdatedCost({
+                ...updatedCost,
+                typeCenterCost: e.target.value,
+              });
+            }}
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={updatedCost?.typeCenterCost}
+            disabled
+          />
+          {invalidTypeCenterCost && (
+            <Message
+              severity="error"
+              text="Categoria é obrigatório"
+              className="smaller-text"
+            />
+          )}
+        </div>
+      </div>
+      <div className="card flex flex-column md:flex-row gap-3 w-full">
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
             text="Data do Custo"
-            htmlFor="purchaseDate"
+            htmlFor="issueDate"
             className="font-semibold"
           />
           <Calendar
             id="buttondisplay"
             onChange={(e) => {
-              setUpdatedPurchaseDate(e.value || null);
+              setUpdatedIssueDate(e.value || null);
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedPurchaseDate}
+            value={updatedIssueDate}
             locale="pt"
             className="ui-state-default"
             dateFormat="dd/mm/yy"
             showIcon
           />
-          {invalidPurchaseDate && (
+          {invalidIssueDate && (
             <Message
               severity="error"
               text="Data de Custo é obrigatório"
@@ -168,22 +305,22 @@ function CostUpdateDialog({
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
             text="Data do Vencimento"
-            htmlFor="paymentDeadline"
+            htmlFor="ReceiptDate"
             className="font-semibold"
           />
           <Calendar
             id="buttondisplay"
             onChange={(e) => {
-              setUpdatedPaymentDeadline(e.value || null);
+              setUpdatedReceiptDate(e.value || null);
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedPaymentDeadline}
+            value={updatedReceiptDate}
             locale="pt"
             className="ui-state-default"
             dateFormat="dd/mm/yy"
             showIcon
           />
-          {invalidPaymentDeadline && (
+          {invalidReceiptDate && (
             <Message
               severity="error"
               text="Data de Vencimento é obrigatório"
@@ -192,58 +329,7 @@ function CostUpdateDialog({
           )}
         </div>
       </div>
-      <div className="card flex flex-column md:flex-row gap-3 w-full">
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Favorecido"
-            htmlFor="vendorName"
-            className="font-semibold"
-          />
-          <InputText
-            type="text"
-            onChange={(e) => {
-              setUpdatedCost({
-                ...updatedCost,
-                vendorName: e.target.value,
-              });
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedCost?.vendorName}
-          />
-          {invalidVendorName && (
-            <Message
-              severity="error"
-              text="Favorecido é obrigatório"
-              className="smaller-text"
-            />
-          )}
-        </div>
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Categoria"
-            htmlFor="costCategory"
-            className="font-semibold"
-          />
-          <InputText
-            type="text"
-            onChange={(e) => {
-              setUpdatedCost({
-                ...updatedCost,
-                costCategory: e.target.value,
-              });
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedCost?.costCategory}
-          />
-          {invalidCostCategory && (
-            <Message
-              severity="error"
-              text="Categoria é obrigatório"
-              className="smaller-text"
-            />
-          )}
-        </div>
-      </div>
+
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -310,49 +396,8 @@ function CostUpdateDialog({
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Confirmação de Pagamento"
-            htmlFor="paymentStatus"
-            className="font-semibold"
-          />
-          <div className="flex align-items-center gap-2 w-full a">
-            <div className="flex">
-              <RadioButton
-                value={true}
-                name="Sim"
-                onChange={(e) =>
-                  setUpdatedCost({
-                    ...updatedCost,
-                    paymentStatus: e.value,
-                  })
-                }
-                checked={updatedCost.paymentStatus === true}
-              />
-              <label htmlFor="option1" className="ml-2">
-                Sim
-              </label>
-            </div>
-            <div className="flex">
-              <RadioButton
-                value={false}
-                name="Não"
-                onChange={(e) => {
-                  setUpdatedCost({
-                    ...updatedCost,
-                    paymentStatus: e.value,
-                  });
-                }}
-                checked={updatedCost.paymentStatus === false}
-              />
-              <label htmlFor="option2" className="ml-2">
-                Não
-              </label>
-            </div>
-          </div>
-        </div>
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Memo"
-            htmlFor="additionalDetails"
+            text="Nota Fiscal"
+            htmlFor="nf"
             className="font-semibold"
           />
           <InputText
@@ -360,11 +405,29 @@ function CostUpdateDialog({
             onChange={(e) => {
               setUpdatedCost({
                 ...updatedCost,
-                additionalDetails: e.target.value,
+                invoice: e.target.value,
               });
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedCost?.additionalDetails}
+            value={updatedCost?.invoice}
+          />
+        </div>
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Contrato"
+            htmlFor="contreact"
+            className="font-semibold"
+          />
+          <InputText
+            type="text"
+            onChange={(e) => {
+              setUpdatedCost({
+                ...updatedCost,
+                numContract: e.target.value,
+              });
+            }}
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={updatedCost?.numContract}
           />
         </div>
       </div>

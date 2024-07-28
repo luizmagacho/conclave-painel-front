@@ -32,16 +32,13 @@ function CostCreateGenericDialog({
   const router = useRouter();
   const { id } = router.query;
   const [newCost, setNewCost] = useState<CostDTO>({
-    name: "",
-    vendorName: "",
+    payer: "",
     centerCost: "",
     centerCostId: "",
-    bankBranch: "",
-    costType: "",
-    costCategory: "",
-    localBank: "",
-    purchaseDate: "",
-    paymentDeadline: "",
+    bankBranchLocalBank: "",
+    typeCenterCost: "",
+    issueDate: "",
+    receiptDate: "",
     workerValue: null,
     materialValue: null,
     inssValue: null,
@@ -49,22 +46,16 @@ function CostCreateGenericDialog({
     valueRemas: null,
     userId: localStorage.getItem("portal.id") as string,
     enabled: true,
-    additionalDetails: "",
-    paymentStatus: false,
     invoice: "",
     numContract: "",
   });
   const [selectedConstruction, setSelectedConstruction] =
     useState<Construction>();
-  const [newPurchaseDate, setNewPurchaseDate] = useState<Date | null>(null);
-  const [invalidPurchaseDate, setInvalidPurchaseDate] =
-    useState<boolean>(false);
-  const [newPaymentDeadline, setNewPaymentDeadline] = useState<Date | null>(
-    null
-  );
-  const [invalidPaymentDeadline, setInvalidPaymentDeadline] =
-    useState<boolean>(false);
-  const [invalidVendorName, setInvalidVendorName] = useState<boolean>(false);
+  const [newIssueDate, setNewIssueDate] = useState<Date | null>(null);
+  const [invalidIssueDate, setInvalidIssueDate] = useState<boolean>(false);
+  const [newReceiptDate, setNewReceiptDate] = useState<Date | null>(null);
+  const [invalidReceiptDate, setInvalidReceiptDate] = useState<boolean>(false);
+  const [invalidPayer, setInvalidPayer] = useState<boolean>(false);
   const [invalidCostCategory, setInvalidCostCategory] =
     useState<boolean>(false);
   const [invalidWorkerValue, setInvalidWorkerValue] = useState<boolean>(false);
@@ -73,24 +64,24 @@ function CostCreateGenericDialog({
   useEffect(() => {
     setNewCost((prevCost) => ({
       ...prevCost,
-      purchaseDate:
-        formatDateToYYYYMMDD(newPurchaseDate) || prevCost.purchaseDate,
+      issueDate: formatDateToYYYYMMDD(newIssueDate) || prevCost.issueDate,
+      receiptDate: formatDateToYYYYMMDD(newReceiptDate) || prevCost.receiptDate,
     }));
-  }, [newPurchaseDate]);
+  }, [newIssueDate, newReceiptDate]);
 
   async function validateFields() {
     const userId = await localStorage.getItem("portal.id");
     setNewCost({ ...newCost, userId: userId || "" });
-    setInvalidVendorName(!newCost.vendorName || newCost.vendorName === "");
+    setInvalidPayer(!newCost.payer || newCost.payer === "");
     setInvalidWorkerValue(!newCost.workerValue || newCost.workerValue === null);
     setInvalidMaterialValue(
       !newCost.materialValue || newCost.materialValue === null
     );
-    setInvalidPurchaseDate(!newPurchaseDate);
+    setInvalidIssueDate(!newIssueDate);
 
     if (
-      !invalidPurchaseDate &&
-      !invalidVendorName &&
+      !invalidIssueDate &&
+      !invalidPayer &&
       !invalidWorkerValue &&
       !invalidMaterialValue
     ) {
@@ -141,8 +132,11 @@ function CostCreateGenericDialog({
       ...prevCost,
       centerCostId: selectedConstruction?.id || prevCost.centerCostId,
       centerCost: selectedConstruction?.code || prevCost.centerCost,
-      bankBranch: selectedConstruction?.bankBranch || prevCost.bankBranch,
-      localBank: selectedConstruction?.local || prevCost.localBank,
+      bankBranchLocalBank: selectedConstruction?.bankBranch
+        ? `${selectedConstruction?.bankBranch} - ${selectedConstruction?.local}`
+        : "" || prevCost.bankBranchLocalBank,
+      typeCenterCost: selectedConstruction?.service || prevCost.typeCenterCost,
+      payer: selectedConstruction?.client || prevCost.payer,
     }));
   }, [selectedConstruction]);
 
@@ -174,7 +168,7 @@ function CostCreateGenericDialog({
               className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
               style={{ height: "30px", fontSize: "0.8rem" }}
             />
-            {invalidPurchaseDate && (
+            {invalidIssueDate && (
               <Message
                 severity="error"
                 text="Data de Custo é obrigatório"
@@ -185,14 +179,14 @@ function CostCreateGenericDialog({
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Local da Agência"
-            htmlFor="localBank"
+            text="Agência"
+            htmlFor="bankBranchLocalBank"
             className="font-semibold"
           />
           <InputText
             type="text"
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.localBank}
+            value={newCost?.bankBranchLocalBank}
             disabled
           />
         </div>
@@ -200,62 +194,8 @@ function CostCreateGenericDialog({
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Data da Emissão"
-            htmlFor="purchaseDate"
-            className="font-semibold"
-          />
-          <Calendar
-            id="buttondisplay"
-            onChange={(e) => {
-              setNewPurchaseDate(e.value || null);
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newPurchaseDate}
-            locale="pt"
-            className="ui-state-default"
-            dateFormat="dd/mm/yy"
-            showIcon
-          />
-          {invalidPurchaseDate && (
-            <Message
-              severity="error"
-              text="Data de Custo é obrigatório"
-              className="smaller-text"
-            />
-          )}
-        </div>
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Data do Vencimento"
-            htmlFor="paymentDeadline"
-            className="font-semibold"
-          />
-          <Calendar
-            id="buttondisplay"
-            onChange={(e) => {
-              setNewPaymentDeadline(e.value || null);
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newPaymentDeadline}
-            locale="pt"
-            className="ui-state-default"
-            dateFormat="dd/mm/yy"
-            showIcon
-          />
-          {invalidPaymentDeadline && (
-            <Message
-              severity="error"
-              text="Data de Vencimento é obrigatório"
-              className="smaller-text"
-            />
-          )}
-        </div>
-      </div>
-      <div className="card flex flex-column md:flex-row gap-3 w-full">
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Favorecido"
-            htmlFor="vendorName"
+            text="Tomador"
+            htmlFor="payer"
             className="font-semibold"
           />
           <InputText
@@ -263,16 +203,17 @@ function CostCreateGenericDialog({
             onChange={(e) => {
               setNewCost({
                 ...newCost,
-                vendorName: e.target.value,
+                payer: e.target.value,
               });
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.vendorName}
+            value={newCost?.payer}
+            disabled
           />
-          {invalidVendorName && (
+          {invalidPayer && (
             <Message
               severity="error"
-              text="Favorecido é obrigatório"
+              text="Tomador é obrigatório"
               className="smaller-text"
             />
           )}
@@ -288,11 +229,12 @@ function CostCreateGenericDialog({
             onChange={(e) => {
               setNewCost({
                 ...newCost,
-                costType: e.target.value,
+                typeCenterCost: e.target.value,
               });
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.costType}
+            value={newCost?.typeCenterCost}
+            disabled
           />
           {invalidCostCategory && (
             <Message
@@ -303,6 +245,61 @@ function CostCreateGenericDialog({
           )}
         </div>
       </div>
+      <div className="card flex flex-column md:flex-row gap-3 w-full">
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Data da Emissão"
+            htmlFor="issueDate"
+            className="font-semibold"
+          />
+          <Calendar
+            id="buttondisplay"
+            onChange={(e) => {
+              setNewIssueDate(e.value || null);
+            }}
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={newIssueDate}
+            locale="pt"
+            className="ui-state-default"
+            dateFormat="dd/mm/yy"
+            showIcon
+          />
+          {invalidIssueDate && (
+            <Message
+              severity="error"
+              text="Data de Custo é obrigatório"
+              className="smaller-text"
+            />
+          )}
+        </div>
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Data do Vencimento"
+            htmlFor="ReceiptDate"
+            className="font-semibold"
+          />
+          <Calendar
+            id="buttondisplay"
+            onChange={(e) => {
+              setNewReceiptDate(e.value || null);
+            }}
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={newReceiptDate}
+            locale="pt"
+            className="ui-state-default"
+            dateFormat="dd/mm/yy"
+            showIcon
+          />
+          {invalidReceiptDate && (
+            <Message
+              severity="error"
+              text="Data de Vencimento é obrigatório"
+              className="smaller-text"
+            />
+          )}
+        </div>
+      </div>
+
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -364,33 +361,6 @@ function CostCreateGenericDialog({
             />
           )}
         </div>
-        {/* <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Valor Remas"
-            htmlFor="remasValue"
-            className="font-semibold"
-          />
-          <InputNumber
-            inputId="currency-br"
-            mode="currency"
-            locale="pt-BR"
-            currency="BRL"
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={formatCurrency(newCost?.valueRemas)}
-            onChange={(e) => {
-              if (e.value) {
-                setNewCost({ ...newCost, valueRemas: e.value * 100 });
-              }
-            }}
-          />
-          {invalidValueRemas && (
-            <Message
-              severity="error"
-              text="Valor Remas é obrigatório"
-              className="smaller-text"
-            />
-          )}
-        </div> */}
       </div>
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">

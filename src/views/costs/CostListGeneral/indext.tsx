@@ -155,17 +155,6 @@ function CostListGeneral() {
     return formatCurrency(cost.totalAmount || null);
   };
 
-  const clearedBodyTemplate = (cost: Cost) => {
-    return (
-      <i
-        className={classNames("pi", {
-          "true-icon pi-check-circle": cost.paymentStatus,
-          "false-icon pi-times-circle": !cost.paymentStatus,
-        })}
-      ></i>
-    );
-  };
-
   function onCenterCostSearch(centerCost: string) {
     handleGetCosts(0, centerCost, monthSearch);
     handleGetCostTotal(centerCost, monthSearch);
@@ -242,23 +231,35 @@ function CostListGeneral() {
           footer={footerTemplate}
         >
           <Column
-            field="invoice"
-            header="Nota Fiscal"
-            className="smaller-text"
-          />
-          <Column
             field="centerCost"
             header="Centro de Custo"
             className="smaller-text"
           />
           <Column
-            field="purchaseDateFormatted"
-            header="Data do Custo"
+            field="bankBranchLocalBank"
+            header="Agência"
             className="smaller-text"
           />
           <Column
-            field="vendorName"
-            header="Favorecido"
+            field="typeCenterCost"
+            header="Tipo de Obra"
+            className="smaller-text"
+          />
+          <Column
+            field="issueDateFormatted"
+            header="Data da Emissão"
+            className="smaller-text"
+          />
+          <Column
+            field="receiptDateFormatted"
+            header="Data do Recebimento"
+            className="smaller-text"
+          />
+          <Column field="payer" header="Tomador" className="smaller-text" />
+          <Column
+            field="totalAmount"
+            header="Valor Total"
+            body={priceTotalValueBodyTemplate}
             className="smaller-text"
           />
           <Column
@@ -274,15 +275,14 @@ function CostListGeneral() {
             className="smaller-text"
           />
           <Column
-            field="totalAmount"
-            header="Valor Total"
-            body={priceTotalValueBodyTemplate}
-            className="smaller-text"
-          />
-          <Column
             field="inssValue"
             header="INSS"
             body={priceInssValueBodyTemplate}
+            className="smaller-text"
+          />
+          <Column
+            field="invoice"
+            header="Nota Fiscal"
             className="smaller-text"
           />
           <Column

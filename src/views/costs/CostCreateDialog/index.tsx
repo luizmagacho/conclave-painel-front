@@ -1,8 +1,14 @@
 import LabelTitle from "@/components/LabelTitle";
 import { ConstructionContext } from "@/context/ConstructionContext";
+import { Construction } from "@/services/construction/type";
 import { CostDTO } from "@/services/costs/type";
 import { formatDateToYYYYMMDD } from "@/util/date";
 import { useRouter } from "next/router";
+import {
+  AutoComplete,
+  AutoCompleteChangeEvent,
+  AutoCompleteCompleteEvent,
+} from "primereact/autocomplete";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
@@ -23,16 +29,13 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
   const { id } = router.query;
   const { selectedConstruction } = useContext(ConstructionContext);
   const [newCost, setNewCost] = useState<CostDTO>({
-    name: "",
-    vendorName: "",
+    payer: selectedConstruction?.client || "",
     centerCost: selectedConstruction?.code || "",
     centerCostId: selectedConstruction?.id || "",
-    bankBranch: selectedConstruction?.bankBranch || "",
-    costType: "",
-    costCategory: "",
-    localBank: selectedConstruction?.local || "",
-    purchaseDate: "",
-    paymentDeadline: "",
+    bankBranchLocalBank: selectedConstruction?.bankBranch || "",
+    typeCenterCost: selectedConstruction?.service || "",
+    issueDate: "",
+    receiptDate: "",
     workerValue: null,
     materialValue: null,
     inssValue: null,
@@ -40,21 +43,17 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
     valueRemas: null,
     userId: localStorage.getItem("portal.id") as string,
     enabled: true,
-    additionalDetails: "",
-    paymentStatus: false,
     invoice: "",
     numContract: "",
   });
-  const [newPurchaseDate, setNewPurchaseDate] = useState<Date | null>(null);
-  const [invalidPurchaseDate, setInvalidPurchaseDate] =
-    useState<boolean>(false);
-  const [newPaymentDeadline, setNewPaymentDeadline] = useState<Date | null>(
-    null
-  );
-  const [invalidPaymentDeadline, setInvalidPaymentDeadline] =
-    useState<boolean>(false);
-  const [invalidVendorName, setInvalidVendorName] = useState<boolean>(false);
-  const [invalidCostCategory, setInvalidCostCategory] =
+  const [selectedConstructionCreate, setSelectedConstructionCreate] =
+    useState<Construction | null>(selectedConstruction);
+  const [newIssueDate, setNewIssueDate] = useState<Date | null>(null);
+  const [invalidIssueDate, setInvalidIssueDate] = useState<boolean>(false);
+  const [newReceiptDate, setNewReceiptDate] = useState<Date | null>(null);
+  const [invalidReceiptDate, setInvalidReceiptDate] = useState<boolean>(false);
+  const [invalidPayer, setInvalidPayer] = useState<boolean>(false);
+  const [invalidTypeCenterCost, setInvalidTypeCenterCost] =
     useState<boolean>(false);
   const [invalidWorkerValue, setInvalidWorkerValue] = useState<boolean>(false);
   const [invalidMaterialValue, setInvalidMaterialValue] =
@@ -64,24 +63,24 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
   useEffect(() => {
     setNewCost((prevCost) => ({
       ...prevCost,
-      purchaseDate:
-        formatDateToYYYYMMDD(newPurchaseDate) || prevCost.purchaseDate,
+      issueDate: formatDateToYYYYMMDD(newIssueDate) || prevCost.issueDate,
+      receiptDate: formatDateToYYYYMMDD(newReceiptDate) || prevCost.receiptDate,
     }));
-  }, [newPurchaseDate]);
+  }, [newIssueDate, newReceiptDate]);
 
   async function validateFields() {
     const userId = await localStorage.getItem("portal.id");
     setNewCost({ ...newCost, userId: userId || "" });
-    setInvalidVendorName(!newCost.vendorName || newCost.vendorName === "");
+    setInvalidPayer(!newCost.payer || newCost.payer === "");
     setInvalidWorkerValue(!newCost.workerValue || newCost.workerValue === null);
     setInvalidMaterialValue(
       !newCost.materialValue || newCost.materialValue === null
     );
-    setInvalidPurchaseDate(!newPurchaseDate);
+    setInvalidIssueDate(!newIssueDate);
 
     if (
-      !invalidPurchaseDate &&
-      !invalidVendorName &&
+      !invalidIssueDate &&
+      !invalidPayer &&
       !invalidWorkerValue &&
       !invalidMaterialValue
     ) {
@@ -108,6 +107,25 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
     }
   }, [newCost.workerValue, newCost.materialValue]);
 
+  const { constructions } = useContext(ConstructionContext);
+
+  const [constructionsItems, setConstructionsItems] =
+    useState<Construction[]>(constructions);
+
+  const constructionSearch = (event: AutoCompleteCompleteEvent) => {
+    setTimeout(() => {
+      let _filteredConstructions;
+      if (!event.query.trim().length) {
+        _filteredConstructions = [...constructions];
+      } else {
+        _filteredConstructions = constructionsItems.filter((construction) => {
+          return construction.code.startsWith(event.query);
+        });
+      }
+      setConstructionsItems(_filteredConstructions);
+    }, 150);
+  };
+
   return (
     <Dialog
       header="Adicionar Novo Custo"
@@ -119,23 +137,121 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
+            text="Centro de Custo"
+            htmlFor="centerCost"
+            className="font-semibold"
+          />
+          <div className="card p-fluid">
+            <AutoComplete
+              type="text"
+              field="code"
+              value={selectedConstructionCreate}
+              suggestions={constructionsItems}
+              completeMethod={constructionSearch}
+              onChange={(e: AutoCompleteChangeEvent) =>
+                setSelectedConstructionCreate(e.value)
+              }
+              className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
+              style={{ height: "30px", fontSize: "0.8rem" }}
+              disabled
+            />
+            {invalidIssueDate && (
+              <Message
+                severity="error"
+                text="Data de Custo é obrigatório"
+                className="smaller-text"
+              />
+            )}
+          </div>
+        </div>
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Agência"
+            htmlFor="bankBranchLocalBank"
+            className="font-semibold"
+          />
+          <InputText
+            type="text"
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={newCost?.bankBranchLocalBank}
+            disabled
+          />
+        </div>
+      </div>
+      <div className="card flex flex-column md:flex-row gap-3 w-full">
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Tomador"
+            htmlFor="Payer"
+            className="font-semibold"
+          />
+          <InputText
+            type="text"
+            onChange={(e) => {
+              setNewCost({
+                ...newCost,
+                payer: e.target.value,
+              });
+            }}
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={newCost?.payer}
+            disabled
+          />
+          {invalidPayer && (
+            <Message
+              severity="error"
+              text="Favorecido é obrigatório"
+              className="smaller-text"
+            />
+          )}
+        </div>
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Tipo de Obra"
+            htmlFor="typeCenterCost"
+            className="font-semibold"
+          />
+          <InputText
+            type="text"
+            onChange={(e) => {
+              setNewCost({
+                ...newCost,
+                typeCenterCost: e.target.value,
+              });
+            }}
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={newCost?.typeCenterCost}
+            disabled
+          />
+          {invalidTypeCenterCost && (
+            <Message
+              severity="error"
+              text="Categoria é obrigatório"
+              className="smaller-text"
+            />
+          )}
+        </div>
+      </div>
+      <div className="card flex flex-column md:flex-row gap-3 w-full">
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
             text="Data do Custo"
-            htmlFor="purchaseDate"
+            htmlFor="IssueDate"
             className="font-semibold"
           />
           <Calendar
             id="buttondisplay"
             onChange={(e) => {
-              setNewPurchaseDate(e.value || null);
+              setNewIssueDate(e.value || null);
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newPurchaseDate}
+            value={newIssueDate}
             locale="pt"
             className="ui-state-default"
             dateFormat="dd/mm/yy"
             showIcon
           />
-          {invalidPurchaseDate && (
+          {invalidIssueDate && (
             <Message
               severity="error"
               text="Data de Custo é obrigatório"
@@ -146,22 +262,22 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
             text="Data do Vencimento"
-            htmlFor="paymentDeadline"
+            htmlFor="ReceiptDate"
             className="font-semibold"
           />
           <Calendar
             id="buttondisplay"
             onChange={(e) => {
-              setNewPaymentDeadline(e.value || null);
+              setNewReceiptDate(e.value || null);
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newPaymentDeadline}
+            value={newReceiptDate}
             locale="pt"
             className="ui-state-default"
             dateFormat="dd/mm/yy"
             showIcon
           />
-          {invalidPaymentDeadline && (
+          {invalidReceiptDate && (
             <Message
               severity="error"
               text="Data de Vencimento é obrigatório"
@@ -170,58 +286,7 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
           )}
         </div>
       </div>
-      <div className="card flex flex-column md:flex-row gap-3 w-full">
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Favorecido"
-            htmlFor="vendorName"
-            className="font-semibold"
-          />
-          <InputText
-            type="text"
-            onChange={(e) => {
-              setNewCost({
-                ...newCost,
-                vendorName: e.target.value,
-              });
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.vendorName}
-          />
-          {invalidVendorName && (
-            <Message
-              severity="error"
-              text="Favorecido é obrigatório"
-              className="smaller-text"
-            />
-          )}
-        </div>
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Categoria"
-            htmlFor="costCategory"
-            className="font-semibold"
-          />
-          <InputText
-            type="text"
-            onChange={(e) => {
-              setNewCost({
-                ...newCost,
-                costCategory: e.target.value,
-              });
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.costCategory}
-          />
-          {invalidCostCategory && (
-            <Message
-              severity="error"
-              text="Categoria é obrigatório"
-              className="smaller-text"
-            />
-          )}
-        </div>
-      </div>
+
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -281,80 +346,12 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
             />
           )}
         </div>
-        {/* <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Valor Remas"
-            htmlFor="remasValue"
-            className="font-semibold"
-          />
-          <InputNumber
-            inputId="currency-br"
-            mode="currency"
-            locale="pt-BR"
-            currency="BRL"
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={formatCurrency(newCost?.valueRemas)}
-            onChange={(e) => {
-              if (e.value) {
-                setNewCost({ ...newCost, valueRemas: e.value * 100 });
-              }
-            }}
-          />
-          {invalidValueRemas && (
-            <Message
-              severity="error"
-              text="Valor Remas é obrigatório"
-              className="smaller-text"
-            />
-          )}
-        </div> */}
       </div>
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Confirmação de Pagamento"
-            htmlFor="paymentStatus"
-            className="font-semibold"
-          />
-          <div className="flex align-items-center gap-2 w-full a">
-            <div className="flex">
-              <RadioButton
-                value={true}
-                name="Sim"
-                onChange={(e) =>
-                  setNewCost({
-                    ...newCost,
-                    paymentStatus: e.value,
-                  })
-                }
-                checked={newCost.paymentStatus === true}
-              />
-              <label htmlFor="option1" className="ml-2">
-                Sim
-              </label>
-            </div>
-            <div className="flex">
-              <RadioButton
-                value={false}
-                name="Não"
-                onChange={(e) => {
-                  setNewCost({
-                    ...newCost,
-                    paymentStatus: e.value,
-                  });
-                }}
-                checked={newCost.paymentStatus === false}
-              />
-              <label htmlFor="option2" className="ml-2">
-                Não
-              </label>
-            </div>
-          </div>
-        </div>
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Memo"
-            htmlFor="additionalDetails"
+            text="Nota Fiscal"
+            htmlFor="nf"
             className="font-semibold"
           />
           <InputText
@@ -362,11 +359,29 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
             onChange={(e) => {
               setNewCost({
                 ...newCost,
-                additionalDetails: e.target.value,
+                invoice: e.target.value,
               });
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.additionalDetails}
+            value={newCost?.invoice}
+          />
+        </div>
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Contrato"
+            htmlFor="contreact"
+            className="font-semibold"
+          />
+          <InputText
+            type="text"
+            onChange={(e) => {
+              setNewCost({
+                ...newCost,
+                numContract: e.target.value,
+              });
+            }}
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={newCost?.numContract}
           />
         </div>
       </div>
