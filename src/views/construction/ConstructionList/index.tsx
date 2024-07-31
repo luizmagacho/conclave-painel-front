@@ -75,11 +75,8 @@ function ConstructionList() {
   );
   const [currDeleteConstruction, setCurrDeleteConstruction] =
     useState<Construction | null>(null);
-  const [currReactiveConstruction, setCurrReactiveConstruction] =
-    useState<Construction | null>(null);
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
-  const [showReactiveDialog, setShowReactiveDialog] = useState<boolean>(false);
   const [codeSearch, setCodeSearch] = useState<string>("");
   const [bankBranchSearch, setBankBranchSearch] = useState<string>("");
   const [localBankSearch, setLocalBankSearch] = useState<string>("");
@@ -90,24 +87,19 @@ function ConstructionList() {
 
   const {
     constructions,
-    constructionsNotEnabled,
     loading,
     totalElements,
-    totalElementsNotEnabled,
     handleGetConstructions,
     handleGetConstructionsNotEnabled,
     handleGetConstructionById,
     handlePostConstruction,
     handleUpdateConstruction,
     handleDeleteConstruction,
-    handleReactiveConstruction,
   } = useContext(ConstructionContext);
 
   const toast = useRef<Toast>(null);
   const [first, setFirst] = useState<number>(0);
   const [page, setPage] = useState<number>(0);
-  const [firstNotEnabled, setFirstNotEnabled] = useState<number>(0);
-  const [pageNotEnabled, setPageNotEnabled] = useState<number>(0);
   const router = useRouter();
 
   const options: Options[] = [
@@ -128,32 +120,9 @@ function ConstructionList() {
     },
   ];
 
-  const optionsNotEnabled: Options[] = [
-    {
-      ariaLabel: "Editar",
-      label: "Editar",
-      onclick: openDialog,
-    },
-    {
-      ariaLabel: "Custos",
-      label: "Custos",
-      onclick: openCosts,
-    },
-    {
-      ariaLabel: "Reativar",
-      label: "Reativar",
-      onclick: openCosts,
-    },
-  ];
-
   const columnBodyOptions = {
     options: (constructions: Construction) =>
       optionsBodyTemplate(options, constructions),
-  };
-
-  const columnBodyOptionsNotEnabled = {
-    options: (constructions: Construction) =>
-      optionsBodyTemplate(optionsNotEnabled, constructions),
   };
 
   async function onUpdateConstruction(construction: Construction) {
@@ -171,34 +140,13 @@ function ConstructionList() {
     setShowDeleteDialog(true);
   }
 
-  function openReactiveDialog(construction: Construction) {
-    setCurrReactiveConstruction(construction);
-    setShowReactiveDialog(true);
-  }
-
   function closeDeleteDialog() {
     setCurrDeleteConstruction(null);
     setShowDeleteDialog((showDeleteDialog) => !showDeleteDialog);
   }
 
-  function closeReactiveDialog() {
-    setCurrReactiveConstruction(null);
-    setShowReactiveDialog((showReactiveDialog) => !showReactiveDialog);
-  }
-
   async function onDeleteConstruction(constructionId: string) {
     await handleDeleteConstruction(constructionId);
-    handleGetConstructions(page, codeSearch, bankBranchSearch, localBankSearch);
-    handleGetConstructionsNotEnabled(
-      page,
-      codeSearch,
-      bankBranchSearch,
-      localBankSearch
-    );
-  }
-
-  async function onReactiveConstruction(constructionId: string) {
-    await handleReactiveConstruction(constructionId);
     handleGetConstructions(page, codeSearch, bankBranchSearch, localBankSearch);
     handleGetConstructionsNotEnabled(
       page,
@@ -237,13 +185,6 @@ function ConstructionList() {
     handleGetConstructions(page);
     setFirst(first);
     setPage(page);
-  }
-
-  function onPageChangeNotEnabled(event: PaginatorPageChangeEvent) {
-    const { page, first } = event;
-    handleGetConstructionsNotEnabled(page);
-    setFirstNotEnabled(first);
-    setPageNotEnabled(page);
   }
 
   function onCodeSearch(code: string) {
@@ -343,80 +284,38 @@ function ConstructionList() {
             />
           </div>
         </div>
-        <TabView className="w-full smaller-text">
-          <TabPanel header="Ativo">
-            <DataTable
-              emptyMessage="Nenhuma centro de custo encontrado."
-              value={constructions}
-              loading={loading}
-              stripedRows
-              showGridlines
-              scrollable
-              scrollHeight="85vh"
-              rows={10}
-              totalRecords={totalElements}
-              tableStyle={{ minWidth: "50rem" }}
-              size="small"
-              className="smaller-text"
-            >
-              {columns.map((col) => {
-                return (
-                  <Column
-                    sortable
-                    key={col.field}
-                    field={col.field}
-                    header={col.header}
-                  />
-                );
-              })}
-              <Column header="Opções" body={columnBodyOptions.options} />
-            </DataTable>
-            <Paginator
-              first={first}
-              rows={10}
-              totalRecords={totalElements}
-              onPageChange={onPageChange}
-            />
-          </TabPanel>
-          <TabPanel header="Encerrado">
-            <DataTable
-              emptyMessage="Nenhuma centro de custo encontrado."
-              value={constructionsNotEnabled}
-              loading={loading}
-              stripedRows
-              showGridlines
-              scrollable
-              scrollHeight="85vh"
-              rows={10}
-              totalRecords={totalElementsNotEnabled}
-              tableStyle={{ minWidth: "50rem" }}
-              size="small"
-              className="smaller-text"
-            >
-              {columns.map((col) => {
-                return (
-                  <Column
-                    sortable
-                    key={col.field}
-                    field={col.field}
-                    header={col.header}
-                    className="smaller-text"
-                  />
-                );
-              })}
+        <DataTable
+          emptyMessage="Nenhuma centro de custo encontrado."
+          value={constructions}
+          loading={loading}
+          stripedRows
+          showGridlines
+          scrollable
+          scrollHeight="85vh"
+          rows={10}
+          totalRecords={totalElements}
+          tableStyle={{ minWidth: "50rem" }}
+          size="small"
+          className="smaller-text"
+        >
+          {columns.map((col) => {
+            return (
               <Column
-                header="Opções"
-                body={columnBodyOptionsNotEnabled.options}
+                sortable
+                key={col.field}
+                field={col.field}
+                header={col.header}
               />
-            </DataTable>
-            <Paginator
-              first={firstNotEnabled}
-              rows={10}
-              totalRecords={totalElementsNotEnabled}
-              onPageChange={onPageChange}
-            />
-          </TabPanel>
-        </TabView>
+            );
+          })}
+          <Column header="Opções" body={columnBodyOptions.options} />
+        </DataTable>
+        <Paginator
+          first={first}
+          rows={10}
+          totalRecords={totalElements}
+          onPageChange={onPageChange}
+        />
 
         {showCreateDialog && (
           <ConstructionCreateDialog
@@ -440,14 +339,6 @@ function ConstructionList() {
           data={currDeleteConstruction}
           onDelete={onDeleteConstruction}
           onHide={closeDeleteDialog}
-        />
-      )}
-      {currReactiveConstruction && (
-        <ConstructionReactiveDialog
-          visible={showReactiveDialog}
-          data={currReactiveConstruction}
-          onReactive={onReactiveConstruction}
-          onHide={closeReactiveDialog}
         />
       )}
     </>
