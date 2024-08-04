@@ -218,7 +218,7 @@ function OutstandingInvoicesList() {
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
-          <h1 className="m-0">Custos - Contas a Pagar</h1>
+          <h1 className="m-0">Contas a Pagar</h1>
           {(role === "Administrador" || role === "Notas") && (
             <Button
               onClick={() => {

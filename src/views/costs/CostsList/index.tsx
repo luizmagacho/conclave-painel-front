@@ -158,7 +158,7 @@ function CostList() {
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
-          <h1 className="m-0">Custos - Notas</h1>
+          <h1 className="m-0">Notas</h1>
         </div>
         <div className="card flex flex-column md:flex-row gap-2 w-11/12">
           <div className="flex flex-column gap-1 w-full">
