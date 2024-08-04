@@ -160,13 +160,13 @@ function CostUpdateDialog({
   useEffect(() => {
     setUpdatedCost((prevCost) => ({
       ...prevCost,
-      centerCostId: selectedConstruction?.id || prevCost.centerCostId,
-      centerCost: selectedConstruction?.code || prevCost.centerCost,
+      centerCostId: selectedConstruction?.id || "",
+      centerCost: selectedConstruction?.code || "",
       bankBranchLocalBank: selectedConstruction?.bankBranch
         ? `${selectedConstruction?.bankBranch} - ${selectedConstruction?.local}`
-        : "" || prevCost.bankBranchLocalBank,
-      typeCenterCost: selectedConstruction?.service || prevCost.typeCenterCost,
-      payer: selectedConstruction?.client || prevCost.payer,
+        : "" || "",
+      typeCenterCost: selectedConstruction?.service || "",
+      payer: selectedConstruction?.client || "",
     }));
   }, [selectedConstruction]);
 
@@ -195,6 +195,7 @@ function CostUpdateDialog({
               onChange={(e: AutoCompleteChangeEvent) =>
                 setSelectedConstruction(e.value)
               }
+              dropdown
               className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
               style={{ height: "30px", fontSize: "0.8rem" }}
             />
@@ -329,7 +330,41 @@ function CostUpdateDialog({
           )}
         </div>
       </div>
-
+      <div className="card flex flex-column md:flex-row gap-3 w-full">
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Valor Total"
+            htmlFor="value"
+            className="font-semibold"
+          />
+          <InputNumber
+            inputId="currency-br"
+            mode="currency"
+            locale="pt-BR"
+            currency="BRL"
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={formatCurrency(updatedCost?.totalAmount)}
+            onChange={(e) => {
+              if (e.value) {
+                setUpdatedCost({
+                  ...updatedCost,
+                  totalAmount: e.value * 100,
+                  workerValue: (e.value / 2) * 100,
+                  materialValue: (e.value / 2) * 100,
+                  inssValue: (e.value / 2) * 100 * 0.11,
+                });
+              }
+            }}
+          />
+          {invalidWorkerValue && (
+            <Message
+              severity="error"
+              text="Valor Mão de Obra é obrigatório"
+              className="smaller-text"
+            />
+          )}
+        </div>
+      </div>
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -344,15 +379,7 @@ function CostUpdateDialog({
             currency="BRL"
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={formatCurrency(updatedCost?.workerValue)}
-            onChange={(e) => {
-              if (e.value) {
-                setUpdatedCost({
-                  ...updatedCost,
-                  workerValue: e.value * 100,
-                  inssValue: e.value * 100 * 0.11,
-                });
-              }
-            }}
+            disabled
           />
           {invalidWorkerValue && (
             <Message
@@ -375,14 +402,7 @@ function CostUpdateDialog({
             currency="BRL"
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={formatCurrency(updatedCost?.materialValue)}
-            onChange={(e) => {
-              if (e.value) {
-                setUpdatedCost({
-                  ...updatedCost,
-                  materialValue: e.value * 100,
-                });
-              }
-            }}
+            disabled
           />
           {invalidMaterialValue && (
             <Message

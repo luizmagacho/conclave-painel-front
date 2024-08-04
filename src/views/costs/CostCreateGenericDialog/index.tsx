@@ -98,15 +98,15 @@ function CostCreateGenericDialog({
     return null;
   };
 
-  useEffect(() => {
-    if (newCost.workerValue !== null && newCost.materialValue) {
-      const totalValue = newCost.workerValue + newCost.materialValue;
-      setNewCost((prevCost) => ({
-        ...prevCost,
-        totalAmount: totalValue || prevCost.totalAmount,
-      }));
-    }
-  }, [newCost.workerValue, newCost.materialValue]);
+  // useEffect(() => {
+  //   if (newCost.workerValue !== null && newCost.materialValue) {
+  //     const totalValue = newCost.workerValue + newCost.materialValue;
+  //     setNewCost((prevCost) => ({
+  //       ...prevCost,
+  //       totalAmount: totalValue || prevCost.totalAmount,
+  //     }));
+  //   }
+  // }, [newCost.workerValue, newCost.materialValue]);
 
   const { constructions } = useContext(ConstructionContext);
 
@@ -130,13 +130,13 @@ function CostCreateGenericDialog({
   useEffect(() => {
     setNewCost((prevCost) => ({
       ...prevCost,
-      centerCostId: selectedConstruction?.id || prevCost.centerCostId,
-      centerCost: selectedConstruction?.code || prevCost.centerCost,
+      centerCostId: selectedConstruction?.id || "",
+      centerCost: selectedConstruction?.code || "",
       bankBranchLocalBank: selectedConstruction?.bankBranch
         ? `${selectedConstruction?.bankBranch} - ${selectedConstruction?.local}`
-        : "" || prevCost.bankBranchLocalBank,
-      typeCenterCost: selectedConstruction?.service || prevCost.typeCenterCost,
-      payer: selectedConstruction?.client || prevCost.payer,
+        : "" || "",
+      typeCenterCost: selectedConstruction?.service || "",
+      payer: selectedConstruction?.client || "",
     }));
   }, [selectedConstruction]);
 
@@ -159,6 +159,7 @@ function CostCreateGenericDialog({
             <AutoComplete
               type="text"
               field="code"
+              dropdown
               value={selectedConstruction}
               suggestions={constructionsItems}
               completeMethod={constructionSearch}
@@ -299,7 +300,41 @@ function CostCreateGenericDialog({
           )}
         </div>
       </div>
-
+      <div className="card flex flex-column md:flex-row gap-3 w-full">
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Valor Total"
+            htmlFor="value"
+            className="font-semibold"
+          />
+          <InputNumber
+            inputId="currency-br"
+            mode="currency"
+            locale="pt-BR"
+            currency="BRL"
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={formatCurrency(newCost?.totalAmount)}
+            onChange={(e) => {
+              if (e.value) {
+                setNewCost({
+                  ...newCost,
+                  totalAmount: e.value * 100,
+                  workerValue: (e.value / 2) * 100,
+                  materialValue: (e.value / 2) * 100,
+                  inssValue: (e.value / 2) * 100 * 0.11,
+                });
+              }
+            }}
+          />
+          {invalidWorkerValue && (
+            <Message
+              severity="error"
+              text="Valor Mão de Obra é obrigatório"
+              className="smaller-text"
+            />
+          )}
+        </div>
+      </div>
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -314,16 +349,7 @@ function CostCreateGenericDialog({
             currency="BRL"
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={formatCurrency(newCost?.workerValue)}
-            onChange={(e) => {
-              if (e.value) {
-                setNewCost({
-                  ...newCost,
-                  workerValue: e.value * 100,
-                  materialValue: e.value * 100,
-                  inssValue: e.value * 100 * 0.11,
-                });
-              }
-            }}
+            disabled
           />
           {invalidWorkerValue && (
             <Message
