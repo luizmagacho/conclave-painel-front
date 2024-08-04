@@ -15,7 +15,6 @@ import { Dialog } from "primereact/dialog";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
-import { RadioButton } from "primereact/radiobutton";
 import { useContext, useEffect, useState } from "react";
 
 interface CostCreateDialog {
@@ -26,7 +25,6 @@ interface CostCreateDialog {
 
 function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
   const router = useRouter();
-  const { id } = router.query;
   const { selectedConstruction } = useContext(ConstructionContext);
   const [newCost, setNewCost] = useState<CostDTO>({
     payer: selectedConstruction?.client || "",
@@ -58,8 +56,6 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
   const [invalidWorkerValue, setInvalidWorkerValue] = useState<boolean>(false);
   const [invalidMaterialValue, setInvalidMaterialValue] =
     useState<boolean>(false);
-  const [invalidInssValue, setInvalidInssValue] = useState<boolean>(false);
-  const [invalidValueRemas, setInvalidValueRemas] = useState<boolean>(false);
   useEffect(() => {
     setNewCost((prevCost) => ({
       ...prevCost,
@@ -97,15 +93,15 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
     return null;
   };
 
-  useEffect(() => {
-    if (newCost.workerValue !== null && newCost.materialValue) {
-      const totalValue = newCost.workerValue + newCost.materialValue;
-      setNewCost((prevCost) => ({
-        ...prevCost,
-        totalAmount: totalValue || prevCost.totalAmount,
-      }));
-    }
-  }, [newCost.workerValue, newCost.materialValue]);
+  // useEffect(() => {
+  //   if (newCost.workerValue !== null && newCost.materialValue) {
+  //     const totalValue = newCost.workerValue + newCost.materialValue;
+  //     setNewCost((prevCost) => ({
+  //       ...prevCost,
+  //       totalAmount: totalValue || prevCost.totalAmount,
+  //     }));
+  //   }
+  // }, [newCost.workerValue, newCost.materialValue]);
 
   const { constructions } = useContext(ConstructionContext);
 
@@ -145,6 +141,7 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
             <AutoComplete
               type="text"
               field="code"
+              dropdown
               value={selectedConstructionCreate}
               suggestions={constructionsItems}
               completeMethod={constructionSearch}
@@ -286,6 +283,41 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
           )}
         </div>
       </div>
+      <div className="card flex flex-column md:flex-row gap-3 w-full">
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Valor Total"
+            htmlFor="value"
+            className="font-semibold"
+          />
+          <InputNumber
+            inputId="currency-br"
+            mode="currency"
+            locale="pt-BR"
+            currency="BRL"
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={formatCurrency(newCost?.totalAmount)}
+            onChange={(e) => {
+              if (e.value) {
+                setNewCost({
+                  ...newCost,
+                  totalAmount: e.value * 100,
+                  workerValue: (e.value / 2) * 100,
+                  materialValue: (e.value / 2) * 100,
+                  inssValue: (e.value / 2) * 100 * 0.11,
+                });
+              }
+            }}
+          />
+          {invalidWorkerValue && (
+            <Message
+              severity="error"
+              text="Valor Mão de Obra é obrigatório"
+              className="smaller-text"
+            />
+          )}
+        </div>
+      </div>
 
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
@@ -301,15 +333,7 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
             currency="BRL"
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={formatCurrency(newCost?.workerValue)}
-            onChange={(e) => {
-              if (e.value) {
-                setNewCost({
-                  ...newCost,
-                  workerValue: e.value * 100,
-                  inssValue: e.value * 100 * 0.11,
-                });
-              }
-            }}
+            disabled
           />
           {invalidWorkerValue && (
             <Message

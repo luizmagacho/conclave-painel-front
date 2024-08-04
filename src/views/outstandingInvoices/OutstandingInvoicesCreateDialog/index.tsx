@@ -192,6 +192,9 @@ function OutstandingInvoicesCreateDialog({
             <AutoComplete
               type="text"
               field="code"
+              dropdown
+              className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
+              style={{ height: "30px", fontSize: "0.8rem" }}
               value={selectedConstruction}
               suggestions={constructionsItems}
               completeMethod={constructionSearch}
@@ -233,6 +236,8 @@ function OutstandingInvoicesCreateDialog({
             <AutoComplete
               type="text"
               field="shortenedName"
+              dropdown
+              className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
               style={{ height: "30px", fontSize: "0.8rem" }}
               value={selectedSupplier}
               suggestions={suppliersItems}
