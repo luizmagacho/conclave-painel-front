@@ -90,7 +90,6 @@ function ConstructionList() {
     loading,
     totalElements,
     handleGetConstructions,
-    handleGetConstructionsNotEnabled,
     handleGetConstructionById,
     handlePostConstruction,
     handleUpdateConstruction,
@@ -148,12 +147,6 @@ function ConstructionList() {
   async function onDeleteConstruction(constructionId: string) {
     await handleDeleteConstruction(constructionId);
     handleGetConstructions(page, codeSearch, bankBranchSearch, localBankSearch);
-    handleGetConstructionsNotEnabled(
-      page,
-      codeSearch,
-      bankBranchSearch,
-      localBankSearch
-    );
   }
 
   function closeDialog() {
@@ -189,32 +182,14 @@ function ConstructionList() {
 
   function onCodeSearch(code: string) {
     handleGetConstructions(0, code, bankBranchSearch, localBankSearch);
-    handleGetConstructionsNotEnabled(
-      0,
-      code,
-      bankBranchSearch,
-      localBankSearch
-    );
   }
 
   function onBankBranchSearch(bankBranch: string) {
     handleGetConstructions(0, codeSearch, bankBranch, localBankSearch);
-    handleGetConstructionsNotEnabled(
-      0,
-      codeSearch,
-      bankBranch,
-      localBankSearch
-    );
   }
 
   function onLocalBankSearch(localBank: string) {
     handleGetConstructions(0, codeSearch, bankBranchSearch, localBank);
-    handleGetConstructionsNotEnabled(
-      0,
-      codeSearch,
-      bankBranchSearch,
-      localBank
-    );
   }
 
   function onChangeCodeSearch(code: string) {

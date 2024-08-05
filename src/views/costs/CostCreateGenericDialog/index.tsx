@@ -15,7 +15,6 @@ import { Dialog } from "primereact/dialog";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
-import { RadioButton } from "primereact/radiobutton";
 import { useContext, useEffect, useState } from "react";
 
 interface CostCreateGenericDialog {
@@ -108,16 +107,16 @@ function CostCreateGenericDialog({
   //   }
   // }, [newCost.workerValue, newCost.materialValue]);
 
-  const { constructions } = useContext(ConstructionContext);
+  const { allConstructions } = useContext(ConstructionContext);
 
   const [constructionsItems, setConstructionsItems] =
-    useState<Construction[]>(constructions);
+    useState<Construction[]>(allConstructions);
 
   const constructionSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
       let _filteredConstructions;
       if (!event.query.trim().length) {
-        _filteredConstructions = [...constructions];
+        _filteredConstructions = [...allConstructions];
       } else {
         _filteredConstructions = constructionsItems.filter((construction) => {
           return construction.code.startsWith(event.query);
