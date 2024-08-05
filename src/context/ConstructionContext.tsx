@@ -1,5 +1,6 @@
 import {
   deleteConstruction,
+  getAllConstructions,
   getConstructionById,
   getConstructions,
   getConstructionsNotEnabled,
@@ -17,23 +18,17 @@ interface ProviderProps {
 
 interface ConstructionContextProps {
   constructions: Construction[];
-  constructionsNotEnabled: Construction[];
+  allConstructions: Construction[];
   selectedConstruction: Construction | null;
   loading: boolean;
   totalElements: number;
-  totalElementsNotEnabled: number;
   handleGetConstructions: (
     page?: number,
     code?: string,
     bankBranch?: string,
     localBank?: string
   ) => Promise<void>;
-  handleGetConstructionsNotEnabled: (
-    page?: number,
-    code?: string,
-    bankBranch?: string,
-    localBank?: string
-  ) => Promise<void>;
+  handleGetConstructionsAll: () => Promise<void>;
   handleGetConstructionById: (id: string) => Promise<void>;
   handlePostConstruction: (construction: ConstructionDTO) => Promise<void>;
   handleUpdateConstruction: (construction: Construction) => Promise<void>;
@@ -47,9 +42,7 @@ export const ConstructionContext = createContext(
 
 export const ConstructionProvider = ({ children }: ProviderProps) => {
   const [constructions, setConstructions] = useState<Construction[]>([]);
-  const [constructionsNotEnabled, setConstructionsNotEnabled] = useState<
-    Construction[]
-  >([]);
+  const [allConstructions, setAllConstructions] = useState<Construction[]>([]);
   const [bufferedConstructions, setBufferedConstructions] = useState<
     Construction[]
   >([]);
@@ -59,8 +52,6 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const [totalElements, setTotalElements] = useState<number>(0);
-  const [totalElementsNotEnabled, setTotalElementsNotEnabled] =
-    useState<number>(0);
 
   const router = useRouter();
 
@@ -90,24 +81,11 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
     }
   }
 
-  async function handleGetConstructionsNotEnabled(
-    page: number = 0,
-    code: string = "",
-    bankBranch: string = "",
-    localBank: string = ""
-  ) {
+  async function handleGetConstructionsAll() {
     setLoading(true);
 
     try {
-      const { content, totalElements } = await getConstructionsNotEnabled({
-        page,
-        size: 10,
-        code,
-        bankBranch,
-        localBank,
-      });
-      setConstructionsNotEnabled(content || []);
-      setTotalElementsNotEnabled(totalElements);
+      setAllConstructions(await getAllConstructions());
     } catch (error) {
       console.error(error);
     } finally {
@@ -173,20 +151,19 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
 
   useEffect(() => {
     handleGetConstructions();
-    handleGetConstructionsNotEnabled();
+    handleGetConstructionsAll();
   }, []);
 
   return (
     <ConstructionContext.Provider
       value={{
         constructions,
-        constructionsNotEnabled,
+        allConstructions,
         selectedConstruction,
         loading,
         totalElements,
-        totalElementsNotEnabled,
         handleGetConstructions,
-        handleGetConstructionsNotEnabled,
+        handleGetConstructionsAll,
         handleGetConstructionById,
         handlePostConstruction,
         handleUpdateConstruction,

@@ -103,16 +103,16 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
   //   }
   // }, [newCost.workerValue, newCost.materialValue]);
 
-  const { constructions } = useContext(ConstructionContext);
+  const { allConstructions } = useContext(ConstructionContext);
 
   const [constructionsItems, setConstructionsItems] =
-    useState<Construction[]>(constructions);
+    useState<Construction[]>(allConstructions);
 
   const constructionSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
       let _filteredConstructions;
       if (!event.query.trim().length) {
-        _filteredConstructions = [...constructions];
+        _filteredConstructions = [...allConstructions];
       } else {
         _filteredConstructions = constructionsItems.filter((construction) => {
           return construction.code.startsWith(event.query);
