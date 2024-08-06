@@ -22,7 +22,7 @@ function InputSearch({ onSearch, onChange, inputType }: InputSearchProps) {
     <IconField iconPosition="left">
       <InputIcon className="pi pi-search"> </InputIcon>
       <InputText
-        placeholder="Search"
+        placeholder="Buscar"
         className="w-12"
         onChange={(e) => {
           searchUserByName(e.target.value);

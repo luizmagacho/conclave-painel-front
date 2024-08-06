@@ -123,6 +123,7 @@ function PurchaseList() {
           tableStyle={{ minWidth: "50rem" }}
           totalRecords={totalElements}
           size="small"
+          className="smaller-text"
         >
           <Column field="centerCost" header="Centro de Custo" />
           <Column field="purchaseDateFormatted" header="Data da Compra" />
