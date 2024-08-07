@@ -1,5 +1,5 @@
 export type Cost = {
-  id: string | null;
+  id: string;
   centerCost: string;
   centerCostId: string;
   bankBranchLocalBank: string;

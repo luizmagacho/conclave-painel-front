@@ -15,6 +15,7 @@ import {
 import OutstandingInvoicesDialog from "../OutstandingInvoicesDialog";
 import OutstandingInvoicesCreateDialog from "../OutstandingInvoicesCreateDialog";
 import { OutstandingInvoicesContext } from "@/context/OutstandingInvoiceContext";
+import OutstandingInvoicesDeleteDialog from "../OutstandingInvoicesDeleteDialog";
 
 interface Options {
   icon?: string;
@@ -33,7 +34,10 @@ function OutstandingInvoicesList() {
   const router = useRouter();
   const [currOutstandingInvoices, setCurrOutstandingInvoices] =
     useState<OutstandingInvoices | null>(null);
+  const [currDeleteOutstandingInvoices, setCurrDeleteOutstandingInvoices] =
+    useState<OutstandingInvoices | null>(null);
   const [showDialog, setShowDialog] = useState<boolean>(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
   const {
     outstandingInvoices,
@@ -42,6 +46,7 @@ function OutstandingInvoicesList() {
     handleGetOutstandingInvoices,
     handlePostOutstandingInvoices,
     handleUpdateOutstandingInvoices,
+    handleDeleteOutstandingInvoices,
   } = useContext(OutstandingInvoicesContext);
 
   const [centerCostSearch, setCenterCostSearch] = useState<string>("");
@@ -59,6 +64,11 @@ function OutstandingInvoicesList() {
       ariaLabel: "Editar",
       label: "Editar",
       onClick: openDialog,
+    },
+    {
+      ariaLabel: "Excluir",
+      label: "Excluir",
+      onClick: openDeleteDialog,
     },
   ];
 
@@ -90,6 +100,11 @@ function OutstandingInvoicesList() {
     setShowDialog(true);
   }
 
+  function openDeleteDialog(outstandingInvoices: OutstandingInvoices) {
+    setCurrDeleteOutstandingInvoices(outstandingInvoices);
+    setShowDeleteDialog(true);
+  }
+
   async function onUpateOutstandingInvoices(
     outstandingInvoices: OutstandingInvoices
   ) {
@@ -97,9 +112,19 @@ function OutstandingInvoicesList() {
     handleGetOutstandingInvoices();
   }
 
+  async function onDeleteOutstandingInvoices(outstandingInvoicesId: string) {
+    await handleDeleteOutstandingInvoices(outstandingInvoicesId);
+    handleGetOutstandingInvoices();
+  }
+
   function closeUpdateDialog() {
     setShowDialog((showDialog) => !showDialog);
     setCurrOutstandingInvoices(null);
+  }
+
+  function closeDeleteDialog() {
+    setCurrDeleteOutstandingInvoices(null);
+    setShowDeleteDialog((showDeleteDialog) => !showDeleteDialog);
   }
 
   function onPageChange(event: PaginatorPageChangeEvent) {
@@ -359,6 +384,14 @@ function OutstandingInvoicesList() {
             onHide={closeUpdateDialog}
             onUpdate={onUpateOutstandingInvoices}
             data={currOutstandingInvoices}
+          />
+        )}
+        {currDeleteOutstandingInvoices && (
+          <OutstandingInvoicesDeleteDialog
+            visible={showDeleteDialog}
+            data={currDeleteOutstandingInvoices}
+            onDelete={onDeleteOutstandingInvoices}
+            onHide={closeDeleteDialog}
           />
         )}
       </section>

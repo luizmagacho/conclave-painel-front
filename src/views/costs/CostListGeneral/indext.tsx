@@ -14,6 +14,7 @@ import InputSearch from "@/components/InputSearch";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { getMonthsNames } from "@/util/date";
 import CostCreateGenericDialog from "../CostCreateGenericDialog";
+import CostDeleteDialog from "../CostDeleteDialog";
 
 interface Options {
   icon?: string;
@@ -31,7 +32,9 @@ function CostListGeneral() {
   const role = Cookies.get("portal.role");
   const router = useRouter();
   const [currCost, setCurrCost] = useState<Cost | null>(null);
+  const [currDeleteCost, setCurrDeleteCost] = useState<Cost | null>(null);
   const [showDialog, setShowDialog] = useState<boolean>(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
   const {
     costs,
@@ -42,6 +45,7 @@ function CostListGeneral() {
     handleGetCostTotal,
     handlePostCost,
     handleUpdateCost,
+    handleDeleteCost,
   } = useContext(CostContext);
 
   const [centerCostSearch, setCenterCostSearch] = useState<string>("");
@@ -55,6 +59,11 @@ function CostListGeneral() {
       label: "Editar",
       onClick: openDialog,
     },
+    {
+      ariaLabel: "Excluir",
+      label: "Excluir",
+      onClick: openDeleteDialog,
+    },
   ];
 
   const columnBodyOptions = {
@@ -64,6 +73,11 @@ function CostListGeneral() {
   function openDialog(cost: Cost) {
     setCurrCost(cost);
     setShowDialog(true);
+  }
+
+  function openDeleteDialog(cost: Cost) {
+    setCurrDeleteCost(cost);
+    setShowDeleteDialog(true);
   }
 
   function onPageChange(event: PaginatorPageChangeEvent) {
@@ -81,8 +95,18 @@ function CostListGeneral() {
     setShowCreateDialog((showCreateDialog) => !showCreateDialog);
   }
 
+  function closeDeleteDialog() {
+    setCurrDeleteCost(null);
+    setShowDeleteDialog((showDeleteDialog) => !showDeleteDialog);
+  }
+
   async function onUpateCost(cost: Cost) {
     await handleUpdateCost(cost);
+    handleGetCosts();
+  }
+
+  async function onDeleteCost(costId: string) {
+    await handleDeleteCost(costId);
     handleGetCosts();
   }
 
@@ -311,6 +335,14 @@ function CostListGeneral() {
             onHide={closeUpdateDialog}
             onUpdate={onUpateCost}
             data={currCost}
+          />
+        )}
+        {currDeleteCost && (
+          <CostDeleteDialog
+            visible={showDeleteDialog}
+            data={currDeleteCost}
+            onDelete={onDeleteCost}
+            onHide={closeDeleteDialog}
           />
         )}
       </section>
