@@ -89,6 +89,7 @@ function CostListGeneral() {
   async function onCreateCost(cost: CostDTO) {
     await handlePostCost(cost);
     handleGetCosts();
+    handleGetCostTotal();
   }
 
   function closeCreateDialog() {
@@ -103,11 +104,13 @@ function CostListGeneral() {
   async function onUpateCost(cost: Cost) {
     await handleUpdateCost(cost);
     handleGetCosts();
+    handleGetCostTotal();
   }
 
   async function onDeleteCost(costId: string) {
     await handleDeleteCost(costId);
     handleGetCosts();
+    handleGetCostTotal();
   }
 
   function closeUpdateDialog() {
