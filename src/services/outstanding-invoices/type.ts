@@ -1,5 +1,5 @@
 export type OutstandingInvoices = {
-  id: string | null;
+  id: string;
   centerCost: string;
   centerCostId: string;
   bankBranch: string;
