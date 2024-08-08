@@ -49,6 +49,8 @@ function CostListGeneral() {
   } = useContext(CostContext);
 
   const [centerCostSearch, setCenterCostSearch] = useState<string>("");
+  const [bankBranchLocalBankSearch, setBankBranchLocalBankSearch] =
+    useState<string>("");
   const [monthSearch, setMonthSearch] = useState<string>("");
 
   const [first, setFirst] = useState<number>(0);
@@ -183,17 +185,26 @@ function CostListGeneral() {
   };
 
   function onCenterCostSearch(centerCost: string) {
-    handleGetCosts(0, centerCost, monthSearch);
-    handleGetCostTotal(centerCost, monthSearch);
+    handleGetCosts(0, centerCost, bankBranchLocalBankSearch, monthSearch);
+    handleGetCostTotal(centerCost, bankBranchLocalBankSearch, monthSearch);
+  }
+
+  function onBankBranchLocalBankSearch(bankBranchLocalBank: string) {
+    handleGetCosts(0, centerCostSearch, bankBranchLocalBank, monthSearch);
+    handleGetCostTotal(centerCostSearch, bankBranchLocalBank, monthSearch);
   }
 
   function onChangeCenterCost(centerCost: string) {
     setCenterCostSearch(centerCost);
   }
 
+  function onChangeBankBranchLocalBankSearch(bankBranchLocalBank: string) {
+    setBankBranchLocalBankSearch(bankBranchLocalBank);
+  }
+
   function onMonthSearch(month: string) {
-    handleGetCosts(0, centerCostSearch, month);
-    handleGetCostTotal(centerCostSearch, month);
+    handleGetCosts(0, centerCostSearch, bankBranchLocalBankSearch, month);
+    handleGetCostTotal(centerCostSearch, bankBranchLocalBankSearch, month);
   }
 
   function onChageMonth(month: string) {
@@ -204,7 +215,7 @@ function CostListGeneral() {
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
-          <h1 className="m-0">Custos</h1>
+          <h1 className="m-0">Notas Fiscais</h1>
           {(role === "Administrador" || role === "Notas") && (
             <Button
               onClick={() => {
@@ -219,13 +230,24 @@ function CostListGeneral() {
         <div className="card flex flex-column md:flex-row gap-2 w-11/12">
           <div className="field flex flex-column gap-1 w-full">
             <LabelTitle
-              text="Centro de Custo"
+              text="Obra"
               htmlFor="centerCost"
               className="font-semibold smaller-text"
             />
             <InputSearch
               onSearch={onCenterCostSearch}
               onChange={onChangeCenterCost}
+            />
+          </div>
+          <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="Agência"
+              htmlFor="bankBranch"
+              className="font-semibold smaller-text"
+            />
+            <InputSearch
+              onSearch={onBankBranchLocalBankSearch}
+              onChange={onChangeBankBranchLocalBankSearch}
             />
           </div>
           <div className="field flex flex-column gap-1 w-full">
@@ -257,11 +279,7 @@ function CostListGeneral() {
           className="smaller-text"
           footer={footerTemplate}
         >
-          <Column
-            field="centerCost"
-            header="Centro de Custo"
-            className="smaller-text"
-          />
+          <Column field="centerCost" header="Obra" className="smaller-text" />
           <Column
             field="bankBranchLocalBank"
             header="Agência"
