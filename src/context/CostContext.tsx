@@ -21,13 +21,18 @@ interface CostsContextProps {
   handleGetCosts: (
     page?: number,
     centerCost?: string,
+    bankBranchLocalBank?: string,
     month?: string
   ) => Promise<void>;
   handleGetCostsByCenterCostId: (
     centerCostId: string,
     page?: number
   ) => Promise<void>;
-  handleGetCostTotal: (centerCost?: string, month?: string) => Promise<void>;
+  handleGetCostTotal: (
+    centerCost?: string,
+    bankBranchLocalBank?: string,
+    month?: string
+  ) => Promise<void>;
   handlePostCost: (cost: CostDTO) => Promise<void>;
   handleUpdateCost: (cost: Cost) => Promise<void>;
   handleDeleteCost: (costId: string) => Promise<void>;
@@ -47,6 +52,7 @@ export const CostProvider = ({ children }: ProviderProps) => {
   async function handleGetCosts(
     page: number = 0,
     centerCost: string = "",
+    bankBranchLocalBank: string = "",
     month: string = ""
   ) {
     setLoading(true);
@@ -55,6 +61,7 @@ export const CostProvider = ({ children }: ProviderProps) => {
         page,
         size: 15,
         centerCost,
+        bankBranchLocalBank,
         month,
       });
 
@@ -76,7 +83,7 @@ export const CostProvider = ({ children }: ProviderProps) => {
     try {
       const { content, totalElements } = await getCostsByCenterCostId(
         centerCostId,
-        { page, size: 20, centerCost: "", month: "" }
+        { page, size: 20, centerCost: "", bankBranchLocalBank: "", month: "" }
       );
 
       setBufferedCosts(content || []);
@@ -91,11 +98,14 @@ export const CostProvider = ({ children }: ProviderProps) => {
 
   async function handleGetCostTotal(
     centerCost: string = "",
+    bankBranchLocalBank: string = "",
     month: string = ""
   ) {
     setLoading(true);
     try {
-      setCostTotal(await getTotalsValue(centerCost, month));
+      setCostTotal(
+        await getTotalsValue(centerCost, bankBranchLocalBank, month)
+      );
     } catch (error) {
       console.error(error);
     } finally {
