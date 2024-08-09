@@ -189,6 +189,20 @@ function CostList() {
               className="font-semibold"
             />
           </div>
+          <div className="flex flex-column gap-1 w-full">
+            <LabelTitle
+              text={`UPE: ${selectedConstruction?.upe}`}
+              htmlFor="upe"
+              className="font-semibold"
+            />
+          </div>
+          <div className="flex flex-column gap-1 w-full">
+            <LabelTitle
+              text={`SAP: ${selectedConstruction?.sap}`}
+              htmlFor="sap"
+              className="font-semibold"
+            />
+          </div>
         </div>
         <DataTable
           emptyMessage="Nenhum custo encontrado."

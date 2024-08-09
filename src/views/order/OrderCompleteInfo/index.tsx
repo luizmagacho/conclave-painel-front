@@ -54,6 +54,8 @@ function OrderCompleteInfo() {
       responsible: "",
       cad: false,
       isCad: "",
+      upe: "",
+      sap: "",
       client: "",
       openingDate: "",
       closedDate: "",

@@ -39,6 +39,8 @@ function CostUpdateDialog({
     centerCostId: data.centerCostId,
     bankBranchLocalBank: data.bankBranchLocalBank,
     typeCenterCost: data.typeCenterCost,
+    upe: data.upe,
+    sap: data.sap,
     issueDate: data.issueDate,
     issueDateFormatted: data.issueDateFormatted,
     receiptDate: data.receiptDate,
@@ -167,6 +169,8 @@ function CostUpdateDialog({
         : "" || "",
       typeCenterCost: selectedConstruction?.service || "",
       payer: selectedConstruction?.client || "",
+      upe: selectedConstruction?.upe || "",
+      sap: selectedConstruction?.sap || "",
     }));
   }, [selectedConstruction]);
 

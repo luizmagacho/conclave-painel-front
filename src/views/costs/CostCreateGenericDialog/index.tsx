@@ -36,6 +36,8 @@ function CostCreateGenericDialog({
     centerCostId: "",
     bankBranchLocalBank: "",
     typeCenterCost: "",
+    upe: "",
+    sap: "",
     issueDate: "",
     receiptDate: "",
     workerValue: null,
@@ -136,6 +138,8 @@ function CostCreateGenericDialog({
         : "" || "",
       typeCenterCost: selectedConstruction?.service || "",
       payer: selectedConstruction?.client || "",
+      upe: selectedConstruction?.upe || "",
+      sap: selectedConstruction?.sap || "",
     }));
   }, [selectedConstruction]);
 
