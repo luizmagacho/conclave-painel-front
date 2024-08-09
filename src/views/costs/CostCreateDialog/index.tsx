@@ -32,6 +32,8 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
     centerCostId: selectedConstruction?.id || "",
     bankBranchLocalBank: selectedConstruction?.bankBranch || "",
     typeCenterCost: selectedConstruction?.service || "",
+    upe: selectedConstruction?.upe || "",
+    sap: selectedConstruction?.sap || "",
     issueDate: "",
     receiptDate: "",
     workerValue: null,

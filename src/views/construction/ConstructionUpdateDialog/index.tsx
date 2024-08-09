@@ -8,6 +8,7 @@ import {
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
+import { InputMask } from "primereact/inputmask";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
@@ -35,6 +36,8 @@ function ConstructionUpdateDialog({
     responsible: data.responsible,
     cad: data.cad,
     isCad: data.isCad,
+    upe: data.upe,
+    sap: data.sap,
     client: data.client,
     openingDate: data.openingDate,
     closedDate: data.closedDate,
@@ -314,6 +317,36 @@ function ConstructionUpdateDialog({
           {invalidBankBranch && (
             <Message severity="error" text="Agência é obrigatória" />
           )}
+        </div>
+      </div>
+      <div className="card flex flex-column md:flex-row gap-3 w-full">
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle text="UPE" htmlFor="upe" className="font-semibold" />
+          <InputMask
+            mask="999999"
+            placeholder="999999"
+            onChange={(e) => {
+              setUpdatedConstruction({
+                ...updatedConstruction,
+                upe: e.target.value || "",
+              });
+            }}
+            value={updatedConstruction?.upe}
+          />
+        </div>
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle text="SAP" htmlFor="sap" className="font-semibold" />
+          <InputMask
+            mask="999999/9999"
+            placeholder="999999/9999"
+            onChange={(e) => {
+              setUpdatedConstruction({
+                ...updatedConstruction,
+                sap: e.target.value || "",
+              });
+            }}
+            value={updatedConstruction?.sap}
+          />
         </div>
       </div>
       <div className="flex gap-2">

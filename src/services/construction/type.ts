@@ -8,6 +8,8 @@ export type Construction = {
   service: string;
   cad: boolean;
   isCad: string;
+  upe: string;
+  sap: string;
   openingDate: string;
   openingDateFormatted?: string;
   closedDate: string | null;
@@ -28,6 +30,8 @@ export type ConstructionDTO = {
   responsible: string;
   service: string;
   cad: boolean;
+  upe?: string;
+  sap?: string;
   openingDate?: Date | null;
   closedDate?: Date | null;
   totalBilled?: number;

@@ -9,6 +9,8 @@ export type Cost = {
   issueDateFormatted: string;
   typeCenterCost: string;
   payer: string;
+  upe: string;
+  sap: string;
   workerValue: number;
   materialValue: number;
   inssValue: number;
@@ -30,6 +32,8 @@ export type CostDTO = {
   issueDate: string;
   typeCenterCost: string;
   payer: string;
+  upe: string;
+  sap: string;
   workerValue: number | null;
   materialValue: number | null;
   inssValue: number | null;

@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
+import { InputMask } from "primereact/inputmask";
 import {
   InputNumber,
   InputNumberValueChangeEvent,
@@ -29,6 +30,8 @@ function ConstructionCreateDialog({
     code: "",
     bankBranch: "",
     responsible: "",
+    upe: "",
+    sap: "",
     cad: false,
     client: "",
     local: "",
@@ -296,6 +299,36 @@ function ConstructionCreateDialog({
           {invalidBankBranch && (
             <Message severity="error" text="Agência é obrigatória" />
           )}
+        </div>
+      </div>
+      <div className="card flex flex-column md:flex-row gap-3 w-full">
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle text="UPE" htmlFor="upe" className="font-semibold" />
+          <InputMask
+            mask="999999"
+            placeholder="999999"
+            onChange={(e) => {
+              setNewConstruction({
+                ...newConstruction,
+                upe: e.target.value || "",
+              });
+            }}
+            value={newConstruction?.upe}
+          />
+        </div>
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle text="SAP" htmlFor="sap" className="font-semibold" />
+          <InputMask
+            mask="999999/9999"
+            placeholder="999999/9999"
+            onChange={(e) => {
+              setNewConstruction({
+                ...newConstruction,
+                sap: e.target.value || "",
+              });
+            }}
+            value={newConstruction?.sap}
+          />
         </div>
       </div>
       <div className="flex gap-2">
