@@ -1,41 +1,31 @@
-import { Cost } from "@/services/costs/type";
+import { Tool } from "@/services/tool/type";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 
-interface CostDeleteDialog {
+interface ToolDeleteDialog {
   visible: boolean;
   onHide: () => void;
-  onDelete: (costId: string) => void;
-  data: Cost;
+  onDelete: (toolId: string) => void;
+  data: Tool;
 }
 
-function CostDeleteDialog({
+function ToolDeleteDialog({
   visible,
   onHide,
   onDelete,
   data,
-}: CostDeleteDialog) {
-  const formatCurrency = (value: number | null) => {
-    if (!value) {
-      return "-";
-    }
-    return (value / 100).toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-  };
-
+}: ToolDeleteDialog) {
   return (
     <Dialog
-      header="Excluir Nota"
+      header="Excluir Ferramenta"
       visible={visible}
       onHide={onHide}
       className="w-25rem"
     >
       <div className="card flex justify-content-center">
         <h4>
-          Tem certeza que deseja exluir a nota da obra {data.centerCost} do
-          valor de {formatCurrency(data.totalAmount)} ?
+          Tem certeza que deseja exluir a nota da obra {data.name} da obra{" "}
+          {data.centerCost} ?
         </h4>
       </div>
       <div className="flex gap-2">
@@ -53,5 +43,4 @@ function CostDeleteDialog({
     </Dialog>
   );
 }
-
-export default CostDeleteDialog;
+export default ToolDeleteDialog;

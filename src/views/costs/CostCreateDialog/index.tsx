@@ -30,10 +30,10 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
     payer: selectedConstruction?.client || "",
     centerCost: selectedConstruction?.code || "",
     centerCostId: selectedConstruction?.id || "",
-    bankBranchLocalBank: selectedConstruction?.bankBranch || "",
+    bankBranchLocalBank: selectedConstruction?.bankBranch
+      ? `${selectedConstruction?.bankBranch} - ${selectedConstruction?.local}`
+      : "" || "",
     typeCenterCost: selectedConstruction?.service || "",
-    upe: selectedConstruction?.upe || "",
-    sap: selectedConstruction?.sap || "",
     issueDate: "",
     receiptDate: "",
     workerValue: null,

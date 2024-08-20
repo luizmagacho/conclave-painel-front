@@ -1,7 +1,7 @@
 import LabelTitle from "@/components/LabelTitle";
 import { ConstructionContext } from "@/context/ConstructionContext";
 import { Construction } from "@/services/construction/type";
-import { CostDTO } from "@/services/costs/type";
+import { ToolDTO } from "@/services/tool/type";
 import { formatDateToYYYYMMDD } from "@/util/date";
 import { useRouter } from "next/router";
 import {
@@ -12,101 +12,56 @@ import {
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
-import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useContext, useEffect, useState } from "react";
 
-interface CostCreateGenericDialog {
+interface ToolCreateDialog {
   visible: boolean;
   onHide: () => void;
-  onCreate: (cost: CostDTO) => void;
+  onCreate: (tool: ToolDTO) => void;
 }
 
-function CostCreateGenericDialog({
+function ToolCreateGenericDialog({
   visible,
   onCreate,
   onHide,
-}: CostCreateGenericDialog) {
+}: ToolCreateDialog) {
   const router = useRouter();
-  const { id } = router.query;
-  const [newCost, setNewCost] = useState<CostDTO>({
-    payer: "",
+  const [newTool, setNewTool] = useState<ToolDTO>({
+    name: "",
     centerCost: "",
     centerCostId: "",
     bankBranchLocalBank: "",
+    payer: "",
     typeCenterCost: "",
-    issueDate: "",
-    receiptDate: "",
-    workerValue: null,
-    materialValue: null,
-    inssValue: null,
-    totalAmount: null,
-    valueRemas: null,
+    dateLoanFrom: "",
+    dateLoanTo: "",
+    responsible: "",
     userId: localStorage.getItem("portal.id") as string,
     enabled: true,
-    invoice: "",
-    numContract: "",
   });
   const [selectedConstruction, setSelectedConstruction] =
     useState<Construction>();
-  const [newIssueDate, setNewIssueDate] = useState<Date | null>(null);
-  const [invalidIssueDate, setInvalidIssueDate] = useState<boolean>(false);
-  const [newReceiptDate, setNewReceiptDate] = useState<Date | null>(null);
-  const [invalidReceiptDate, setInvalidReceiptDate] = useState<boolean>(false);
+  const [invalidCenterCost, setInvalidCenterCost] = useState<boolean>(false);
+  const [invalidName, setInvalidName] = useState<boolean>(false);
   const [invalidPayer, setInvalidPayer] = useState<boolean>(false);
+  const [invalidResponsible, setInvalidResponsible] = useState<boolean>(false);
+  const [newDateLoanFrom, setNewDateLoanFrom] = useState<Date | null>(null);
+  const [invalidNewDateLoanFrom, setInvalidNewDateLoanFrom] =
+    useState<boolean>(false);
   const [invalidCostCategory, setInvalidCostCategory] =
     useState<boolean>(false);
-  const [invalidCenterCost, setInvalidCenterCost] = useState<boolean>(false);
-  const [invalidWorkerValue, setInvalidWorkerValue] = useState<boolean>(false);
-  const [invalidMaterialValue, setInvalidMaterialValue] =
-    useState<boolean>(false);
+  const [newDateLoanTo, setNewDateLoanTo] = useState<Date | null>(null);
+
   useEffect(() => {
-    setNewCost((prevCost) => ({
-      ...prevCost,
-      issueDate: formatDateToYYYYMMDD(newIssueDate) || prevCost.issueDate,
-      receiptDate: formatDateToYYYYMMDD(newReceiptDate) || prevCost.receiptDate,
+    setNewTool((prevTool) => ({
+      ...prevTool,
+      dateLoanFrom:
+        formatDateToYYYYMMDD(newDateLoanFrom) || prevTool.dateLoanFrom,
+      dateLoanTo: formatDateToYYYYMMDD(newDateLoanTo) || prevTool.dateLoanTo,
     }));
-  }, [newIssueDate, newReceiptDate]);
-
-  async function validateFields() {
-    const userId = await localStorage.getItem("portal.id");
-    setNewCost({ ...newCost, userId: userId || "" });
-    setInvalidPayer(!newCost.payer || newCost.payer === "");
-    setInvalidWorkerValue(!newCost.workerValue || newCost.workerValue === null);
-    setInvalidMaterialValue(
-      !newCost.materialValue || newCost.materialValue === null
-    );
-    setInvalidIssueDate(!newIssueDate);
-
-    if (
-      !invalidIssueDate &&
-      !invalidPayer &&
-      !invalidWorkerValue &&
-      !invalidMaterialValue
-    ) {
-      onCreate(newCost);
-      onHide();
-    }
-  }
-
-  const formatCurrency = (value: number | null) => {
-    if (value) {
-      return value / 100;
-    }
-
-    return null;
-  };
-
-  // useEffect(() => {
-  //   if (newCost.workerValue !== null && newCost.materialValue) {
-  //     const totalValue = newCost.workerValue + newCost.materialValue;
-  //     setNewCost((prevCost) => ({
-  //       ...prevCost,
-  //       totalAmount: totalValue || prevCost.totalAmount,
-  //     }));
-  //   }
-  // }, [newCost.workerValue, newCost.materialValue]);
+  }, [newDateLoanFrom, newDateLoanTo]);
 
   const { allConstructions } = useContext(ConstructionContext);
 
@@ -128,24 +83,38 @@ function CostCreateGenericDialog({
   };
 
   useEffect(() => {
-    setNewCost((prevCost) => ({
+    setNewTool((prevCost) => ({
       ...prevCost,
       centerCostId: selectedConstruction?.id || "",
       centerCost: selectedConstruction?.code || "",
       bankBranchLocalBank: selectedConstruction?.bankBranch
         ? `${selectedConstruction?.bankBranch} - ${selectedConstruction?.local}`
         : "" || "",
+
       typeCenterCost: selectedConstruction?.service || "",
       payer: selectedConstruction?.client || "",
     }));
   }, [selectedConstruction]);
 
+  async function validateFields() {
+    const userId = await localStorage.getItem("portal.id");
+    setNewTool({ ...newTool, userId: userId || "" });
+    setInvalidName(!newTool.name || newTool.name === "");
+    setInvalidNewDateLoanFrom(!newDateLoanFrom);
+    setInvalidResponsible(!newTool.responsible || newTool.responsible === "");
+
+    if (!invalidNewDateLoanFrom && !invalidName && !invalidResponsible) {
+      onCreate(newTool);
+      onHide();
+    }
+  }
+
   return (
     <Dialog
-      header="Adicionar Nova Nota"
+      header="Adicionar Nova Ferramenta"
       visible={visible}
       onHide={onHide}
-      className="w-60rem"
+      className="w-50rem"
       style={{ width: "40vw" }}
     >
       <div className="card flex flex-column md:flex-row gap-3 w-full">
@@ -187,7 +156,7 @@ function CostCreateGenericDialog({
           <InputText
             type="text"
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.bankBranchLocalBank}
+            value={newTool?.bankBranchLocalBank}
             disabled
           />
         </div>
@@ -202,13 +171,13 @@ function CostCreateGenericDialog({
           <InputText
             type="text"
             onChange={(e) => {
-              setNewCost({
-                ...newCost,
+              setNewTool({
+                ...newTool,
                 payer: e.target.value,
               });
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.payer}
+            value={newTool?.payer}
             disabled
           />
           {invalidPayer && (
@@ -228,13 +197,13 @@ function CostCreateGenericDialog({
           <InputText
             type="text"
             onChange={(e) => {
-              setNewCost({
-                ...newCost,
+              setNewTool({
+                ...newTool,
                 typeCenterCost: e.target.value,
               });
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.typeCenterCost}
+            value={newTool?.typeCenterCost}
             disabled
           />
           {invalidCostCategory && (
@@ -248,24 +217,69 @@ function CostCreateGenericDialog({
       </div>
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle text="Nome" htmlFor="name" className="font-semibold" />
+          <InputText
+            type="text"
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            onChange={(e) => {
+              setNewTool({ ...newTool, name: e.target.value.toUpperCase() });
+            }}
+            value={newTool?.name}
+          />
+          {invalidName && (
+            <Message
+              severity="error"
+              text="Nome é obrigatório"
+              className="smaller-text"
+            />
+          )}
+        </div>
+        <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Data da Emissão"
-            htmlFor="issueDate"
+            text="Responsável"
+            htmlFor="responsible"
+            className="font-semibold"
+          />
+          <InputText
+            type="text"
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            onChange={(e) => {
+              setNewTool({
+                ...newTool,
+                responsible: e.target.value.toUpperCase(),
+              });
+            }}
+            value={newTool?.responsible}
+          />
+          {invalidResponsible && (
+            <Message
+              severity="error"
+              text="Responsável é obrigatório"
+              className="smaller-text"
+            />
+          )}
+        </div>
+      </div>
+      <div className="card flex flex-column md:flex-row gap-3 w-full">
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Data do Empréstimo"
+            htmlFor="dateLoanFrom"
             className="font-semibold"
           />
           <Calendar
             id="buttondisplay"
             onChange={(e) => {
-              setNewIssueDate(e.value || null);
+              setNewDateLoanFrom(e.value || null);
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newIssueDate}
+            value={newDateLoanFrom}
             locale="pt"
             className="ui-state-default"
             dateFormat="dd/mm/yy"
             showIcon
           />
-          {invalidIssueDate && (
+          {invalidNewDateLoanFrom && (
             <Message
               severity="error"
               text="Data de Custo é obrigatório"
@@ -275,154 +289,21 @@ function CostCreateGenericDialog({
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Data do Vencimento"
-            htmlFor="ReceiptDate"
+            text="Data de Devolução"
+            htmlFor="dateLoanTo"
             className="font-semibold"
           />
           <Calendar
             id="buttondisplay"
             onChange={(e) => {
-              setNewReceiptDate(e.value || null);
+              setNewDateLoanTo(e.value || null);
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newReceiptDate}
+            value={newDateLoanTo}
             locale="pt"
             className="ui-state-default"
             dateFormat="dd/mm/yy"
             showIcon
-          />
-          {invalidReceiptDate && (
-            <Message
-              severity="error"
-              text="Data de Vencimento é obrigatório"
-              className="smaller-text"
-            />
-          )}
-        </div>
-      </div>
-      <div className="card flex flex-column md:flex-row gap-3 w-full">
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Valor Total"
-            htmlFor="value"
-            className="font-semibold"
-          />
-          <InputNumber
-            inputId="currency-br"
-            mode="currency"
-            locale="pt-BR"
-            currency="BRL"
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={formatCurrency(newCost?.totalAmount)}
-            onChange={(e) => {
-              if (e.value) {
-                setNewCost({
-                  ...newCost,
-                  totalAmount: e.value * 100,
-                  workerValue: (e.value / 2) * 100,
-                  materialValue: (e.value / 2) * 100,
-                  inssValue: (e.value / 2) * 100 * 0.11,
-                });
-              }
-            }}
-          />
-          {invalidWorkerValue && (
-            <Message
-              severity="error"
-              text="Valor Mão de Obra é obrigatório"
-              className="smaller-text"
-            />
-          )}
-        </div>
-      </div>
-      <div className="card flex flex-column md:flex-row gap-3 w-full">
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Valor Mão de Obra"
-            htmlFor="value"
-            className="font-semibold"
-          />
-          <InputNumber
-            inputId="currency-br"
-            mode="currency"
-            locale="pt-BR"
-            currency="BRL"
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={formatCurrency(newCost?.workerValue)}
-            disabled
-          />
-          {invalidWorkerValue && (
-            <Message
-              severity="error"
-              text="Valor Mão de Obra é obrigatório"
-              className="smaller-text"
-            />
-          )}
-        </div>
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Valor Material"
-            htmlFor="value"
-            className="font-semibold"
-          />
-          <InputNumber
-            inputId="currency-br"
-            mode="currency"
-            locale="pt-BR"
-            currency="BRL"
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={formatCurrency(newCost?.materialValue)}
-            onChange={(e) => {
-              if (e.value) {
-                setNewCost({ ...newCost, materialValue: e.value * 100 });
-              }
-            }}
-            disabled
-          />
-          {invalidWorkerValue && (
-            <Message
-              severity="error"
-              text="Valor Material é obrigatório"
-              className="smaller-text"
-            />
-          )}
-        </div>
-      </div>
-      <div className="card flex flex-column md:flex-row gap-3 w-full">
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Nota Fiscal"
-            htmlFor="nf"
-            className="font-semibold"
-          />
-          <InputText
-            type="text"
-            onChange={(e) => {
-              setNewCost({
-                ...newCost,
-                invoice: e.target.value,
-              });
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.invoice}
-          />
-        </div>
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Contrato"
-            htmlFor="contreact"
-            className="font-semibold"
-          />
-          <InputText
-            type="text"
-            onChange={(e) => {
-              setNewCost({
-                ...newCost,
-                numContract: e.target.value,
-              });
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newCost?.numContract}
           />
         </div>
       </div>
@@ -439,4 +320,4 @@ function CostCreateGenericDialog({
   );
 }
 
-export default CostCreateGenericDialog;
+export default ToolCreateGenericDialog;

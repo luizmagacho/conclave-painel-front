@@ -11,6 +11,7 @@ import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { useContext, useEffect, useState } from "react";
 import ToolCreateDialog from "../ToolCreateDialog";
 import ToolUpdateDialog from "../ToolUpdateDialog";
+import ToolDeleteDialog from "../ToolDeleteDialog";
 
 interface Options {
   icon?: string;
@@ -28,7 +29,9 @@ function ToolListCenterCost() {
   const role = Cookies.get("portal.role");
   const router = useRouter();
   const [currTool, setCurrTool] = useState<Tool | null>(null);
+  const [currDeleteTool, setCurrDeleteTool] = useState<Tool | null>(null);
   const [showDialog, setShowDialog] = useState<boolean>(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
 
   const {
@@ -52,6 +55,11 @@ function ToolListCenterCost() {
       label: "Editar",
       onClick: openDialog,
     },
+    {
+      ariaLabel: "Excluir",
+      label: "Excluir",
+      onClick: openDeleteDialog,
+    },
   ];
 
   const columnBodyOptions = {
@@ -63,6 +71,11 @@ function ToolListCenterCost() {
     setShowDialog(true);
   }
 
+  function openDeleteDialog(tool: Tool) {
+    setCurrDeleteTool(tool);
+    setShowDeleteDialog(true);
+  }
+
   function onPageChange(event: PaginatorPageChangeEvent) {
     const { page, first } = event;
     const { id } = router.query;
@@ -72,6 +85,10 @@ function ToolListCenterCost() {
 
   function closeCreateDialog() {
     setShowCreateDialog((showCreateDialog) => !showCreateDialog);
+  }
+
+  function closeDeleteDialog() {
+    setShowDeleteDialog((showDeleteDialog) => !showDeleteDialog);
   }
 
   function closeUpdatedDialog() {
@@ -86,6 +103,13 @@ function ToolListCenterCost() {
 
   async function onCreateTool(tool: ToolDTO) {
     await handlePostTool(tool);
+    const { id } = router.query;
+    handleGetToolsByCenterCostId(typeof id === "string" ? id : "");
+    handleGetConstructionById(typeof id === "string" ? id : "");
+  }
+
+  async function onDeleteTool(toolId: string) {
+    await handleDeleteTool(toolId);
     const { id } = router.query;
     handleGetToolsByCenterCostId(typeof id === "string" ? id : "");
     handleGetConstructionById(typeof id === "string" ? id : "");
@@ -192,6 +216,14 @@ function ToolListCenterCost() {
             onHide={closeUpdatedDialog}
             visible={showDialog}
             data={currTool}
+          />
+        )}
+        {currDeleteTool && (
+          <ToolDeleteDialog
+            visible={showDeleteDialog}
+            onDelete={onDeleteTool}
+            onHide={closeDeleteDialog}
+            data={currDeleteTool}
           />
         )}
       </section>
