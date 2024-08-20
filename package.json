@@ -31,8 +31,7 @@
     "react-dom": "18.2.0",
     "sharp": "^0.32.6",
     "styled-components": "^6.0.7",
-    "typescript": "^5.3.3",
-    "xlsx": "^0.18.5"
+    "typescript": "^5.3.3"
   },
   "devDependencies": {
     "@types/styled-components": "^5.1.26",

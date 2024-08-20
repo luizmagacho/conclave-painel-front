@@ -22,7 +22,7 @@ interface ToolContextProps {
     name?: string,
     responsible?: string,
     centerCost?: string,
-    bankBranch?: string
+    bankBranchLocalBank?: string
   ) => Promise<void>;
   handleGetToolsByCenterCostId: (
     centerToolId: string,
@@ -50,7 +50,7 @@ export const ToolProvider = ({ children }: ProviderProps) => {
     name: string = "",
     responsible: string = "",
     centerCost: string = "",
-    bankBranch: string = ""
+    bankBranchLocalBank: string = ""
   ) {
     setLoading(true);
     try {
@@ -60,7 +60,7 @@ export const ToolProvider = ({ children }: ProviderProps) => {
         name,
         responsible,
         centerCost,
-        bankBranch,
+        bankBranchLocalBank,
       });
       setBufferedTools(content || []);
       setTools(content || []);

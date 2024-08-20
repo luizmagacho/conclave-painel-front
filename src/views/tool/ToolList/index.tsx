@@ -12,6 +12,8 @@ import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { useContext, useEffect, useState } from "react";
 import ToolCreateDialog from "../ToolCreateDialog";
 import ToolUpdateDialog from "../ToolUpdateDialog";
+import ToolCreateGenericDialog from "../ToolCreateGenericDialog";
+import ToolDeleteDialog from "../ToolDeleteDialog";
 
 interface Options {
   icon?: string;
@@ -29,12 +31,15 @@ function ToolList() {
   const role = Cookies.get("portal.role");
   const router = useRouter();
   const [currTool, setCurrTool] = useState<Tool | null>(null);
+  const [currDeleteTool, setCurrDeleteTool] = useState<Tool | null>(null);
   const [showDialog, setShowDialog] = useState<boolean>(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
   const [nameSearch, setNameSearch] = useState<string>("");
   const [responsibleSearch, setResponsibleSearch] = useState<string>("");
   const [codeSearch, setCodeSearch] = useState<string>("");
-  const [bankBranchSearch, setbankBranchSearch] = useState<string>("");
+  const [bankBranchLocalBankSearch, setBankBranchLocalBankSearch] =
+    useState<string>("");
 
   const {
     tools,
@@ -57,6 +62,11 @@ function ToolList() {
       label: "Editar",
       onClick: openDialog,
     },
+    {
+      ariaLabel: "Excluir",
+      label: "Excluir",
+      onClick: openDeleteDialog,
+    },
   ];
 
   const columnBodyOptions = {
@@ -68,6 +78,11 @@ function ToolList() {
     setShowDialog(true);
   }
 
+  function openDeleteDialog(tool: Tool) {
+    setCurrDeleteTool(tool);
+    setShowDeleteDialog(true);
+  }
+
   function onPageChange(event: PaginatorPageChangeEvent) {
     const { page, first } = event;
     const { id } = router.query;
@@ -75,6 +90,10 @@ function ToolList() {
 
   function closeCreateDialog() {
     setShowCreateDialog((showCreateDialog) => !showCreateDialog);
+  }
+
+  function closeDeleteDialog() {
+    setShowDeleteDialog((showDeleteDialog) => !showDeleteDialog);
   }
 
   function closeUpdatedDialog() {
@@ -88,7 +107,24 @@ function ToolList() {
 
   async function onCreateTool(tool: ToolDTO) {
     await handlePostTool(tool);
-    handleGetTools();
+    handleGetTools(
+      0,
+      nameSearch,
+      responsibleSearch,
+      codeSearch,
+      bankBranchLocalBankSearch
+    );
+  }
+
+  async function onDeleteTool(toolId: string) {
+    await handleDeleteTool(toolId);
+    handleGetTools(
+      0,
+      nameSearch,
+      responsibleSearch,
+      codeSearch,
+      bankBranchLocalBankSearch
+    );
   }
 
   async function onUpdatedTool(tool: Tool) {
@@ -98,16 +134,28 @@ function ToolList() {
       nameSearch,
       responsibleSearch,
       codeSearch,
-      bankBranchSearch
+      bankBranchLocalBankSearch
     );
   }
 
   function onNameSearch(name: string) {
-    handleGetTools(0, name, responsibleSearch, codeSearch, bankBranchSearch);
+    handleGetTools(
+      0,
+      name,
+      responsibleSearch,
+      codeSearch,
+      bankBranchLocalBankSearch
+    );
   }
 
   function onResponsibleSearch(responsible: string) {
-    handleGetTools(0, nameSearch, responsible, codeSearch, bankBranchSearch);
+    handleGetTools(
+      0,
+      nameSearch,
+      responsible,
+      codeSearch,
+      bankBranchLocalBankSearch
+    );
   }
 
   function onChangeNameearch(name: string) {
@@ -119,19 +167,31 @@ function ToolList() {
   }
 
   function onCodeSearch(code: string) {
-    handleGetTools(0, nameSearch, responsibleSearch, code, bankBranchSearch);
+    handleGetTools(
+      0,
+      nameSearch,
+      responsibleSearch,
+      code,
+      bankBranchLocalBankSearch
+    );
   }
 
-  function onBankBranchSearch(bankBranch: string) {
-    handleGetTools(0, nameSearch, responsibleSearch, codeSearch, bankBranch);
+  function onBankBranchLocalBankSearch(bankBranchLocalBank: string) {
+    handleGetTools(
+      0,
+      nameSearch,
+      responsibleSearch,
+      codeSearch,
+      bankBranchLocalBank
+    );
   }
 
   function onChangeCodeSearch(code: string) {
     setCodeSearch(code);
   }
 
-  function onChangeBankBranchSearch(bankBranch: string) {
-    setbankBranchSearch(bankBranch);
+  function onChangeBankBranchLocalBankSearch(bankBranchLocalBank: string) {
+    setBankBranchLocalBankSearch(bankBranchLocalBank);
   }
 
   return (
@@ -192,12 +252,12 @@ function ToolList() {
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="Agência"
-              htmlFor="bankBranch"
+              htmlFor="bankBranchLocalBank"
               className="font-semibold smaller-text"
             />
             <InputSearch
-              onSearch={onBankBranchSearch}
-              onChange={onChangeBankBranchSearch}
+              onSearch={onBankBranchLocalBankSearch}
+              onChange={onChangeBankBranchLocalBankSearch}
             />
           </div>
         </div>
@@ -217,7 +277,7 @@ function ToolList() {
           <Column field="dateLoanFromFormatted" header="Data de Empréstimo" />
           <Column field="dateLoanToFormatted" header="Data de Devolução" />
           <Column field="centerCost" header="Centro de Custo" />
-          <Column field="bankBranch" header="Agência" />
+          <Column field="bankBranchLocalBankLocalBank" header="Agência" />
 
           <Column header="Opções" body={columnBodyOptions.options} />
         </DataTable>
@@ -229,7 +289,7 @@ function ToolList() {
         />
       </section>
       {showCreateDialog && (
-        <ToolCreateDialog
+        <ToolCreateGenericDialog
           visible={showCreateDialog}
           onCreate={onCreateTool}
           onHide={closeCreateDialog}
@@ -241,6 +301,14 @@ function ToolList() {
           onUpdate={onUpdatedTool}
           onHide={closeUpdatedDialog}
           data={currTool}
+        />
+      )}
+      {currDeleteTool && (
+        <ToolDeleteDialog
+          visible={showDeleteDialog}
+          onDelete={onDeleteTool}
+          onHide={closeDeleteDialog}
+          data={currDeleteTool}
         />
       )}
     </>

@@ -23,8 +23,11 @@ function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
     name: "",
     centerCost: selectedConstruction?.code || "",
     centerCostId: selectedConstruction?.id || "",
-    bankBranch: selectedConstruction?.bankBranch || "",
-    localBank: selectedConstruction?.local || "",
+    bankBranchLocalBank: selectedConstruction?.bankBranch
+      ? `${selectedConstruction?.bankBranch} - ${selectedConstruction?.local}`
+      : "" || "",
+    payer: selectedConstruction?.client || "",
+    typeCenterCost: selectedConstruction?.service || "",
     dateLoanFrom: "",
     dateLoanTo: "",
     responsible: "",
@@ -94,11 +97,11 @@ function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
           <InputText
             type="text"
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={newTool?.bankBranch}
+            value={newTool?.bankBranchLocalBank}
             onChange={(e) => {
               setNewTool({
                 ...newTool,
-                bankBranch: e.target.value.toUpperCase(),
+                bankBranchLocalBank: e.target.value.toUpperCase(),
               });
             }}
             disabled={selectedConstruction?.bankBranch !== null}

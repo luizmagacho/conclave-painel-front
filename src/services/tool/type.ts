@@ -1,9 +1,10 @@
 export type Tool = {
-  id: string | null;
+  id: string;
   centerCost: string;
   centerCostId: string;
-  bankBranch: string;
-  localBank: string;
+  bankBranchLocalBank: string;
+  payer: string;
+  typeCenterCost: string;
   name: string;
   responsible: string;
   userId: string;
@@ -20,8 +21,9 @@ export type Tool = {
 export type ToolDTO = {
   centerCost: string;
   centerCostId: string;
-  bankBranch: string;
-  localBank: string;
+  bankBranchLocalBank: string;
+  payer: string;
+  typeCenterCost: string;
   name: string;
   responsible: string;
   userId: string;
@@ -36,5 +38,5 @@ export type CostPaginationParam = {
   name: string;
   responsible: string;
   centerCost?: string;
-  bankBranch?: string;
+  bankBranchLocalBank?: string;
 };

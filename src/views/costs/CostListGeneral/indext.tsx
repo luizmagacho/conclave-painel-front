@@ -290,8 +290,6 @@ function CostListGeneral() {
             header="Tipo de Obra"
             className="smaller-text"
           />
-          <Column field="upe" header="UPE" className="smaller-text" />
-          <Column field="sap" header="SAP" className="smaller-text" />
           <Column
             field="issueDateFormatted"
             header="Data da Emissão"

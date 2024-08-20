@@ -28,8 +28,9 @@ function ToolUpdateDialog({
     name: data.name,
     centerCost: data.centerCost,
     centerCostId: data.centerCostId,
-    bankBranch: data.bankBranch,
-    localBank: data.localBank,
+    bankBranchLocalBank: data.bankBranchLocalBank,
+    payer: data.payer,
+    typeCenterCost: data.typeCenterCost,
     dateLoanFrom: data.dateLoanFrom,
     dateLoanFromFormatted: data.dateLoanFromFormatted,
     dateLoanTo: data.dateLoanTo,
@@ -107,7 +108,7 @@ function ToolUpdateDialog({
           <InputText
             type="text"
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedTool?.bankBranch}
+            value={updatedTool?.bankBranchLocalBank}
             disabled={true}
           />
         </div>
