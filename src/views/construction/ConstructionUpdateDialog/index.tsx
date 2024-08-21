@@ -5,6 +5,7 @@ import {
   formatDateToYYYYMMDD,
   localeBR,
 } from "@/util/date";
+import Cookies from "js-cookie";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
@@ -29,6 +30,7 @@ function ConstructionUpdateDialog({
   onUpdate,
   data,
 }: ConstructionUpdateDialog) {
+  const role = Cookies.get("portal.role");
   const [updatedConstruction, setUpdatedConstruction] = useState<Construction>({
     id: data.id,
     code: data.code,
@@ -107,7 +109,7 @@ function ConstructionUpdateDialog({
 
   return (
     <Dialog
-      header="Atualizar Centro de Custo"
+      header="Atualizar Obra"
       visible={visible}
       onHide={onHide}
       className="w-50rem"
@@ -130,6 +132,7 @@ function ConstructionUpdateDialog({
               setInvalidCode(false);
             }}
             value={updatedConstruction.code}
+            disabled={role !== "Administrador"}
           />
           {invalidCode && (
             <Message severity="error" text="Código é obrigatório" />
@@ -152,6 +155,7 @@ function ConstructionUpdateDialog({
               setInvalidClient(false);
             }}
             value={updatedConstruction?.client}
+            disabled={role !== "Administrador"}
           />
           {invalidClient && (
             <Message severity="error" text="Cliente é obrigatório" />
@@ -176,6 +180,7 @@ function ConstructionUpdateDialog({
               setInvalidLocal(false);
             }}
             value={updatedConstruction?.local}
+            disabled={role !== "Administrador"}
           />
           {invalidLocal && (
             <Message severity="error" text="Local é obrigatório" />
@@ -198,6 +203,7 @@ function ConstructionUpdateDialog({
               setInvalidResponsible(false);
             }}
             value={updatedConstruction?.responsible}
+            disabled={role !== "Administrador"}
           />
           {invalidResponsible && (
             <Message severity="error" text="Responsável é obrigatório" />
@@ -220,6 +226,7 @@ function ConstructionUpdateDialog({
               });
             }}
             value={updatedConstruction?.service}
+            disabled={role !== "Administrador"}
           />
         </div>
         <div className="field flex flex-column gap-2 w-full">
@@ -235,6 +242,7 @@ function ConstructionUpdateDialog({
                     cad: e.value,
                   })
                 }
+                disabled={role !== "Administrador"}
                 checked={updatedConstruction.cad === true}
               />
               <label htmlFor="option1" className="ml-2">
@@ -251,6 +259,7 @@ function ConstructionUpdateDialog({
                     cad: e.value,
                   });
                 }}
+                disabled={role !== "Administrador"}
                 checked={updatedConstruction.cad === false}
               />
               <label htmlFor="option2" className="ml-2">
@@ -276,6 +285,7 @@ function ConstructionUpdateDialog({
             className="ui-state-default"
             dateFormat="dd/mm/yy"
             showIcon
+            disabled={role !== "Administrador"}
           />
         </div>
         <div className="field flex flex-column gap-2 w-full">
@@ -293,6 +303,7 @@ function ConstructionUpdateDialog({
             className="ui-state-default"
             dateFormat="dd/mm/yy"
             showIcon
+            disabled={role !== "Administrador"}
           />
         </div>
       </div>
@@ -313,6 +324,7 @@ function ConstructionUpdateDialog({
               setInvalidBankBranch(false);
             }}
             value={updatedConstruction?.bankBranch}
+            disabled={role !== "Administrador"}
           />
           {invalidBankBranch && (
             <Message severity="error" text="Agência é obrigatória" />

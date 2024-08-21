@@ -1,35 +1,35 @@
-import { Construction } from "@/services/construction/type";
+import { Purchase } from "@/services/purchase/type";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 
-interface ConstructionDeleteDialog {
+interface PurchaseDeleteDialog {
   visible: boolean;
   onHide: () => void;
-  onDelete: (constructionId: string) => void;
-  data: Construction;
+  onDelete: (purchaseId: string) => void;
+  data: Purchase;
 }
 
-function ConstructionDeleteDialog({
+function PurchaseDeleteDialog({
   visible,
   onHide,
   onDelete,
   data,
-}: ConstructionDeleteDialog) {
+}: PurchaseDeleteDialog) {
   return (
     <Dialog
-      header="Encerrar Obra"
+      header="Excluir Compra"
       visible={visible}
       onHide={onHide}
       className="w-25rem"
     >
       <div className="card flex justify-content-center">
-        <h4>Tem certeza que deseja encerrar a obra {data.code} ?</h4>
+        <h4>Tem certeza que deseja exluir a compra {data.material} ?</h4>
       </div>
       <div className="flex gap-2">
         <Button className="w-full" label="Cancelar" outlined onClick={onHide} />
         <Button
           className="w-full"
-          label="Encerrar"
+          label="Excluir"
           severity="danger"
           onClick={() => {
             onDelete(data.id);
@@ -41,4 +41,4 @@ function ConstructionDeleteDialog({
   );
 }
 
-export default ConstructionDeleteDialog;
+export default PurchaseDeleteDialog;

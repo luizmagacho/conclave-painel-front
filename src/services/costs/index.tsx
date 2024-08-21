@@ -11,6 +11,7 @@ export async function getCosts({
   centerCost,
   bankBranchLocalBank,
   month,
+  year,
 }: CostPaginationParam) {
   let res = await api.get<Pagination<Cost>>(baseUrl, {
     params: {
@@ -19,6 +20,7 @@ export async function getCosts({
       centerCost,
       bankBranchLocalBank,
       month,
+      year,
     },
   });
   return res.data;
@@ -37,13 +39,15 @@ export async function getCostsByCenterCostId(
 export async function getTotalsValue(
   centerCost: string,
   bankBranchLocalBank: string,
-  month: string
+  month: string,
+  year: string
 ) {
   let res = await api.get<CostTotal>(`${baseUrl}/totals`, {
     params: {
       centerCost,
       bankBranchLocalBank,
       month,
+      year,
     },
   });
   return res.data;

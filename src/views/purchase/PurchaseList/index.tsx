@@ -8,6 +8,7 @@ import { DataTable } from "primereact/datatable";
 import { useContext, useState } from "react";
 import PurchaseCreateDialog from "../PurchaseCreateDialog";
 import PurchaseUpdateDialog from "../PurchaseUpdateDialog";
+import PurchaseDeleteDialog from "../PurchaseDeleteDialog";
 
 interface Options {
   icon?: string;
@@ -25,7 +26,11 @@ function PurchaseList() {
   const role = Cookies.get("portal.role");
   const router = useRouter();
   const [currPurchase, setCurrPurchase] = useState<Purchase | null>(null);
+  const [currDeletePurchase, setCurrDeletePurchase] = useState<Purchase | null>(
+    null
+  );
   const [showDialog, setShowDialog] = useState<boolean>(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
 
   const {
@@ -46,6 +51,11 @@ function PurchaseList() {
       label: "Editar",
       onClick: openDialog,
     },
+    {
+      ariaLabel: "Excluir",
+      label: "Excluir",
+      onClick: openDeleteDialog,
+    },
   ];
 
   const columnBodyOptions = {
@@ -55,6 +65,11 @@ function PurchaseList() {
   function openDialog(purchase: Purchase) {
     setCurrPurchase(purchase);
     setShowDialog(true);
+  }
+
+  function openDeleteDialog(purchase: Purchase) {
+    setCurrDeletePurchase(purchase);
+    setShowDeleteDialog(true);
   }
 
   const formatCurrency = (value: number | null) => {
@@ -80,10 +95,18 @@ function PurchaseList() {
     handleGetPurchases();
   }
 
+  async function onDeletePurchase(purchaseId: string) {
+    await handleDeletePurchase(purchaseId);
+    handleGetPurchases();
+  }
+
   function closeCreateDialog() {
     setShowCreateDialog((showCreateDialog) => !showCreateDialog);
   }
-
+  function closeDeleteDialog() {
+    setCurrDeletePurchase(null);
+    setShowDeleteDialog((showDeleteDialog) => !showDeleteDialog);
+  }
   async function onUpdatePurchase(purchase: Purchase) {
     await handleUpdatePurchase(purchase);
     handleGetPurchases();
@@ -125,7 +148,7 @@ function PurchaseList() {
           size="small"
           className="smaller-text"
         >
-          <Column field="centerCost" header="Centro de Custo" />
+          <Column field="centerCost" header="Obra" />
           <Column field="purchaseDateFormatted" header="Data da Compra" />
           <Column field="requestedDateFormatted" header="Data do Pedido" />
           <Column field="material" header="Material" />
@@ -157,6 +180,14 @@ function PurchaseList() {
           onHide={closeUpdatedDialog}
           data={currPurchase}
           visible={showDialog}
+        />
+      )}
+      {currDeletePurchase && (
+        <PurchaseDeleteDialog
+          onDelete={onDeletePurchase}
+          onHide={closeDeleteDialog}
+          data={currDeletePurchase}
+          visible={showDeleteDialog}
         />
       )}
     </>

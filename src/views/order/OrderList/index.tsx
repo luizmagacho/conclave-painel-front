@@ -166,9 +166,9 @@ function OrderList() {
               />
               <Column
                 field="construction.code"
-                header="Centro de Custo"
+                header="Obra"
                 filter
-                filterPlaceholder="Buscar por Centro de Custo"
+                filterPlaceholder="Buscar por Obra"
                 className="smaller-text"
               />
               <Column

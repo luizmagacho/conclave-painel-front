@@ -201,7 +201,7 @@ function OutstandingInvoicesDialog({
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Centro de Custo"
+            text="Obra"
             htmlFor="centerCost"
             className="font-semibold"
           />
@@ -222,7 +222,7 @@ function OutstandingInvoicesDialog({
             {invalidCenterCost && (
               <Message
                 severity="error"
-                text="Centro de Custo é obrigatório"
+                text="Obra é obrigatório"
                 className="smaller-text"
               />
             )}

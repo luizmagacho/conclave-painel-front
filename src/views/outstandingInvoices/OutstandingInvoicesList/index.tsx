@@ -258,7 +258,7 @@ function OutstandingInvoicesList() {
         <div className="card flex flex-column md:flex-row gap-2 w-11/12">
           <div className="field flex flex-column gap-1 w-full">
             <LabelTitle
-              text="Centro de Custo"
+              text="Obra"
               htmlFor="centerCost"
               className="font-semibold smaller-text"
             />
@@ -324,11 +324,7 @@ function OutstandingInvoicesList() {
           size="small"
           className="smaller-text"
         >
-          <Column
-            field="centerCost"
-            header="Centro de Custo"
-            className="smaller-text"
-          />
+          <Column field="centerCost" header="Obra" className="smaller-text" />
           <Column
             field="localBank"
             header="Local da Agência"

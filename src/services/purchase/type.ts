@@ -1,5 +1,5 @@
 export type Purchase = {
-  id: string | null;
+  id: string;
   centerCost: string;
   centerCostId: string;
   purchaseDate: string;

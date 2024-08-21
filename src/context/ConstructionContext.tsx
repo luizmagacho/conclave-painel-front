@@ -1,6 +1,7 @@
 import {
   deleteConstruction,
   getAllConstructions,
+  getCenterCostNumber,
   getConstructionById,
   getConstructions,
   getConstructionsNotEnabled,
@@ -20,6 +21,7 @@ interface ConstructionContextProps {
   constructions: Construction[];
   allConstructions: Construction[];
   selectedConstruction: Construction | null;
+  centerCostNumber: string;
   loading: boolean;
   totalElements: number;
   handleGetConstructions: (
@@ -30,6 +32,7 @@ interface ConstructionContextProps {
   ) => Promise<void>;
   handleGetConstructionsAll: () => Promise<void>;
   handleGetConstructionById: (id: string) => Promise<void>;
+  handleGetCenterCostNumber: () => Promise<void>;
   handlePostConstruction: (construction: ConstructionDTO) => Promise<void>;
   handleUpdateConstruction: (construction: Construction) => Promise<void>;
   handleDeleteConstruction: (constructionId: string) => Promise<void>;
@@ -48,6 +51,8 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
   >([]);
   const [selectedConstruction, setSelectedConstruction] =
     useState<Construction | null>(null);
+
+  const [centerCostNumber, setCenterCostNumber] = useState<string>("");
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -96,6 +101,15 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
   async function handleGetConstructionById(id: string) {
     try {
       setSelectedConstruction(await getConstructionById(id));
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function handleGetCenterCostNumber() {
+    try {
+      const resp = await getCenterCostNumber();
+      setCenterCostNumber(resp);
     } catch (error) {
       console.error(error);
     }
@@ -152,6 +166,7 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
   useEffect(() => {
     handleGetConstructions();
     handleGetConstructionsAll();
+    handleGetCenterCostNumber();
   }, []);
 
   return (
@@ -160,11 +175,13 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
         constructions,
         allConstructions,
         selectedConstruction,
+        centerCostNumber,
         loading,
         totalElements,
         handleGetConstructions,
         handleGetConstructionsAll,
         handleGetConstructionById,
+        handleGetCenterCostNumber,
         handlePostConstruction,
         handleUpdateConstruction,
         handleDeleteConstruction,

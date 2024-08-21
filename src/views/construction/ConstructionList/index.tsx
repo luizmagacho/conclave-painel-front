@@ -31,7 +31,7 @@ interface OptionType {
 const columns = [
   {
     field: "code",
-    header: "Centro de Custo",
+    header: "Obra",
   },
   {
     field: "client",
@@ -87,10 +87,12 @@ function ConstructionList() {
 
   const {
     constructions,
+    centerCostNumber,
     loading,
     totalElements,
     handleGetConstructions,
     handleGetConstructionById,
+    handleGetCenterCostNumber,
     handlePostConstruction,
     handleUpdateConstruction,
     handleDeleteConstruction,
@@ -156,16 +158,17 @@ function ConstructionList() {
 
   async function openCosts(construction: Construction) {
     await handleGetConstructionById(construction.id);
-    router.push(`/centro-custo/${construction.id}/custos`);
+    router.push(`/obra/${construction.id}/custos`);
   }
 
   async function openTools(construction: Construction) {
     await handleGetConstructionById(construction.id);
-    router.push(`/centro-custo/${construction.id}/ferramentas`);
+    router.push(`/obra/${construction.id}/ferramentas`);
   }
 
   async function onCreateConstruction(construction: ConstructionDTO) {
     await handlePostConstruction(construction);
+    await handleGetCenterCostNumber();
     handleGetConstructions(page, codeSearch, bankBranchSearch, localBankSearch);
   }
 
@@ -207,7 +210,7 @@ function ConstructionList() {
   return (
     <>
       <section className="flex flex-column gap-2 p-5 w-full">
-        <h1 className="m-0">Centros de Custos</h1>
+        <h1 className="m-0">Obras</h1>
         {role === "Administrador" && (
           <Button
             style={{
@@ -224,7 +227,7 @@ function ConstructionList() {
         <div className="card flex flex-column md:flex-row gap-2 w-11/12">
           <div className="field flex flex-column gap-1 w-full">
             <LabelTitle
-              text="Centro de Custo"
+              text="Obra"
               htmlFor="centerCost"
               className="font-semibold smaller-text"
             />
@@ -260,7 +263,7 @@ function ConstructionList() {
           </div>
         </div>
         <DataTable
-          emptyMessage="Nenhuma centro de custo encontrado."
+          emptyMessage="Nenhuma obra encontrada."
           value={constructions}
           loading={loading}
           stripedRows
@@ -328,7 +331,9 @@ function ConstructionList() {
         {elements.map((el, index) => {
           return (
             <>
-              {(role === "Administrador" || el.label !== "Editar") && (
+              {(role === "Administrador" ||
+                role === "Notas" ||
+                el.label !== "Editar") && (
                 <Button
                   key={index}
                   icon={el.icon}

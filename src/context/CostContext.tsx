@@ -22,7 +22,8 @@ interface CostsContextProps {
     page?: number,
     centerCost?: string,
     bankBranchLocalBank?: string,
-    month?: string
+    month?: string,
+    year?: string
   ) => Promise<void>;
   handleGetCostsByCenterCostId: (
     centerCostId: string,
@@ -31,7 +32,8 @@ interface CostsContextProps {
   handleGetCostTotal: (
     centerCost?: string,
     bankBranchLocalBank?: string,
-    month?: string
+    month?: string,
+    year?: string
   ) => Promise<void>;
   handlePostCost: (cost: CostDTO) => Promise<void>;
   handleUpdateCost: (cost: Cost) => Promise<void>;
@@ -53,7 +55,8 @@ export const CostProvider = ({ children }: ProviderProps) => {
     page: number = 0,
     centerCost: string = "",
     bankBranchLocalBank: string = "",
-    month: string = ""
+    month: string = "",
+    year: string = ""
   ) {
     setLoading(true);
     try {
@@ -63,6 +66,7 @@ export const CostProvider = ({ children }: ProviderProps) => {
         centerCost,
         bankBranchLocalBank,
         month,
+        year,
       });
 
       setBufferedCosts(content || []);
@@ -83,7 +87,14 @@ export const CostProvider = ({ children }: ProviderProps) => {
     try {
       const { content, totalElements } = await getCostsByCenterCostId(
         centerCostId,
-        { page, size: 20, centerCost: "", bankBranchLocalBank: "", month: "" }
+        {
+          page,
+          size: 20,
+          centerCost: "",
+          bankBranchLocalBank: "",
+          month: "",
+          year: "",
+        }
       );
 
       setBufferedCosts(content || []);
@@ -99,12 +110,13 @@ export const CostProvider = ({ children }: ProviderProps) => {
   async function handleGetCostTotal(
     centerCost: string = "",
     bankBranchLocalBank: string = "",
-    month: string = ""
+    month: string = "",
+    year: string = ""
   ) {
     setLoading(true);
     try {
       setCostTotal(
-        await getTotalsValue(centerCost, bankBranchLocalBank, month)
+        await getTotalsValue(centerCost, bankBranchLocalBank, month, year)
       );
     } catch (error) {
       console.error(error);

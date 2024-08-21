@@ -58,6 +58,11 @@ export async function getAllConstructions() {
   return res.data;
 }
 
+export async function getCenterCostNumber() {
+  let res = await api.get<string>(`${baseUrl}/new-center-cost`);
+  return res.data;
+}
+
 export async function postConstruction(construction: ConstructionDTO) {
   let res = await api.post(baseUrl, construction);
   return res.status;

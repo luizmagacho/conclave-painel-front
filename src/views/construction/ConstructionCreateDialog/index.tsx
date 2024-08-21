@@ -1,4 +1,5 @@
 import LabelTitle from "@/components/LabelTitle";
+import { ConstructionContext } from "@/context/ConstructionContext";
 import { ConstructionDTO } from "@/services/construction/type";
 import { formatDateToYYYYMMDD, localeBR } from "@/util/date";
 import Cookies from "js-cookie";
@@ -13,7 +14,7 @@ import {
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { RadioButton } from "primereact/radiobutton";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 interface ConstructionCreateDialog {
   visible: boolean;
@@ -26,8 +27,9 @@ function ConstructionCreateDialog({
   onHide,
   onCreate,
 }: ConstructionCreateDialog) {
+  const { centerCostNumber } = useContext(ConstructionContext);
   const [newConstruction, setNewConstruction] = useState<ConstructionDTO>({
-    code: "",
+    code: centerCostNumber,
     bankBranch: "",
     responsible: "",
     upe: "",
@@ -49,6 +51,7 @@ function ConstructionCreateDialog({
   const [invalidBankBranch, setInvalidBankBranch] = useState<boolean>(false);
   const [invalidService, setInvalidService] = useState<boolean>(false);
   const [invalidOpeningDate, setInvalidOpeningDate] = useState<boolean>(false);
+  const [invalidClosedDate, setInvalidClosedDate] = useState<boolean>(false);
 
   useEffect(() => {
     localeBR;
@@ -76,13 +79,20 @@ function ConstructionCreateDialog({
       !newConstruction.service || newConstruction.service === ""
     );
 
+    setInvalidOpeningDate(!newOpeningDate);
+
+    if (newOpeningDate && newClosedDate)
+      setInvalidClosedDate(newClosedDate < newOpeningDate);
+
     if (
       !invalidCode &&
       !invalidClient &&
       !invalidLocal &&
       !invalidResponsible &&
       !invalidBankBranch &&
-      !invalidService
+      !invalidService &&
+      !invalidOpeningDate &&
+      !invalidClosedDate
     ) {
       onCreate(newConstruction);
       onHide();
@@ -91,7 +101,7 @@ function ConstructionCreateDialog({
 
   return (
     <Dialog
-      header="Adicionar Novo Centro de Custo"
+      header="Adicionar Nova Obra"
       visible={visible}
       onHide={onHide}
       className="w-50rem"
@@ -100,7 +110,7 @@ function ConstructionCreateDialog({
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Código do Centro de Custo"
+            text="Código da Obra"
             htmlFor="code"
             className="font-semibold"
             required={true}
@@ -251,12 +261,16 @@ function ConstructionCreateDialog({
             value={newOpeningDate}
             onChange={(e) => {
               setNewOpeningDate(e.value || null);
+              setInvalidOpeningDate(false);
             }}
             locale="pt"
             className="ui-state-default"
             dateFormat="dd/mm/yy"
             showIcon
           />
+          {invalidOpeningDate && (
+            <Message severity="error" text="Data de Abertura é obrigatório" />
+          )}
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -269,12 +283,19 @@ function ConstructionCreateDialog({
             value={newClosedDate}
             onChange={(e) => {
               setNewClosedDate(e.value || null);
+              setInvalidClosedDate(false);
             }}
             locale="pt"
             className="ui-state-default"
             dateFormat="dd/mm/yy"
             showIcon
           />
+          {invalidClosedDate && (
+            <Message
+              severity="error"
+              text="Data de Encerrada é preciso ser após Data de Abertura"
+            />
+          )}
         </div>
       </div>
       <div className="card flex flex-column md:flex-row gap-3 w-full">
