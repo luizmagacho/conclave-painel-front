@@ -52,6 +52,7 @@ function CostListGeneral() {
   const [bankBranchLocalBankSearch, setBankBranchLocalBankSearch] =
     useState<string>("");
   const [monthSearch, setMonthSearch] = useState<string>("");
+  const [yearSearch, setYearSearch] = useState<string>("");
 
   const [first, setFirst] = useState<number>(0);
 
@@ -185,13 +186,35 @@ function CostListGeneral() {
   };
 
   function onCenterCostSearch(centerCost: string) {
-    handleGetCosts(0, centerCost, bankBranchLocalBankSearch, monthSearch);
-    handleGetCostTotal(centerCost, bankBranchLocalBankSearch, monthSearch);
+    handleGetCosts(
+      0,
+      centerCost,
+      bankBranchLocalBankSearch,
+      monthSearch,
+      yearSearch
+    );
+    handleGetCostTotal(
+      centerCost,
+      bankBranchLocalBankSearch,
+      monthSearch,
+      yearSearch
+    );
   }
 
   function onBankBranchLocalBankSearch(bankBranchLocalBank: string) {
-    handleGetCosts(0, centerCostSearch, bankBranchLocalBank, monthSearch);
-    handleGetCostTotal(centerCostSearch, bankBranchLocalBank, monthSearch);
+    handleGetCosts(
+      0,
+      centerCostSearch,
+      bankBranchLocalBank,
+      monthSearch,
+      yearSearch
+    );
+    handleGetCostTotal(
+      centerCostSearch,
+      bankBranchLocalBank,
+      monthSearch,
+      yearSearch
+    );
   }
 
   function onChangeCenterCost(centerCost: string) {
@@ -203,12 +226,50 @@ function CostListGeneral() {
   }
 
   function onMonthSearch(month: string) {
-    handleGetCosts(0, centerCostSearch, bankBranchLocalBankSearch, month);
-    handleGetCostTotal(centerCostSearch, bankBranchLocalBankSearch, month);
+    handleGetCosts(
+      0,
+      centerCostSearch,
+      bankBranchLocalBankSearch,
+      month,
+      yearSearch
+    );
+    handleGetCostTotal(
+      centerCostSearch,
+      bankBranchLocalBankSearch,
+      month,
+      yearSearch
+    );
+  }
+
+  function onYearSearch(year: string) {
+    handleGetCosts(
+      0,
+      centerCostSearch,
+      bankBranchLocalBankSearch,
+      monthSearch,
+      year
+    );
+    handleGetCostTotal(
+      centerCostSearch,
+      bankBranchLocalBankSearch,
+      monthSearch,
+      year
+    );
   }
 
   function onChageMonth(month: string) {
     setMonthSearch(month);
+  }
+
+  function getYears(): string[] {
+    const currentYear = new Date().getFullYear();
+    const years: string[] = [];
+
+    for (let year = currentYear; year >= 1980; year--) {
+      years.push(year.toString());
+    }
+
+    return years;
   }
 
   return (
@@ -262,6 +323,21 @@ function CostListGeneral() {
               onChange={(e: DropdownChangeEvent) => {
                 setMonthSearch(e.value);
                 onMonthSearch(e.value);
+              }}
+            />
+          </div>
+          <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="Ano"
+              htmlFor="year"
+              className="font-semibold smaller-text"
+            />
+            <Dropdown
+              options={getYears()}
+              value={yearSearch}
+              onChange={(e: DropdownChangeEvent) => {
+                setYearSearch(e.value);
+                onYearSearch(e.value);
               }}
             />
           </div>
@@ -335,7 +411,9 @@ function CostListGeneral() {
             header="Contrato"
             className="smaller-text"
           />
-          <Column header="Opções" body={columnBodyOptions.options} />
+          {(role === "Administrador" || role === "Notas") && (
+            <Column header="Opções" body={columnBodyOptions.options} />
+          )}
         </DataTable>
         <Paginator
           first={first}

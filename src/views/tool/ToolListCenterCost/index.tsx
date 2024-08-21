@@ -132,7 +132,7 @@ function ToolListCenterCost() {
         <div className="card flex flex-column md:flex-row gap-2 w-11/12">
           <div className="flex flex-column gap-1 w-full">
             <LabelTitle
-              text={`Centro de Custo: ${selectedConstruction?.code}`}
+              text={`Obra: ${selectedConstruction?.code}`}
               htmlFor="neighborhood"
               className="font-semibold"
             />

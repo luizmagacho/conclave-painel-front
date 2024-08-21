@@ -244,7 +244,7 @@ function PurchaseCreateDialog({
 
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Código do Centro de Custo"
+            text="Código da Obra"
             htmlFor="centerCost"
             className="font-semibold"
           />
@@ -264,7 +264,7 @@ function PurchaseCreateDialog({
             {invalidMaterial && (
               <Message
                 severity="error"
-                text="Centro de Custo é obrigatório"
+                text="Obra é obrigatório"
                 className="smaller-text"
               />
             )}

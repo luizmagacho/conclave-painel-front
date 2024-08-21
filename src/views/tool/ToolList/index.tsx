@@ -240,7 +240,7 @@ function ToolList() {
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
-              text="Centro de Custo"
+              text="Obra"
               htmlFor="centerCost"
               className="font-semibold smaller-text"
             />
@@ -276,7 +276,7 @@ function ToolList() {
           <Column field="responsible" header="Responsável" />
           <Column field="dateLoanFromFormatted" header="Data de Empréstimo" />
           <Column field="dateLoanToFormatted" header="Data de Devolução" />
-          <Column field="centerCost" header="Centro de Custo" />
+          <Column field="centerCost" header="Obra" />
           <Column field="bankBranchLocalBankLocalBank" header="Agência" />
 
           <Column header="Opções" body={columnBodyOptions.options} />

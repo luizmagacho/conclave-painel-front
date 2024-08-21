@@ -17,13 +17,13 @@ function ConstructionReactiveDialog({
 }: ConstructionReactiveDialog) {
   return (
     <Dialog
-      header="Reativar Centro de Custo"
+      header="Reativar Obra"
       visible={visible}
       onHide={onHide}
       className="w-25rem"
     >
       <div className="card flex justify-content-center">
-        <h4>Tem certeza que deseja reativar o centro de custo {data.code} ?</h4>
+        <h4>Tem certeza que deseja reativar a obra {data.code} ?</h4>
       </div>
       <div className="flex gap-2">
         <Button className="w-full" label="Cancelar" outlined onClick={onHide} />

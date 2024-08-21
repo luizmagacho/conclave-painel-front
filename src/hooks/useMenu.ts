@@ -45,9 +45,9 @@ const useMenu = () => {
       command: () => router.push("/material"),
     },
     {
-      label: "Centro de Custos",
+      label: "Obras",
       icon: "pi pi-fw pi-book",
-      command: () => router.push("/centro-custo"),
+      command: () => router.push("/obras"),
     },
     {
       label: "Fornecedor",

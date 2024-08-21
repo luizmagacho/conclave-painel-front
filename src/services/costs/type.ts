@@ -54,4 +54,5 @@ export type CostPaginationParam = {
   centerCost: string;
   bankBranchLocalBank: string;
   month: string;
+  year: string;
 };

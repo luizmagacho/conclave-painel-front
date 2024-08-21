@@ -267,7 +267,7 @@ function OrderCreate() {
           <div>
             <div className="field flex flex-column gap-2 w-full">
               <LabelTitle
-                text="Código do Centro de Custo"
+                text="Código da Obra"
                 htmlFor="constructionCode"
                 className="font-semibold"
               />
@@ -286,7 +286,7 @@ function OrderCreate() {
               {invalidConstructionCode && (
                 <Message
                   severity="error"
-                  text="Centro de custo é obrigatório"
+                  text="Obra é obrigatório"
                   className="smaller-text"
                 />
               )}
