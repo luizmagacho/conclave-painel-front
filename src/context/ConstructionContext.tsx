@@ -28,7 +28,8 @@ interface ConstructionContextProps {
     page?: number,
     code?: string,
     bankBranch?: string,
-    localBank?: string
+    localBank?: string,
+    responsible?: string
   ) => Promise<void>;
   handleGetConstructionsAll: () => Promise<void>;
   handleGetConstructionById: (id: string) => Promise<void>;
@@ -64,7 +65,8 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
     page: number = 0,
     code: string = "",
     bankBranch: string = "",
-    localBank: string = ""
+    localBank: string = "",
+    responsible: string = ""
   ) {
     setLoading(true);
 
@@ -75,6 +77,7 @@ export const ConstructionProvider = ({ children }: ProviderProps) => {
         code,
         bankBranch,
         localBank,
+        responsible,
       });
       setBufferedConstructions(content || []);
       setConstructions(content || []);

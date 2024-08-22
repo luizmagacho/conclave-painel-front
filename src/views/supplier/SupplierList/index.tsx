@@ -147,7 +147,9 @@ function SupplierList() {
             onChange={onChangeSearch}
             inputType={optionType.type}
           />
-          {role === "Administrador" && (
+          {(role === "Administrador" ||
+            role === "Compras" ||
+            role === "Contas") && (
             <Button
               style={{
                 backgroundColor: "var(--cor-primaria)",
@@ -212,7 +214,10 @@ function SupplierList() {
         {elements.map((el, index) => {
           return (
             <>
-              {(role === "Administrador" || el.label !== "Excluir") && (
+              {(role === "Administrador" ||
+                role === "Compras" ||
+                role === "Contas" ||
+                el.label !== "Excluir") && (
                 <Button
                   key={index}
                   icon={el.icon}

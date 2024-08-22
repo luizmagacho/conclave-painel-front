@@ -80,6 +80,7 @@ function ConstructionList() {
   const [codeSearch, setCodeSearch] = useState<string>("");
   const [bankBranchSearch, setBankBranchSearch] = useState<string>("");
   const [localBankSearch, setLocalBankSearch] = useState<string>("");
+  const [responsibleSearch, setResponsibleSearch] = useState<string>("");
   const [optionType, setOptionType] = useState<OptionType>({
     type: "Code",
   });
@@ -184,15 +185,43 @@ function ConstructionList() {
   }
 
   function onCodeSearch(code: string) {
-    handleGetConstructions(0, code, bankBranchSearch, localBankSearch);
+    handleGetConstructions(
+      0,
+      code,
+      bankBranchSearch,
+      localBankSearch,
+      responsibleSearch
+    );
   }
 
   function onBankBranchSearch(bankBranch: string) {
-    handleGetConstructions(0, codeSearch, bankBranch, localBankSearch);
+    handleGetConstructions(
+      0,
+      codeSearch,
+      bankBranch,
+      localBankSearch,
+      responsibleSearch
+    );
   }
 
   function onLocalBankSearch(localBank: string) {
-    handleGetConstructions(0, codeSearch, bankBranchSearch, localBank);
+    handleGetConstructions(
+      0,
+      codeSearch,
+      bankBranchSearch,
+      localBank,
+      responsibleSearch
+    );
+  }
+
+  function onResponsibleSearch(responsible: string) {
+    handleGetConstructions(
+      0,
+      codeSearch,
+      bankBranchSearch,
+      localBankSearch,
+      responsible
+    );
   }
 
   function onChangeCodeSearch(code: string) {
@@ -205,6 +234,10 @@ function ConstructionList() {
 
   function onChangeLocalBankSearch(localBank: string) {
     setLocalBankSearch(localBank);
+  }
+
+  function onChangeResponsibleSearch(responsible: string) {
+    setResponsibleSearch(responsible);
   }
 
   return (
@@ -258,6 +291,18 @@ function ConstructionList() {
             <InputSearch
               onSearch={onLocalBankSearch}
               onChange={onChangeLocalBankSearch}
+              inputType={optionType.type}
+            />
+          </div>
+          <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="Responsável"
+              htmlFor="responsible"
+              className="font-semibold smaller-text"
+            />
+            <InputSearch
+              onSearch={onResponsibleSearch}
+              onChange={onChangeResponsibleSearch}
               inputType={optionType.type}
             />
           </div>

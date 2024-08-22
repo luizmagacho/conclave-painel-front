@@ -16,6 +16,7 @@ export async function getConstructions({
   code,
   bankBranch,
   localBank,
+  responsible,
 }: ConstructionPaginationParam) {
   let res = await api.get<Pagination<Construction>>(baseUrl, {
     params: {
@@ -24,6 +25,7 @@ export async function getConstructions({
       code,
       bankBranch,
       localBank,
+      responsible,
     },
   });
   return res.data;
