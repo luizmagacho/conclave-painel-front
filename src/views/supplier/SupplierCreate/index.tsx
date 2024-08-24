@@ -105,6 +105,7 @@ function SupplierCreate() {
   };
 
   const validateCpf = () => {
+    console.log(newSupplier.cpf);
     if (
       newSupplier.cpf &&
       newSupplier.cpf.replaceAll("[^0-9]", "").length >= 14
@@ -165,6 +166,7 @@ function SupplierCreate() {
               value={newSupplier?.cpf}
               onBlur={validateCpf}
             />
+            {existsCpf}
             {invalidPersonalInfo && (
               <Message severity="error" text="Cpf ou Cnpj é obrigatório" />
             )}
