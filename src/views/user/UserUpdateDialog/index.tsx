@@ -122,6 +122,7 @@ function UserUpdateDialog({
               setInvalidUsername(false);
             }}
             value={updatedUser.username}
+            disabled
           />
           {invalidUsername && (
             <Message severity="error" text="E-mail é obrigatório" />
@@ -187,6 +188,7 @@ function UserUpdateDialog({
               setUpdatedProfiles(e.value);
               setInvalidProfile(false);
             }}
+            disabled
           />
           {invalidProfile && (
             <Message severity="error" text="Selecione pelo menos um perfil" />

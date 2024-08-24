@@ -88,7 +88,7 @@ export default function Login(): JSX.Element {
         <StyledContainer>
           <div></div>
           <div>
-            <Logo />
+            <Logo redirect="/" />
           </div>
           <div className="flex flex-column items-center justify-center">
             <div className="flex flex-column items-center justify-center gap-2 flex-wrap">
