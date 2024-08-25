@@ -105,7 +105,6 @@ function SupplierCreate() {
   };
 
   const validateCpf = () => {
-    console.log(newSupplier.cpf);
     if (
       newSupplier.cpf &&
       newSupplier.cpf.replaceAll("[^0-9]", "").length >= 14

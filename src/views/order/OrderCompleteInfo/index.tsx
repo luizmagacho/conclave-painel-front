@@ -386,6 +386,7 @@ function OrderCompleteInfo() {
                   if (Array.isArray(e.value)) {
                     setSelectedMaterials(e.value);
                   }
+                  console.log(selectedMaterials);
                 }}
                 dataKey="id"
                 paginator

@@ -274,6 +274,7 @@ function OrderCreate() {
               <AutoComplete
                 type="text"
                 field="code"
+                dropdown
                 value={selectedConstruction}
                 suggestions={constructionsItems}
                 completeMethod={constructionSearch}
@@ -345,15 +346,15 @@ function OrderCreate() {
               <h3>Cadastrar Materiais</h3>
               <Toolbar className="mb-4" end={rightToolbarTemplate}></Toolbar>
               <DataTable
-                ref={dt}
                 emptyMessage="Nenhum material adicionado"
                 value={listMaterials}
                 rows={10}
-                selection={selectedMaterials!}
+                selection={selectedMaterials}
                 onSelectionChange={(e) => {
                   if (Array.isArray(e.value)) {
                     setSelectedMaterials(e.value);
                   }
+                  console.log(selectedMaterials);
                 }}
                 dataKey="id"
                 paginator
@@ -435,6 +436,7 @@ function OrderCreate() {
               onChange={(e: AutoCompleteChangeEvent) => {
                 setNewMaterial(e.value);
               }}
+              dropdown
               forceSelection
             />
           </div>
