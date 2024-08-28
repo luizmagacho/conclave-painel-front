@@ -57,3 +57,13 @@ export async function deleteTool(toolId: string) {
   let res = await api.delete(`${baseUrl}/${toolId}`);
   return res.status;
 }
+
+export async function getAllNames() {
+  let res = await api.get(`${baseUrl}/all-names`);
+  return res.data;
+}
+
+export async function getAllResponsible() {
+  let res = await api.get(`${baseUrl}/all-responsible`);
+  return res.data;
+}

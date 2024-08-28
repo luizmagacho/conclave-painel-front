@@ -45,14 +45,15 @@ function ToolList() {
     tools,
     loading,
     totalElements,
+    listNames,
+    listResponsible,
     handleGetTools,
     handlePostTool,
     handleUpdateTool,
     handleDeleteTool,
+    handleGetAllNames,
+    handleGetAllResponsible,
   } = useContext(ToolContext);
-
-  const { selectedConstruction, handleGetConstructionById } =
-    useContext(ConstructionContext);
 
   const [first, setFirst] = useState<number>(0);
 
@@ -103,6 +104,8 @@ function ToolList() {
   useEffect(() => {
     const { id } = router.query;
     handleGetTools();
+    handleGetAllNames();
+    handleGetAllResponsible();
   }, []);
 
   async function onCreateTool(tool: ToolDTO) {
@@ -114,6 +117,8 @@ function ToolList() {
       codeSearch,
       bankBranchLocalBankSearch
     );
+    handleGetAllNames();
+    handleGetAllResponsible();
   }
 
   async function onDeleteTool(toolId: string) {
@@ -136,6 +141,8 @@ function ToolList() {
       codeSearch,
       bankBranchLocalBankSearch
     );
+    handleGetAllNames();
+    handleGetAllResponsible();
   }
 
   function onNameSearch(name: string) {
@@ -293,6 +300,8 @@ function ToolList() {
           visible={showCreateDialog}
           onCreate={onCreateTool}
           onHide={closeCreateDialog}
+          names={listNames}
+          responsible={listResponsible}
         />
       )}
       {currTool && (

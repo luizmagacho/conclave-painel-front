@@ -1,5 +1,6 @@
 import LabelTitle from "@/components/LabelTitle";
 import { ConstructionContext } from "@/context/ConstructionContext";
+import { ToolContext } from "@/context/ToolContext";
 import { Construction } from "@/services/construction/type";
 import { ToolDTO } from "@/services/tool/type";
 import { formatDateToYYYYMMDD } from "@/util/date";
@@ -20,12 +21,16 @@ interface ToolCreateDialog {
   visible: boolean;
   onHide: () => void;
   onCreate: (tool: ToolDTO) => void;
+  responsible: string[];
+  names: string[];
 }
 
 function ToolCreateGenericDialog({
   visible,
   onCreate,
   onHide,
+  responsible,
+  names,
 }: ToolCreateDialog) {
   const router = useRouter();
   const [newTool, setNewTool] = useState<ToolDTO>({
@@ -68,6 +73,10 @@ function ToolCreateGenericDialog({
   const [constructionsItems, setConstructionsItems] =
     useState<Construction[]>(allConstructions);
 
+  const [namesItems, setNamesItems] = useState<string[]>(names);
+  const [responsibleItems, setResponsibleItems] =
+    useState<string[]>(responsible);
+
   const constructionSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
       let _filteredConstructions;
@@ -79,6 +88,34 @@ function ToolCreateGenericDialog({
         });
       }
       setConstructionsItems(_filteredConstructions);
+    }, 150);
+  };
+
+  const namesSearch = (event: AutoCompleteCompleteEvent) => {
+    setTimeout(() => {
+      let _filteredNames;
+      if (!event.query.trim().length) {
+        _filteredNames = [...names];
+      } else {
+        _filteredNames = names.filter((name) => {
+          return name.startsWith(event.query);
+        });
+      }
+      setNamesItems(_filteredNames);
+    }, 150);
+  };
+
+  const responsibleSearch = (event: AutoCompleteCompleteEvent) => {
+    setTimeout(() => {
+      let _filteredResponsible;
+      if (!event.query.trim().length) {
+        _filteredResponsible = [...responsible];
+      } else {
+        _filteredResponsible = responsible.filter((resp) => {
+          return resp.startsWith(event.query);
+        });
+      }
+      setResponsibleItems(_filteredResponsible);
     }, 150);
   };
 
@@ -98,12 +135,19 @@ function ToolCreateGenericDialog({
 
   async function validateFields() {
     const userId = await localStorage.getItem("portal.id");
+    setInvalidCenterCost(!newTool.centerCost || newTool.centerCost === "");
     setNewTool({ ...newTool, userId: userId || "" });
     setInvalidName(!newTool.name || newTool.name === "");
     setInvalidNewDateLoanFrom(!newDateLoanFrom);
     setInvalidResponsible(!newTool.responsible || newTool.responsible === "");
+    console.log(newDateLoanFrom);
 
-    if (!invalidNewDateLoanFrom && !invalidName && !invalidResponsible) {
+    if (
+      !invalidNewDateLoanFrom &&
+      !invalidName &&
+      !invalidResponsible &&
+      !invalidCenterCost
+    ) {
       onCreate(newTool);
       onHide();
     }
@@ -141,8 +185,8 @@ function ToolCreateGenericDialog({
             {invalidCenterCost && (
               <Message
                 severity="error"
-                text="Número da Obra é obrigatório"
-                className="smaller-text"
+                text="Obra é obrigatório"
+                style={{ height: "30px", fontSize: "0.4rem" }}
               />
             )}
           </div>
@@ -218,21 +262,28 @@ function ToolCreateGenericDialog({
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle text="Nome" htmlFor="name" className="font-semibold" />
-          <InputText
-            type="text"
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            onChange={(e) => {
-              setNewTool({ ...newTool, name: e.target.value.toUpperCase() });
-            }}
-            value={newTool?.name}
-          />
-          {invalidName && (
-            <Message
-              severity="error"
-              text="Nome é obrigatório"
-              className="smaller-text"
+          <div className="card p-fluid">
+            <AutoComplete
+              type="text"
+              dropdown
+              value={newTool.name}
+              suggestions={namesItems}
+              completeMethod={namesSearch}
+              onChange={(e: AutoCompleteChangeEvent) => {
+                setNewTool({ ...newTool, name: e.value.toLocaleUpperCase() });
+                setInvalidName(false);
+              }}
+              className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
+              style={{ height: "30px", fontSize: "0.8rem" }}
             />
-          )}
+            {invalidName && (
+              <Message
+                severity="error"
+                text="Nome é obrigatório"
+                className="smaller-text"
+              />
+            )}
+          </div>
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -240,24 +291,31 @@ function ToolCreateGenericDialog({
             htmlFor="responsible"
             className="font-semibold"
           />
-          <InputText
-            type="text"
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            onChange={(e) => {
-              setNewTool({
-                ...newTool,
-                responsible: e.target.value.toUpperCase(),
-              });
-            }}
-            value={newTool?.responsible}
-          />
-          {invalidResponsible && (
-            <Message
-              severity="error"
-              text="Responsável é obrigatório"
-              className="smaller-text"
+          <div className="card p-fluid">
+            <AutoComplete
+              type="text"
+              dropdown
+              value={newTool.responsible}
+              suggestions={responsibleItems}
+              completeMethod={responsibleSearch}
+              onChange={(e: AutoCompleteChangeEvent) => {
+                setNewTool({
+                  ...newTool,
+                  responsible: e.value.toLocaleUpperCase(),
+                });
+                setInvalidResponsible(false);
+              }}
+              className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
+              style={{ height: "30px", fontSize: "0.8rem" }}
             />
-          )}
+            {invalidResponsible && (
+              <Message
+                severity="error"
+                text="Responsável é obrigatório"
+                className="smaller-text"
+              />
+            )}
+          </div>
         </div>
       </div>
       <div className="card flex flex-column md:flex-row gap-3 w-full">
@@ -271,6 +329,7 @@ function ToolCreateGenericDialog({
             id="buttondisplay"
             onChange={(e) => {
               setNewDateLoanFrom(e.value || null);
+              setInvalidNewDateLoanFrom(false);
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={newDateLoanFrom}
@@ -282,7 +341,7 @@ function ToolCreateGenericDialog({
           {invalidNewDateLoanFrom && (
             <Message
               severity="error"
-              text="Data de Custo é obrigatório"
+              text="Data de Empréstimo é obrigatório"
               className="smaller-text"
             />
           )}

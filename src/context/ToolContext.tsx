@@ -1,5 +1,7 @@
 import {
   deleteTool,
+  getAllNames,
+  getAllResponsible,
   getTools,
   getToolsByCenterCostId,
   postTool,
@@ -17,6 +19,8 @@ interface ToolContextProps {
   tools: Tool[];
   loading: boolean;
   totalElements: number;
+  listNames: string[];
+  listResponsible: string[];
   handleGetTools: (
     page?: number,
     name?: string,
@@ -31,6 +35,8 @@ interface ToolContextProps {
   handlePostTool: (tool: ToolDTO) => Promise<void>;
   handleUpdateTool: (tool: Tool) => Promise<void>;
   handleDeleteTool: (toolId: string) => Promise<void>;
+  handleGetAllNames: () => Promise<void>;
+  handleGetAllResponsible: () => Promise<void>;
 }
 
 export const ToolContext = createContext({} as ToolContextProps);
@@ -42,6 +48,9 @@ export const ToolProvider = ({ children }: ProviderProps) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const [totalElements, setTotalElements] = useState<number>(0);
+
+  const [listNames, setListNames] = useState<string[]>([]);
+  const [listResponsible, setListResponsible] = useState<string[]>([]);
 
   const router = useRouter();
 
@@ -131,17 +140,37 @@ export const ToolProvider = ({ children }: ProviderProps) => {
     }
   }
 
+  async function handleGetAllNames() {
+    try {
+      setListNames(await getAllNames());
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function handleGetAllResponsible() {
+    try {
+      setListResponsible(await getAllResponsible());
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <ToolContext.Provider
       value={{
         tools,
         loading,
         totalElements,
+        listNames,
+        listResponsible,
         handleGetTools,
         handleGetToolsByCenterCostId,
         handlePostTool,
         handleUpdateTool,
         handleDeleteTool,
+        handleGetAllNames,
+        handleGetAllResponsible,
       }}
     >
       {children}
