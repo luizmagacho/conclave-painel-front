@@ -3,6 +3,8 @@ import { Profile } from "@/services/profile/type";
 import { UserRequestDTO } from "@/services/user/type";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { MultiSelect, MultiSelectChangeEvent } from "primereact/multiselect";
@@ -126,23 +128,23 @@ function UserCreateDialog({
             className="font-semibold"
             required={true}
           />
-          <div className="card">
-            <span className="p-input-icon-right w-full">
-              <i
-                className={showPassword ? "pi pi-eye" : "pi pi-eye-slash"}
-                onClick={() => setShowPassword(!showPassword)}
-              />
-              <InputText
-                className="w-full"
-                type={showPassword ? "text" : "password"}
-                onChange={(e) => {
-                  setNewUser({ ...newUser, password: e.target.value });
-                  setInvalidPassword(false);
-                }}
-                value={newUser.password}
-              />
-            </span>
-          </div>
+          <IconField iconPosition="right">
+            <InputIcon
+              onClick={() => setShowPassword(!showPassword)}
+              className={showPassword ? "pi pi-eye" : "pi pi-eye-slash"}
+            >
+              {" "}
+            </InputIcon>
+            <InputText
+              className="w-full"
+              type={showPassword ? "text" : "password"}
+              onChange={(e) => {
+                setNewUser({ ...newUser, password: e.target.value });
+                setInvalidPassword(false);
+              }}
+              value={newUser.password}
+            />
+          </IconField>
           {invalidPassword && (
             <Message severity="error" text="Senha é obrigatória" />
           )}

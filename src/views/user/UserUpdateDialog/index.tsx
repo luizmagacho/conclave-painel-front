@@ -3,6 +3,8 @@ import { Profile } from "@/services/profile/type";
 import { User } from "@/services/user/type";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { MultiSelect, MultiSelectChangeEvent } from "primereact/multiselect";
@@ -134,23 +136,23 @@ function UserUpdateDialog({
             htmlFor="updated_password"
             className="font-semibold"
           />
-          <div className="card">
-            <span className="p-input-icon-right w-full">
-              <i
-                className={showPassword ? "pi pi-eye" : "pi pi-eye-slash"}
-                onClick={() => setShowPassword(!showPassword)}
-              />
-              <InputText
-                className="w-full"
-                type={showPassword ? "text" : "password"}
-                onChange={(e) => {
-                  setUpdatedUser({ ...updatedUser, password: e.target.value });
-                  setInvalidPassword(false);
-                }}
-                value={updatedUser.password}
-              />
-            </span>
-          </div>
+          <IconField iconPosition="right">
+            <InputIcon
+              onClick={() => setShowPassword(!showPassword)}
+              className={showPassword ? "pi pi-eye" : "pi pi-eye-slash"}
+            >
+              {" "}
+            </InputIcon>
+            <InputText
+              className="w-full"
+              type={showPassword ? "text" : "password"}
+              onChange={(e) => {
+                setUpdatedUser({ ...updatedUser, password: e.target.value });
+                setInvalidPassword(false);
+              }}
+              value={updatedUser.password}
+            />
+          </IconField>
         </div>
         <div className="field flex flex-column gap-2">
           <LabelTitle
