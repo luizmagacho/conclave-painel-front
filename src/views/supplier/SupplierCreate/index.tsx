@@ -333,8 +333,8 @@ function SupplierCreate() {
               className="font-semibold text-sm"
             />
             <InputMask
-              mask="(99) 99999-9999"
-              placeholder="(99) 99999-9999"
+              mask="(99) 9999-9999?9"
+              placeholder="(99) 9999-99999"
               onChange={(e) => {
                 setNewSupplier({
                   ...newSupplier,
@@ -358,8 +358,8 @@ function SupplierCreate() {
               className="font-semibold text-sm"
             />
             <InputMask
-              mask="(99) 99999-9999"
-              placeholder="(99) 99999-9999"
+              mask="(99) 9999-9999?9"
+              placeholder="(99) 9999-99999"
               onChange={(e) => {
                 setNewSupplier({
                   ...newSupplier,
@@ -367,7 +367,7 @@ function SupplierCreate() {
                 });
                 setInvalidSellerMobilePhone(false);
               }}
-              value={newSupplier?.sellerPhone}
+              value={newSupplier?.sellerMobilePhone}
             />
             {invalidSellerMobilePhone && (
               <Message severity="error" text="Celular Vendedor é obrigatório" />
@@ -424,8 +424,8 @@ function SupplierCreate() {
               className="font-semibold text-sm"
             />
             <InputMask
-              mask="(99) 99999-9999"
-              placeholder="(99) 99999-9999"
+              mask="(99) 9999-9999?9"
+              placeholder="(99) 9999-99999"
               onChange={(e) => {
                 setNewSupplier({
                   ...newSupplier,
@@ -449,8 +449,8 @@ function SupplierCreate() {
               className="font-semibold text-sm"
             />
             <InputMask
-              mask="(99) 99999-9999"
-              placeholder="(99) 99999-9999"
+              mask="(99) 9999-9999?9"
+              placeholder="(99) 9999-99999"
               onChange={(e) => {
                 setNewSupplier({
                   ...newSupplier,
