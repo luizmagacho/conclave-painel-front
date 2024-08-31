@@ -13,7 +13,7 @@ export type Tool = {
   dateLoanFrom: string;
   dateLoanFromFormatted: string;
   enabled: boolean;
-  isFinishedConstruction: boolean;
+  isFinishedConstruction?: boolean;
 
   createdAt: Date | null;
   updatedAt: Date | null;
