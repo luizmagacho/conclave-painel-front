@@ -65,7 +65,7 @@ export const ToolProvider = ({ children }: ProviderProps) => {
     try {
       const { content, totalElements } = await getTools({
         page,
-        size: 15,
+        size: 10,
         name,
         responsible,
         centerCost,
