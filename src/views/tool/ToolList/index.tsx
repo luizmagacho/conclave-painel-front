@@ -14,6 +14,7 @@ import ToolCreateDialog from "../ToolCreateDialog";
 import ToolUpdateDialog from "../ToolUpdateDialog";
 import ToolCreateGenericDialog from "../ToolCreateGenericDialog";
 import ToolDeleteDialog from "../ToolDeleteDialog";
+import { classNames } from "primereact/utils";
 
 interface Options {
   icon?: string;
@@ -203,6 +204,17 @@ function ToolList() {
     setBankBranchLocalBankSearch(bankBranchLocalBank);
   }
 
+  const clearedBodyTemplate = (tool: Tool) => {
+    return (
+      <i
+        className={classNames("pi", {
+          "true-icon pi-check-circle": tool.isFinishedConstruction,
+          "false-icon pi-times-circle": !tool.isFinishedConstruction,
+        })}
+      ></i>
+    );
+  };
+
   return (
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
@@ -286,7 +298,8 @@ function ToolList() {
           <Column field="dateLoanFromFormatted" header="Data de Empréstimo" />
           <Column field="dateLoanToFormatted" header="Data de Devolução" />
           <Column field="centerCost" header="Obra" />
-          <Column field="bankBranchLocalBankLocalBank" header="Agência" />
+          <Column field="bankBranchLocalBank" header="Agência" />
+          <Column body={clearedBodyTemplate} header="Obra Finalizada?" />
 
           <Column header="Opções" body={columnBodyOptions.options} />
         </DataTable>
