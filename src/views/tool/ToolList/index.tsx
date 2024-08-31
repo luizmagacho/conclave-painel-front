@@ -87,6 +87,8 @@ function ToolList() {
   function onPageChange(event: PaginatorPageChangeEvent) {
     const { page, first } = event;
     const { id } = router.query;
+    handleGetTools(page);
+    setFirst(first);
   }
 
   function closeCreateDialog() {
