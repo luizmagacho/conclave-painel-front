@@ -21,13 +21,13 @@ interface OrderContextProps {
   totalElementsFinished: number;
   handleGetOrdersNotFinished: (
     page?: number,
-    constructionCode?: string,
+    centerCostId?: string,
     orderDate?: Date | null,
     finish?: boolean
   ) => Promise<void>;
   handleGetOrdersFinished: (
     page?: number,
-    constructionCode?: string,
+    centerCostId?: string,
     orderDate?: Date | null,
     finish?: boolean
   ) => Promise<void>;
@@ -52,7 +52,7 @@ export const OrderProvider = ({ children }: ProviderProps) => {
 
   async function handleGetOrdersNotFinished(
     page: number = 0,
-    constructionCode: string = "",
+    centerCostId: string = "",
     orderDate: Date | null = null,
     finish: boolean = false
   ) {
@@ -62,7 +62,7 @@ export const OrderProvider = ({ children }: ProviderProps) => {
       const { content, totalElements } = await getOrders({
         page,
         size: 20,
-        constructionCode,
+        centerCostId,
         orderDate,
         finish,
       });
@@ -89,7 +89,7 @@ export const OrderProvider = ({ children }: ProviderProps) => {
 
   async function handleGetOrdersFinished(
     page: number = 0,
-    constructionCode: string = "",
+    centerCostId: string = "",
     orderDate: Date | null = null,
     finish: boolean = true
   ) {
@@ -99,7 +99,7 @@ export const OrderProvider = ({ children }: ProviderProps) => {
       const { content, totalElements } = await getOrders({
         page,
         size: 20,
-        constructionCode,
+        centerCostId,
         orderDate,
         finish,
       });

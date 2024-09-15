@@ -1,4 +1,5 @@
 import { AuthProvider } from "@/context/AuthContext";
+import { ConstructionProvider } from "@/context/ConstructionContext";
 import { MaterialProvider } from "@/context/MaterialContext";
 import { OrderProvider } from "@/context/OrderContext";
 import { DefaultLayout } from "@/layouts";
@@ -8,11 +9,13 @@ export default function SelectedOrder(): JSX.Element {
   return (
     <DefaultLayout>
       <AuthProvider>
-        <MaterialProvider>
-          <OrderProvider>
-            <OrderCompleteInfo />
-          </OrderProvider>
-        </MaterialProvider>
+        <ConstructionProvider>
+          <MaterialProvider>
+            <OrderProvider>
+              <OrderCompleteInfo />
+            </OrderProvider>
+          </MaterialProvider>
+        </ConstructionProvider>
       </AuthProvider>
     </DefaultLayout>
   );

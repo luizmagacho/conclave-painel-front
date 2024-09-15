@@ -24,6 +24,29 @@ export function convertStringToDate(dateString: string): Date | null {
   return date;
 }
 
+export function convertOrderTimeToDate(timeString: string): Date {
+  // Validação básica para garantir que a string esteja no formato correto
+  const timeRegex = /^([0-9]{2}):([0-9]{2})$/;
+  if (!timeRegex.test(timeString)) {
+    throw new Error("Formato de hora inválido. Use HH:MM");
+  }
+
+  // Separa as horas e minutos da string
+  const [hours, minutes] = timeString.split(":").map(Number);
+
+  // Cria um novo objeto Date com a data atual e as horas e minutos especificados
+  const currentDate = new Date();
+  const timeDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    currentDate.getDate(),
+    hours,
+    minutes
+  );
+
+  return timeDate;
+}
+
 export function formatDateToYYYYMMDD(date: Date | null): string | null {
   if (date === null) {
     return null; // Retorna null se a data for null
@@ -33,6 +56,16 @@ export function formatDateToYYYYMMDD(date: Date | null): string | null {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+export function formatDateToHHMM(date: Date | null): string | null {
+  if (date === null) {
+    return null; // Retorna null se a data for null
+  }
+
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
 }
 
 export const localeBR = addLocale("pt", {

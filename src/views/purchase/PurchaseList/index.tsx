@@ -6,7 +6,7 @@ import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useContext, useState } from "react";
-import PurchaseCreateDialog from "../PurchaseCreateDialog";
+import PurchaseCreateDialog from "../PurchasePost";
 import PurchaseUpdateDialog from "../PurchaseUpdateDialog";
 import PurchaseDeleteDialog from "../PurchaseDeleteDialog";
 
@@ -38,7 +38,6 @@ function PurchaseList() {
     loading,
     totalElements,
     handleGetPurchases,
-    handlePostPurchase,
     handleUpdatePurchase,
     handleDeletePurchase,
   } = useContext(PurchaseContext);
@@ -90,18 +89,9 @@ function PurchaseList() {
     return formatCurrency(purchase.totalValue || null);
   };
 
-  async function onCreatePurchase(purchase: PurchaseDTO) {
-    await handlePostPurchase(purchase);
-    handleGetPurchases();
-  }
-
   async function onDeletePurchase(purchaseId: string) {
     await handleDeletePurchase(purchaseId);
     handleGetPurchases();
-  }
-
-  function closeCreateDialog() {
-    setShowCreateDialog((showCreateDialog) => !showCreateDialog);
   }
   function closeDeleteDialog() {
     setCurrDeletePurchase(null);
@@ -129,7 +119,7 @@ function PurchaseList() {
                 border: "1px solid var(--cor-primaria)",
               }}
               onClick={() => {
-                setShowCreateDialog(true);
+                router.push("compras/cadastrar");
               }}
             >
               Adicionar
@@ -167,13 +157,6 @@ function PurchaseList() {
           <Column header="Opções" body={columnBodyOptions.options} />
         </DataTable>
       </section>
-      {showCreateDialog && (
-        <PurchaseCreateDialog
-          onCreate={onCreatePurchase}
-          onHide={closeCreateDialog}
-          visible={showCreateDialog}
-        />
-      )}
       {currPurchase && (
         <PurchaseUpdateDialog
           onUpdate={onUpdatePurchase}

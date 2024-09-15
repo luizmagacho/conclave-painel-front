@@ -1,8 +1,18 @@
 export type Material = {
   id: string;
   name: string;
+  observation: string;
+  unit: string;
+  enabled: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type MaterialOrder = {
+  id: string;
+  name: string;
   quantity: number | null;
-  metricUnit: string;
+  unit: string;
   enabled: boolean;
   createdAt?: Date;
   updatedAt?: Date;
@@ -10,8 +20,15 @@ export type Material = {
 
 export type MaterialDTO = {
   name: string;
+  observation: string;
+  unit: string;
+  enabled?: boolean;
+};
+
+export type MaterialOrderDTO = {
+  name: string;
   quantity: number | null;
-  metricUnit: string;
+  unit: string;
   enabled?: boolean;
 };
 

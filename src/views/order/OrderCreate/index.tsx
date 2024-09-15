@@ -2,17 +2,23 @@ import LabelTitle from "@/components/LabelTitle";
 import { ConstructionContext } from "@/context/ConstructionContext";
 import { MaterialContext } from "@/context/MaterialContext";
 import { OrderContext } from "@/context/OrderContext";
-import { Construction, ConstructionDTO } from "@/services/construction/type";
+import { Construction } from "@/services/construction/type";
 import { updateMaterial } from "@/services/material";
-import { Material, MaterialDTO } from "@/services/material/type";
+import {
+  Material,
+  MaterialDTO,
+  MaterialOrderDTO,
+} from "@/services/material/type";
 import { OrderDTO } from "@/services/order/type";
-import { Router, useRouter } from "next/router";
+import { formatDateToHHMM, formatDateToYYYYMMDD } from "@/util/date";
+import { useRouter } from "next/router";
 import {
   AutoComplete,
   AutoCompleteChangeEvent,
   AutoCompleteCompleteEvent,
 } from "primereact/autocomplete";
 import { Button } from "primereact/button";
+import { Calendar } from "primereact/calendar";
 import { Card } from "primereact/card";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
@@ -33,41 +39,42 @@ function OrderCreate() {
     id = window.localStorage.getItem("portal.id");
   }
   const dt = useRef<DataTable<MaterialDTO[]>>(null);
-  const [invalidListMaterials, setInvalidListMaterials] =
-    useState<boolean>(false);
-  const [listMaterials, setListMaterials] = useState<MaterialDTO[]>([]);
-  const [selectedMaterials, setSelectedMaterials] = useState<MaterialDTO[]>([]);
+
+  const [listMaterials, setListMaterials] = useState<MaterialOrderDTO[]>([]);
+  const [selectedMaterials, setSelectedMaterials] = useState<
+    MaterialOrderDTO[]
+  >([]);
   const [showAddMaterial, setShowAddMaterial] = useState<boolean>(false);
   const [invalidConstructionCode, setInvalidConstructionCode] =
     useState<boolean>(false);
+  const [invalidListMaterials, setInvalidListMaterials] =
+    useState<boolean>(false);
   const [invalidName, setInvalidName] = useState<boolean>(false);
   const [invalidQuantity, setInvalidQuantity] = useState<boolean>(false);
-  const [invalidMetricUnit, setInvalidMetricUnit] = useState<boolean>(false);
+  const [invalidUnit, setInvalidUnit] = useState<boolean>(false);
+  const [invalidDate, setInvalidDate] = useState<boolean>(false);
   const [selectedConstruction, setSelectedConstruction] =
-    useState<ConstructionDTO>();
+    useState<Construction>();
   const [newOrder, setNewOrder] = useState<OrderDTO>({
-    construction: {
-      code: "",
-      bankBranch: "",
-      responsible: "",
-      cad: false,
-      client: "",
-      openingDate: new Date(),
-      local: "",
-      service: "",
-      userId: "",
-    },
+    centerCost: "",
+    centerCostId: "",
+    bankBranchLocalBank: "",
+    payer: "",
+    typeCenterCost: "",
     materials: [],
-    orderDate: new Date(),
+    orderDate: "",
+    orderTime: "",
     userRequest: name || "",
     userRequestId: id || "",
     finish: false,
   });
-  const [newMaterial, setNewMaterial] = useState<MaterialDTO>({
+  const [newMaterial, setNewMaterial] = useState<MaterialOrderDTO>({
     name: "",
     quantity: null,
-    metricUnit: "",
+    unit: "",
   });
+  const [newOrderDate, setNewOrderDate] = useState<Date | null>(null);
+  const [newOrderTime, setNewOrderTime] = useState<Date | null>(null);
 
   const toast = useRef<Toast>(null);
 
@@ -77,10 +84,10 @@ function OrderCreate() {
 
   const { handlePostOrder } = useContext(OrderContext);
 
-  const { constructions } = useContext(ConstructionContext);
+  const { allConstructions } = useContext(ConstructionContext);
 
   const [constructionsItems, setConstructionsItems] =
-    useState<Construction[]>(constructions);
+    useState<Construction[]>(allConstructions);
 
   const { allMaterials, handleGetAllMaterials } = useContext(MaterialContext);
   const [materialsItems, setMaterialsItems] =
@@ -89,10 +96,6 @@ function OrderCreate() {
   const confirmDeleteSelected = () => {
     setDeleteMaterialsDialog(true);
   };
-
-  useEffect(() => {
-    setConstructionsItems(constructions);
-  }, [constructions]);
 
   useEffect(() => {
     setMaterialsItems(allMaterials);
@@ -134,8 +137,8 @@ function OrderCreate() {
   }, []);
 
   useEffect(() => {
-    setConstructionsItems(constructions);
-  }, [constructions]);
+    setConstructionsItems(allConstructions);
+  }, [allConstructions]);
 
   useEffect(() => {
     setMaterialsItems(allMaterials);
@@ -168,7 +171,7 @@ function OrderCreate() {
     setTimeout(() => {
       let _filteredConstructions;
       if (!event.query.trim().length) {
-        _filteredConstructions = [...constructions];
+        _filteredConstructions = [...allConstructions];
       } else {
         _filteredConstructions = constructionsItems.filter((construction) => {
           return construction.code.startsWith(event.query);
@@ -205,7 +208,7 @@ function OrderCreate() {
         ...listMaterials,
         {
           name: newMaterial.name,
-          metricUnit: newMaterial.metricUnit,
+          unit: newMaterial.unit,
           quantity: newQuantity,
         },
       ]);
@@ -213,7 +216,7 @@ function OrderCreate() {
       setNewMaterial({
         name: "",
         quantity: null,
-        metricUnit: "",
+        unit: "",
       });
       setNewQuantity(null);
     }
@@ -221,10 +224,11 @@ function OrderCreate() {
 
   async function validateFields() {
     setInvalidConstructionCode(
-      !newOrder.construction?.code || newOrder.construction?.code === ""
+      !newOrder.centerCost || newOrder.centerCost === ""
     );
     setInvalidListMaterials(!listMaterials || listMaterials.length === 0);
     if (!invalidConstructionCode && !invalidListMaterials) {
+      console.log(newOrder);
       await handlePostOrder(newOrder);
       router.push("/pedidos");
     }
@@ -241,6 +245,28 @@ function OrderCreate() {
   useEffect(() => {
     updateNewOrder();
   }, [selectedConstruction, listMaterials]);
+
+  useEffect(() => {
+    setNewOrder((prevCost) => ({
+      ...prevCost,
+      centerCostId: selectedConstruction?.id || "",
+      centerCost: selectedConstruction?.code || "",
+      bankBranchLocalBank: selectedConstruction?.bankBranch
+        ? `${selectedConstruction?.bankBranch} - ${selectedConstruction?.local}`
+        : "" || "",
+
+      typeCenterCost: selectedConstruction?.service || "",
+      payer: selectedConstruction?.client || "",
+    }));
+  }, [selectedConstruction]);
+
+  useEffect(() => {
+    setNewOrder((prevOrder) => ({
+      ...prevOrder,
+      orderDate: formatDateToYYYYMMDD(newOrderDate) || prevOrder.orderDate,
+      orderTime: formatDateToHHMM(newOrderTime) || prevOrder.orderTime,
+    }));
+  }, [newOrderDate, newOrderTime]);
 
   const deleteMaterialsDialogFooter = (
     <React.Fragment>
@@ -264,131 +290,161 @@ function OrderCreate() {
       <Card className="m-3">
         <section className="flex flex-column gap-2 w-full">
           <h1 className="m-0">Cadastrar Pedido</h1>
-          <div>
+
+          <div className="card flex flex-column md:flex-row gap-2 w-full">
             <div className="field flex flex-column gap-2 w-full">
               <LabelTitle
                 text="Código da Obra"
                 htmlFor="constructionCode"
                 className="font-semibold"
               />
-              <AutoComplete
-                type="text"
-                field="code"
-                dropdown
-                value={selectedConstruction}
-                suggestions={constructionsItems}
-                completeMethod={constructionSearch}
-                onChange={(e: AutoCompleteChangeEvent) => {
-                  setSelectedConstruction(e.value);
-                  setInvalidConstructionCode(false);
-                }}
-                forceSelection
+              <div className="card p-fluid">
+                <AutoComplete
+                  type="text"
+                  field="code"
+                  dropdown
+                  value={selectedConstruction}
+                  suggestions={constructionsItems}
+                  completeMethod={constructionSearch}
+                  onChange={(e: AutoCompleteChangeEvent) => {
+                    setSelectedConstruction(e.value);
+                    setInvalidConstructionCode(false);
+                  }}
+                  style={{ height: "30px", fontSize: "0.8rem" }}
+                  forceSelection
+                />
+                {invalidConstructionCode && (
+                  <Message
+                    severity="error"
+                    text="Obra é obrigatório"
+                    className="smaller-text"
+                  />
+                )}
+              </div>
+            </div>
+            <div className="field flex flex-column gap-2 w-full">
+              <LabelTitle
+                text="Nome da Obra"
+                htmlFor="bankBranchLocalBank"
+                className="font-semibold"
               />
-              {invalidConstructionCode && (
-                <Message
-                  severity="error"
-                  text="Obra é obrigatório"
-                  className="smaller-text"
-                />
-              )}
+              <InputText
+                type="text"
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={newOrder?.bankBranchLocalBank}
+                disabled
+              />
             </div>
-            <div className="card flex flex-column md:flex-row gap-2 w-full">
-              <div className="field flex flex-column gap-2 w-full">
-                <LabelTitle
-                  text="Cliente"
-                  htmlFor="client"
-                  className="font-semibold"
-                />
-                <InputText
-                  type="text"
-                  value={selectedConstruction?.client}
-                  disabled
-                />
-              </div>
-              <div className="field flex flex-column gap-2 w-full">
-                <LabelTitle
-                  text="Local"
-                  htmlFor="local"
-                  className="font-semibold"
-                />
-                <InputText
-                  type="text"
-                  value={selectedConstruction?.local}
-                  disabled
-                />
-              </div>
-              <div className="field flex flex-column gap-2 w-full">
-                <LabelTitle
-                  text="Agência"
-                  htmlFor="branchBank"
-                  className="font-semibold"
-                />
-                <InputText
-                  type="text"
-                  value={selectedConstruction?.bankBranch}
-                  disabled
-                />
-              </div>
-              <div className="field flex flex-column gap-2 w-full">
-                <LabelTitle
-                  text="Responsável"
-                  htmlFor="responsable"
-                  className="font-semibold"
-                />
-                <InputText
-                  type="text"
-                  value={selectedConstruction?.responsible}
-                  disabled
-                />
-              </div>
-            </div>
-            <Card>
-              <h3>Cadastrar Materiais</h3>
-              <Toolbar className="mb-4" end={rightToolbarTemplate}></Toolbar>
-              <DataTable
-                emptyMessage="Nenhum material adicionado"
-                value={listMaterials}
-                rows={10}
-                selection={selectedMaterials}
-                onSelectionChange={(e) => {
-                  if (Array.isArray(e.value)) {
-                    setSelectedMaterials(e.value);
-                  }
-                  console.log(selectedMaterials);
-                }}
-                dataKey="id"
-                paginator
-                selectionMode="multiple"
-              >
-                <Column selectionMode="multiple" exportable={false}></Column>
-                <Column
-                  field="name"
-                  header="Nome"
-                  sortable
-                  style={{ minWidth: "12rem" }}
-                ></Column>
-                <Column
-                  field="quantity"
-                  header="Quantidade"
-                  sortable
-                  style={{ minWidth: "12rem" }}
-                ></Column>
-                <Column
-                  field="metricUnit"
-                  header="Unidade Métrica"
-                  sortable
-                  style={{ minWidth: "12rem" }}
-                ></Column>
-              </DataTable>
-              {invalidListMaterials && (
-                <Message
-                  severity="error"
-                  text="Pelo menos um material é obrigatório"
-                  className="smaller-text"
-                />
-              )}
-            </Card>
           </div>
+          <div className="card flex flex-column md:flex-row gap-2 w-full">
+            <div className="field flex flex-column gap-2 w-full">
+              <LabelTitle
+                text="Data"
+                htmlFor="orderDate"
+                className="font-semibold"
+              />
+              <Calendar
+                id="buttondisplay"
+                onChange={(e) => {
+                  setNewOrderDate(e.value || null);
+                  setInvalidDate(false);
+                }}
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={newOrderDate}
+                locale="pt"
+                className="ui-state-default"
+                dateFormat="dd/mm/yy"
+                showIcon
+              />
+              {invalidDate && (
+                <Message
+                  severity="error"
+                  text="Data do Pedido é obrigatório"
+                  className="smaller-text"
+                />
+              )}
+            </div>
+            <div className="field flex flex-column gap-2 w-full">
+              <LabelTitle
+                text="Hora"
+                htmlFor="requestTime"
+                className="font-semibold"
+              />
+              <Calendar
+                id="buttondisplay"
+                onChange={(e) => {
+                  setNewOrderTime(e.value || null);
+                }}
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={newOrderTime}
+                className="ui-state-default"
+                icon={() => <i className="pi pi-clock" />}
+                timeOnly
+                showIcon
+              />
+            </div>
+            <div className="field flex flex-column gap-2 w-full">
+              <LabelTitle
+                text="Solicitante"
+                htmlFor="userRequest"
+                className="font-semibold"
+              />
+              <InputText
+                type="text"
+                value={newOrder?.userRequest}
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                disabled
+              />
+            </div>
+          </div>
+
+          <Card>
+            <h3>Cadastrar Materiais</h3>
+            <Toolbar className="mb-4" end={rightToolbarTemplate}></Toolbar>
+            <DataTable
+              emptyMessage="Nenhum material adicionado"
+              value={listMaterials}
+              rows={10}
+              selection={selectedMaterials}
+              onSelectionChange={(e) => {
+                if (Array.isArray(e.value)) {
+                  setSelectedMaterials(e.value);
+                }
+                console.log(selectedMaterials);
+              }}
+              dataKey="id"
+              paginator
+              selectionMode="multiple"
+            >
+              <Column selectionMode="multiple" exportable={false}></Column>
+              <Column
+                field="name"
+                header="Nome"
+                sortable
+                style={{ minWidth: "12rem" }}
+              ></Column>
+              <Column
+                field="quantity"
+                header="Quantidade"
+                sortable
+                style={{ minWidth: "12rem" }}
+              ></Column>
+              <Column
+                field="unit"
+                header="Unidade"
+                sortable
+                style={{ minWidth: "12rem" }}
+              ></Column>
+            </DataTable>
+            {invalidListMaterials && (
+              <Message
+                severity="error"
+                text="Pelo menos um material é obrigatório"
+                className="smaller-text"
+              />
+            )}
+          </Card>
+
           <div
             className="flex justify-end gap-2 w-full"
             style={{ justifyContent: "end" }}
@@ -461,8 +517,8 @@ function OrderCreate() {
             </div>
             <div className="field flex flex-column gap-2">
               <LabelTitle
-                text="Unidade Métrica"
-                htmlFor="metricUnit"
+                text="Unidade"
+                htmlFor="unit"
                 className="font-semibold"
                 required={true}
               />
@@ -471,11 +527,11 @@ function OrderCreate() {
                 onChange={(e) => {
                   setNewMaterial({
                     ...newMaterial,
-                    metricUnit: e.target.value,
+                    unit: e.target.value,
                   });
-                  setInvalidMetricUnit(false);
+                  setInvalidUnit(false);
                 }}
-                value={newMaterial?.metricUnit}
+                value={newMaterial?.unit}
                 disabled
               />
             </div>
