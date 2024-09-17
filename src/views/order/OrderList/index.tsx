@@ -86,10 +86,6 @@ function OrderList() {
     router.push(`/pedidos/${order.id}`);
   }
 
-  function openCreatePage() {
-    router.push(`pedidos/cadastrar`);
-  }
-
   function finishOrderDialog(order: Order) {
     setCurrOrderFinish(order);
     setShowDialogFinish((showDialogFinish) => !showDialogFinish);
@@ -221,6 +217,7 @@ function OrderList() {
               totalRecords={totalElementsFinished}
               tableStyle={{ minWidth: "50rem" }}
               size="small"
+              className="smaller-text"
             >
               <Column
                 field="orderDate"

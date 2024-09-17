@@ -20,22 +20,18 @@ function MaterialCreateDialog({
 }: MaterialCreateDialog) {
   const [newMaterial, setNewMaterial] = useState<MaterialDTO>({
     name: "",
-    quantity: null,
-    metricUnit: "",
+    observation: "",
+    unit: "",
     enabled: true,
   });
   const [invalidName, setInvalidName] = useState<boolean>(false);
-  const [invalidQuantity, setInvalidQuantity] = useState<boolean>(false);
-  const [invalidMetricUnit, setInvalidMetricUnit] = useState<boolean>(false);
+  const [invalidUnit, setInvalidUnit] = useState<boolean>(false);
 
   function validateFields() {
     setInvalidName(!newMaterial.name || newMaterial.name === "");
-    setInvalidQuantity(newMaterial.quantity === null);
 
-    setInvalidMetricUnit(
-      !newMaterial.metricUnit || newMaterial.metricUnit === ""
-    );
-    if (!invalidName && !invalidQuantity && !invalidMetricUnit) {
+    setInvalidUnit(!newMaterial.unit || newMaterial.unit === "");
+    if (!invalidName && !invalidUnit) {
       onCreate(newMaterial);
       onHide();
     }
@@ -68,54 +64,43 @@ function MaterialCreateDialog({
             <Message severity="error" text="Nome é obrigatório" />
           )}
         </div>
+        <div className="field flex flex-column gap-2">
+          <LabelTitle
+            text="Unidade"
+            htmlFor="unit"
+            className="font-semibold"
+            required={true}
+          />
+          <InputText
+            type="text"
+            onChange={(e) => {
+              setNewMaterial({ ...newMaterial, unit: e.target.value });
+              setInvalidUnit(false);
+            }}
+            value={newMaterial?.unit}
+          />
+          {invalidUnit && (
+            <Message severity="error" text="Unidade é obrigatório" />
+          )}
+        </div>
         <div className="field gap-10">
           <div className="field flex flex-column gap-2">
             <LabelTitle
-              text="Quantidade"
-              htmlFor="quantity"
-              className="font-semibold"
-              required={true}
-            />
-            <InputNumber
-              onChange={(e) => {
-                if (e.value) {
-                  setNewMaterial({
-                    ...newMaterial,
-                    quantity: e.value,
-                  });
-                } else {
-                  setNewMaterial({
-                    ...newMaterial,
-                    quantity: 0,
-                  });
-                }
-                setInvalidQuantity(false);
-              }}
-              style={{ height: "30px", fontSize: "0.8rem" }}
-              value={newMaterial?.quantity}
-            />
-            {invalidQuantity && (
-              <Message severity="error" text="Quantidade é obrigatório" />
-            )}
-          </div>
-          <div className="field flex flex-column gap-2">
-            <LabelTitle
-              text="Unidade Métrica"
-              htmlFor="metricUnit"
+              text="Observações"
+              htmlFor="observation"
               className="font-semibold"
               required={true}
             />
             <InputText
               type="text"
               onChange={(e) => {
-                setNewMaterial({ ...newMaterial, metricUnit: e.target.value });
-                setInvalidMetricUnit(false);
+                setNewMaterial({
+                  ...newMaterial,
+                  observation: e.target.value,
+                });
               }}
-              value={newMaterial?.metricUnit}
+              value={newMaterial.observation}
             />
-            {invalidMetricUnit && (
-              <Message severity="error" text="Unidade métrica é obrigatório" />
-            )}
           </div>
         </div>
       </div>

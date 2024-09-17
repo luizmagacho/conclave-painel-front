@@ -28,12 +28,12 @@ const columns = [
     header: "Nome",
   },
   {
-    field: "quantity",
-    header: "Quantidade",
+    field: "unit",
+    header: "Unidade",
   },
   {
-    field: "metricUnit",
-    header: "Unidade Métrica",
+    field: "observation",
+    header: "Observações",
   },
 ];
 

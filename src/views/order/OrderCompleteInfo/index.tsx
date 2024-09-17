@@ -3,8 +3,9 @@ import { ConstructionContext } from "@/context/ConstructionContext";
 import { MaterialContext } from "@/context/MaterialContext";
 import { OrderContext } from "@/context/OrderContext";
 import { Construction } from "@/services/construction/type";
-import { Material } from "@/services/material/type";
+import { Material, MaterialOrder } from "@/services/material/type";
 import { Order, OrderDTO } from "@/services/order/type";
+import { convertOrderTimeToDate, convertStringToDate } from "@/util/date";
 import { useRouter } from "next/router";
 import {
   AutoComplete,
@@ -12,6 +13,7 @@ import {
   AutoCompleteCompleteEvent,
 } from "primereact/autocomplete";
 import { Button } from "primereact/button";
+import { Calendar } from "primereact/calendar";
 import { Card } from "primereact/card";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
@@ -33,8 +35,10 @@ function OrderCompleteInfo() {
   }
   const [invalidListMaterials, setInvalidListMaterials] =
     useState<boolean>(false);
-  const [listMaterials, setListMaterials] = useState<Material[]>([]);
-  const [selectedMaterials, setSelectedMaterials] = useState<Material[]>([]);
+  const [listMaterials, setListMaterials] = useState<MaterialOrder[]>([]);
+  const [selectedMaterials, setSelectedMaterials] = useState<MaterialOrder[]>(
+    []
+  );
   const [showAddMaterial, setShowAddMaterial] = useState<boolean>(false);
   const [invalidConstructionCode, setInvalidConstructionCode] =
     useState<boolean>(false);
@@ -47,55 +51,48 @@ function OrderCompleteInfo() {
     useContext(OrderContext);
   const [updatedOrder, setUpdatedOrder] = useState<Order>({
     id: null,
-    construction: {
-      id: "",
-      code: "",
-      bankBranch: "",
-      responsible: "",
-      cad: false,
-      isCad: "",
-      upe: "",
-      sap: "",
-      client: "",
-      openingDate: "",
-      closedDate: "",
-      local: "",
-      service: "",
-      userId: "",
-      totalBilled: 0,
-      totalRemas: 0,
-      enabled: false,
-      updatedAt: null,
-      createdAt: null,
-    },
+    centerCostId: "",
+    centerCost: "",
+    bankBranchLocalBank: "",
+    payer: "",
+    typeCenterCost: "",
+    orderTime: "",
     materials: [],
-    orderDate: new Date(),
-    orderDateFormatted: "",
+    orderDate: selectedOrder?.orderDate || "",
+    orderDateFormatted: selectedOrder?.orderTime || "",
     userRequest: "",
     userRequestId: "",
     finish: false,
     updatedAt: null,
     createdAt: null,
   });
-  const [updatedMaterial, setUpdatedMaterial] = useState<Material>({
+  const [updatedMaterial, setUpdatedMaterial] = useState<MaterialOrder>({
     id: "",
     name: "",
     quantity: null,
-    metricUnit: "",
+    unit: "",
     enabled: false,
   });
+  const [updatedOrderDate, setUpdatedOrderDate] = useState<Date | null>(
+    convertStringToDate(selectedOrder?.orderDate || "")
+  );
+  const [updatedOrderTime, setUpdatedOrderTime] = useState<Date | null>(
+    convertStringToDate(selectedOrder?.orderTime || "")
+  );
+  const [invalidDate, setInvalidDate] = useState<boolean>(false);
+
   if (typeof window !== "undefined") {
     name = window.localStorage.getItem("portal.name");
     id = window.localStorage.getItem("portal.id");
   }
   const [newQuantity, setNewQuantity] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const { constructions } = useContext(ConstructionContext);
+  const { allConstructions } = useContext(ConstructionContext);
 
   const toast = useRef<Toast>(null);
 
   const [constructionsItems, setConstructionsItems] =
-    useState<Construction[]>(constructions);
+    useState<Construction[]>(allConstructions);
 
   const { allMaterials, handleGetAllMaterials } = useContext(MaterialContext);
   const [materialsItems, setMaterialsItems] =
@@ -141,8 +138,8 @@ function OrderCompleteInfo() {
   }, []);
 
   useEffect(() => {
-    setConstructionsItems(constructions);
-  }, [constructions]);
+    setConstructionsItems(allConstructions);
+  }, [allConstructions]);
 
   useEffect(() => {
     setMaterialsItems(allMaterials);
@@ -180,14 +177,24 @@ function OrderCompleteInfo() {
       setUpdatedOrder((prevOrder) => ({
         ...prevOrder,
         id: selectedOrder?.id || prevOrder.id,
-        construction: selectedOrder?.construction || prevOrder.construction,
+        centerCostId: selectedOrder?.centerCostId || prevOrder.centerCostId,
+        centerCost: selectedOrder?.centerCost || prevOrder.centerCost,
+        bankBranchLocalBank:
+          selectedOrder?.bankBranchLocalBank || prevOrder.bankBranchLocalBank,
+        payer: selectedOrder?.payer || prevOrder.payer,
+        typeCenterCost:
+          selectedOrder?.typeCenterCost || prevOrder.typeCenterCost,
         materials: selectedOrder?.materials || prevOrder.materials,
         finish: selectedOrder?.finish || prevOrder.finish,
         orderDate: selectedOrder?.orderDate || prevOrder.orderDate,
+        orderTime: selectedOrder?.orderTime || prevOrder.orderTime,
         userRequest: selectedOrder?.userRequest || prevOrder.userRequest,
         userRequestId: selectedOrder?.userRequestId || prevOrder.userRequestId,
       }));
-      setSelectedConstruction(selectedOrder?.construction);
+      setUpdatedOrderDate(convertStringToDate(selectedOrder?.orderDate || ""));
+      setUpdatedOrderTime(
+        convertOrderTimeToDate(selectedOrder?.orderTime || "")
+      );
       setListMaterials(selectedOrder?.materials || []);
     } catch (error) {
       console.error(error);
@@ -200,14 +207,14 @@ function OrderCompleteInfo() {
     setTimeout(() => {
       let _filteredConstructions;
       if (!event.query.trim().length) {
-        _filteredConstructions = [...constructions];
+        _filteredConstructions = [...allConstructions];
       } else {
         _filteredConstructions = constructionsItems.filter((construction) => {
           return construction.code.startsWith(event.query);
         });
       }
       setConstructionsItems(_filteredConstructions);
-    }, 250);
+    }, 150);
   };
 
   const materialSearch = (event: AutoCompleteCompleteEvent) => {
@@ -235,7 +242,7 @@ function OrderCompleteInfo() {
         {
           id: updatedMaterial.id,
           name: updatedMaterial.name,
-          metricUnit: updatedMaterial.metricUnit,
+          unit: updatedMaterial.unit,
           quantity: newQuantity,
           enabled: updatedMaterial.enabled,
         },
@@ -245,7 +252,7 @@ function OrderCompleteInfo() {
         id: "",
         name: "",
         quantity: null,
-        metricUnit: "",
+        unit: "",
         enabled: true,
       });
       setNewQuantity(null);
@@ -254,7 +261,7 @@ function OrderCompleteInfo() {
 
   async function validateFields() {
     setInvalidConstructionCode(
-      !updatedOrder.construction?.code || updatedOrder.construction?.code === ""
+      !updatedOrder.centerCostId || updatedOrder.centerCostId === ""
     );
     setInvalidListMaterials(!listMaterials || listMaterials.length === 0);
     if (!invalidConstructionCode && !invalidListMaterials) {
@@ -266,7 +273,6 @@ function OrderCompleteInfo() {
   const updatedUpdatedOrder = () => {
     setUpdatedOrder((prevOrder) => ({
       ...prevOrder,
-      construction: selectedConstruction || prevOrder.construction,
       materials: listMaterials || prevOrder.materials,
     }));
   };
@@ -297,130 +303,158 @@ function OrderCompleteInfo() {
       <Card className="m-3">
         <section className="flex flex-column gap-2 p-5 w-full">
           <h1 className="m-0">Visualizar Pedido</h1>
-          <div>
+          <div className="card flex flex-column md:flex-row gap-2 w-full">
             <div className="field flex flex-column gap-2 w-full">
               <LabelTitle
                 text="Código da Obra"
                 htmlFor="constructionCode"
                 className="font-semibold"
               />
-              <AutoComplete
-                type="text"
-                field="code"
-                value={selectedConstruction}
-                suggestions={constructionsItems}
-                completeMethod={constructionSearch}
-                onChange={(e: AutoCompleteChangeEvent) => {
-                  setSelectedConstruction(e.value);
-                  setInvalidConstructionCode(false);
-                }}
-                forceSelection
+              <div className="card p-fluid">
+                <AutoComplete
+                  type="text"
+                  field="code"
+                  value={updatedOrder.centerCost}
+                  suggestions={constructionsItems}
+                  completeMethod={constructionSearch}
+                  onChange={(e: AutoCompleteChangeEvent) => {
+                    setSelectedConstruction(e.value);
+                    setInvalidConstructionCode(false);
+                  }}
+                  forceSelection
+                  dropdown
+                />
+                {invalidConstructionCode && (
+                  <Message
+                    severity="error"
+                    text="Obra é obrigatório"
+                    className="smaller-text"
+                  />
+                )}
+              </div>
+            </div>
+            <div className="field flex flex-column gap-2 w-full">
+              <LabelTitle
+                text="Nome da Obra"
+                htmlFor="bankBranchLocalBank"
+                className="font-semibold"
               />
-              {invalidConstructionCode && (
-                <Message
-                  severity="error"
-                  text="Obra é obrigatório"
-                  className="smaller-text"
-                />
-              )}
+              <InputText
+                type="text"
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={updatedOrder.bankBranchLocalBank}
+                disabled
+              />
             </div>
-            <div className="card flex flex-column md:flex-row gap-2 w-full">
-              <div className="field flex flex-column gap-2 w-full">
-                <LabelTitle
-                  text="Cliente"
-                  htmlFor="client"
-                  className="font-semibold"
-                />
-                <InputText
-                  type="text"
-                  value={selectedConstruction?.client}
-                  disabled
-                />
-              </div>
-              <div className="field flex flex-column gap-2 w-full">
-                <LabelTitle
-                  text="Local"
-                  htmlFor="local"
-                  className="font-semibold"
-                />
-                <InputText
-                  type="text"
-                  value={selectedConstruction?.local}
-                  disabled
-                />
-              </div>
-              <div className="field flex flex-column gap-2 w-full">
-                <LabelTitle
-                  text="Agência"
-                  htmlFor="branchBank"
-                  className="font-semibold"
-                />
-                <InputText
-                  type="text"
-                  value={selectedConstruction?.bankBranch}
-                  disabled
-                />
-              </div>
-              <div className="field flex flex-column gap-2 w-full">
-                <LabelTitle
-                  text="Responsável"
-                  htmlFor="responsable"
-                  className="font-semibold"
-                />
-                <InputText
-                  type="text"
-                  value={selectedConstruction?.responsible}
-                  disabled
-                />
-              </div>
-            </div>
-            <Card>
-              <h3>Cadastrar Materiais</h3>
-              <Toolbar className="mb-2" end={rightToolbarTemplate}></Toolbar>
-              <DataTable
-                emptyMessage="Nenhum material adicionado"
-                value={listMaterials}
-                rows={10}
-                selection={selectedMaterials}
-                onSelectionChange={(e) => {
-                  if (Array.isArray(e.value)) {
-                    setSelectedMaterials(e.value);
-                  }
-                  console.log(selectedMaterials);
-                }}
-                dataKey="id"
-                paginator
-                selectionMode="multiple"
-              >
-                <Column selectionMode="multiple" exportable={false}></Column>
-                <Column
-                  field="name"
-                  header="Nome"
-                  sortable
-                  style={{ minWidth: "12rem" }}
-                ></Column>
-                <Column
-                  field="quantity"
-                  header="Quantidade"
-                  sortable
-                  style={{ minWidth: "12rem" }}
-                ></Column>
-                <Column
-                  field="metricUnit"
-                  header="Unidade Métrica"
-                  sortable
-                  style={{ minWidth: "12rem" }}
-                ></Column>
-              </DataTable>
-              {invalidListMaterials && (
-                <Message
-                  severity="error"
-                  text="Pelo menos um material é obrigatório"
-                  className="smaller-text"
-                />
-              )}
-            </Card>
           </div>
+
+          <div className="card flex flex-column md:flex-row gap-2 w-full">
+            <div className="field flex flex-column gap-2 w-full">
+              <LabelTitle
+                text="Data"
+                htmlFor="orderDate"
+                className="font-semibold"
+              />
+              <Calendar
+                id="buttondisplay"
+                onChange={(e) => {
+                  setUpdatedOrderDate(e.value || null);
+                  setInvalidDate(false);
+                }}
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={updatedOrderDate}
+                locale="pt"
+                className="ui-state-default"
+                dateFormat="dd/mm/yy"
+                showIcon
+              />
+              {invalidDate && (
+                <Message
+                  severity="error"
+                  text="Data do Pedido é obrigatório"
+                  className="smaller-text"
+                />
+              )}
+            </div>
+            <div className="field flex flex-column gap-2 w-full">
+              <LabelTitle
+                text="Hora"
+                htmlFor="requestTime"
+                className="font-semibold"
+              />
+              <Calendar
+                id="buttondisplay"
+                onChange={(e) => {
+                  setUpdatedOrderTime(e.value || null);
+                }}
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={updatedOrderTime}
+                className="ui-state-default"
+                icon={() => <i className="pi pi-clock" />}
+                timeOnly
+                showIcon
+              />
+            </div>
+            <div className="field flex flex-column gap-2 w-full">
+              <LabelTitle
+                text="Solicitante"
+                htmlFor="userRequest"
+                className="font-semibold"
+              />
+              <InputText
+                type="text"
+                value={updatedOrder?.userRequest}
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                disabled
+              />
+            </div>
+          </div>
+          <Card>
+            <h3>Cadastrar Materiais</h3>
+            <Toolbar className="mb-2" end={rightToolbarTemplate}></Toolbar>
+            <DataTable
+              emptyMessage="Nenhum material adicionado"
+              value={listMaterials}
+              rows={10}
+              selection={selectedMaterials}
+              onSelectionChange={(e) => {
+                if (Array.isArray(e.value)) {
+                  setSelectedMaterials(e.value);
+                }
+                console.log(selectedMaterials);
+              }}
+              dataKey="id"
+              paginator
+              selectionMode="multiple"
+            >
+              <Column selectionMode="multiple" exportable={false}></Column>
+              <Column
+                field="name"
+                header="Nome"
+                sortable
+                style={{ minWidth: "12rem" }}
+              ></Column>
+              <Column
+                field="quantity"
+                header="Quantidade"
+                sortable
+                style={{ minWidth: "12rem" }}
+              ></Column>
+              <Column
+                field="unit"
+                header="Unidade"
+                sortable
+                style={{ minWidth: "12rem" }}
+              ></Column>
+            </DataTable>
+            {invalidListMaterials && (
+              <Message
+                severity="error"
+                text="Pelo menos um material é obrigatório"
+                className="smaller-text"
+              />
+            )}
+          </Card>
           <div
             className="flex justify-end gap-6 w-full"
             style={{ justifyContent: "end" }}
@@ -469,6 +503,7 @@ function OrderCompleteInfo() {
                 setUpdatedMaterial(e.value);
               }}
               forceSelection
+              dropdown
             />
           </div>
           <div className="field gap-10">
@@ -492,7 +527,7 @@ function OrderCompleteInfo() {
             </div>
             <div className="field flex flex-column gap-2">
               <LabelTitle
-                text="Unidade Métrica"
+                text="Unidade"
                 htmlFor="metricUnit"
                 className="font-semibold"
                 required={true}
@@ -502,10 +537,10 @@ function OrderCompleteInfo() {
                 onChange={(e) => {
                   setUpdatedMaterial({
                     ...updatedMaterial,
-                    metricUnit: e.target.value,
+                    unit: e.target.value,
                   });
                 }}
-                value={updatedMaterial?.metricUnit}
+                value={updatedMaterial?.unit}
                 disabled
               />
             </div>

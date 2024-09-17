@@ -8,7 +8,7 @@ const api = getAPIClient();
 export async function getOrders({
   page,
   size,
-  constructionCode,
+  centerCostId,
   finish,
   orderDate,
 }: OrderPaginationParam) {
@@ -16,7 +16,7 @@ export async function getOrders({
     params: {
       page,
       size,
-      constructionCode,
+      centerCostId,
       finish,
       orderDate,
     },

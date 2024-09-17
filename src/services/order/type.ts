@@ -1,32 +1,42 @@
-import { Construction, ConstructionDTO } from "../construction/type";
-import { Material, MaterialDTO } from "../material/type";
+import { MaterialOrder, MaterialOrderDTO } from "../material/type";
 
 export type Order = {
   id: string | null;
-  materials: Material[];
-  construction: Construction;
+  materials: MaterialOrder[];
+  centerCost: string;
+  centerCostId: string;
+  bankBranchLocalBank: string;
+  payer: string;
+  typeCenterCost: string;
+
   userRequestId: string;
   userRequest: string;
   finish: boolean;
-  orderDate: Date;
+  orderDate: string;
+  orderTime: string;
   orderDateFormatted: string;
   createdAt: Date | null;
   updatedAt: Date | null;
 };
 
 export type OrderDTO = {
-  construction: ConstructionDTO | undefined;
-  materials: MaterialDTO[];
+  centerCost: string;
+  centerCostId: string;
+  bankBranchLocalBank: string;
+  payer: string;
+  typeCenterCost: string;
+  materials: MaterialOrderDTO[];
   userRequestId: string;
   finish: boolean;
   userRequest: string;
-  orderDate: Date;
+  orderDate: string;
+  orderTime: string;
 };
 
 export type OrderPaginationParam = {
   size: number;
   page: number;
-  constructionCode: string;
+  centerCostId: string;
   orderDate: Date | null;
   finish: boolean;
 };
