@@ -323,6 +323,7 @@ function OrderCompleteInfo() {
                   }}
                   forceSelection
                   dropdown
+                  style={{ height: "30px", fontSize: "0.8rem" }}
                 />
                 {invalidConstructionCode && (
                   <Message

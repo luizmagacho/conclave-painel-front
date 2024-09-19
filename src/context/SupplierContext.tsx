@@ -1,6 +1,7 @@
 import {
   deleteSupplier,
   getAllSuppliers,
+  getAllSuppliersShortenedName,
   getSupplierById,
   getSuppliers,
   postSupplier,
@@ -20,6 +21,7 @@ interface SupplierContextProps {
   suppliers: Supplier[];
   selectedSupplier: Supplier | null;
   allSuppliers: Supplier[];
+  allSuppliersShortenedName: string[];
   loading: boolean;
   totalElements: number;
   postStatus: number;
@@ -31,6 +33,7 @@ interface SupplierContextProps {
     type?: string
   ) => Promise<void>;
   handleGetAllSuppliers: () => Promise<void>;
+  handleGetAllShortenedName: () => Promise<void>;
   handlePostSupplier: (supplier: SupplierDTO) => Promise<number | null>;
   handleGetSupplierById: (supplierId: string) => Promise<void>;
   handleUpdateSupplier: (supplier: Supplier) => Promise<void>;
@@ -46,6 +49,9 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
   const [existsCpf, setExistsCpf] = useState<boolean>(false);
   const [existsCnpj, setExistsCnpj] = useState<boolean>(false);
   const [allSuppliers, setAllSuplliers] = useState<Supplier[]>([]);
+  const [allSuppliersShortenedName, setAllSuplliersShortenedName] = useState<
+    string[]
+  >([]);
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
     null
   );
@@ -84,6 +90,17 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
     setLoading(true);
     try {
       setAllSuplliers(await getAllSuppliers());
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleGetAllShortenedName() {
+    setLoading(true);
+    try {
+      setAllSuplliersShortenedName(await getAllSuppliersShortenedName());
     } catch (error) {
       console.error(error);
     } finally {
@@ -170,6 +187,7 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
       value={{
         suppliers,
         allSuppliers,
+        allSuppliersShortenedName,
         selectedSupplier,
         loading,
         totalElements,
@@ -178,6 +196,7 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
         existsCnpj,
         handleGetSuppliers,
         handleGetAllSuppliers,
+        handleGetAllShortenedName,
         handleGetSupplierById,
         handlePostSupplier,
         handleUpdateSupplier,
