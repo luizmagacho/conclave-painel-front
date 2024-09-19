@@ -23,7 +23,9 @@ function PurchaseDeleteDialog({
       className="w-25rem"
     >
       <div className="card flex justify-content-center">
-        <h4>Tem certeza que deseja exluir a compra {data.material} ?</h4>
+        <h4>
+          Tem certeza que deseja excluir a compra para obra {data.centerCost} ?
+        </h4>
       </div>
       <div className="flex gap-2">
         <Button className="w-full" label="Cancelar" outlined onClick={onHide} />

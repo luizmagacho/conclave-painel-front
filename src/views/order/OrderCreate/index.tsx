@@ -199,7 +199,7 @@ function OrderCreate() {
   };
 
   function validateFieldsMaterial() {
-    setInvalidName(!newMaterial.name || updateMaterial.name === "");
+    setInvalidName(!newMaterial.name || newMaterial.name === "");
     setInvalidQuantity(!newQuantity);
 
     if (!invalidName && !invalidQuantity) {
@@ -494,6 +494,7 @@ function OrderCreate() {
               }}
               dropdown
               forceSelection
+              style={{ height: "30px", fontSize: "0.8rem" }}
             />
           </div>
           <div className="field gap-2">

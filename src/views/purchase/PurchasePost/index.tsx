@@ -11,6 +11,7 @@ import {
   SupplierPurchaseDTO,
 } from "@/services/purchase/type";
 import { formatDateToYYYYMMDD } from "@/util/date";
+import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import {
   AutoComplete,
@@ -31,12 +32,7 @@ import React, { useContext, useEffect, useState } from "react";
 
 function PurchasePost() {
   const router = useRouter();
-  let name;
-  let id;
-  if (typeof window !== "undefined") {
-    name = window.localStorage.getItem("portal.name");
-    id = window.localStorage.getItem("portal.id");
-  }
+
   const [newPurchase, setNewPurchase] = useState<PurchaseDTO>({
     material: [],
     centerCost: "",
@@ -44,7 +40,7 @@ function PurchasePost() {
     purchaseDate: "",
     requestedDate: "",
     type: "",
-    userId: localStorage.getItem("portal.id") as string,
+    userId: Cookies.get("portal.id") as string,
     enabled: true,
   });
 
