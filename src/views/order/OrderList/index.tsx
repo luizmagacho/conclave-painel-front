@@ -160,27 +160,10 @@ function OrderList() {
                 filterPlaceholder="Buscar por Data"
                 className="smaller-text"
               />
-              <Column
-                field="construction.code"
-                header="Obra"
-                filter
-                filterPlaceholder="Buscar por Obra"
-                className="smaller-text"
-              />
-              <Column
-                field="construction.bankBranch"
-                header="Código da Agência"
-                filter
-                filterPlaceholder="Buscar por Código"
-                className="smaller-text"
-              />
-              <Column
-                field="construction.local"
-                header="Local da Agência"
-                filter
-                filterPlaceholder="Buscar por Local"
-                className="smaller-text"
-              />
+              <Column field="orderTime" header="Hora" filter />
+              <Column field="centerCost" header="Obra" />
+
+              <Column field="bankBranchLocalBank" header="Agência" />
               <Column
                 field="userRequest"
                 header="Solicitante"
@@ -208,11 +191,7 @@ function OrderList() {
               loading={loading}
               stripedRows
               showGridlines
-              globalFilterFields={[
-                "orderDate",
-                "construction.bankBranch",
-                "construction.local",
-              ]}
+              globalFilterFields={["orderDate", "bankBranchLocalBank"]}
               rows={10}
               totalRecords={totalElementsFinished}
               tableStyle={{ minWidth: "50rem" }}
@@ -220,23 +199,13 @@ function OrderList() {
               className="smaller-text"
             >
               <Column
-                field="orderDate"
-                header="Data Abertura"
+                field="orderDateFormatted"
+                header="Data"
                 filter
                 filterPlaceholder="Buscar por Data"
               />
-              <Column
-                field="construction.bankBranch"
-                header="Código da Agência"
-                filter
-                filterPlaceholder="Buscar por Código"
-              />
-              <Column
-                field="construction.local"
-                header="Local da Agência"
-                filter
-                filterPlaceholder="Buscar por Local"
-              />
+              <Column field="orderTime" header="Hora" filter />
+              <Column field="bankBranchLocalBank" header="Agência" />
               <Column
                 field="userRequest"
                 header="Solicitante"

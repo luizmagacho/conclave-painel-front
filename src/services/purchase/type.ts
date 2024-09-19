@@ -7,10 +7,7 @@ export type Purchase = {
   requestedDate: string;
   requestedDateFormatted: string;
   type: string;
-  material: string;
-  quantity: number;
-  unitValue: number;
-  totalValue: number;
+  material: MaterialPurchase[];
 
   userId: string;
   enabled: boolean;
@@ -25,13 +22,40 @@ export type PurchaseDTO = {
   purchaseDate: string;
   requestedDate: string;
   type: string;
-  material: string;
-  quantity: number | null;
-  unitValue: number | null;
-  totalValue: number | null;
+  material: MaterialPurchaseDTO[];
 
   userId: string;
   enabled?: boolean;
+};
+
+export type MaterialPurchase = {
+  id: string;
+  name: number | null;
+  quantity: string;
+  unit: string;
+  supplierPurchase: SupplierPurchase[];
+};
+
+export type MaterialPurchaseDTO = {
+  name: string;
+  quantity: number | null;
+  unit: string;
+  supplierPurchase: SupplierPurchaseDTO[];
+};
+
+export type SupplierPurchase = {
+  id: string;
+  shortenedName: string;
+
+  unitValue: number;
+  totalValue: number;
+};
+
+export type SupplierPurchaseDTO = {
+  shortenedName: string;
+
+  unitValue: number | null;
+  totalValue: number | null;
 };
 
 export type PurchasePaginationParam = {

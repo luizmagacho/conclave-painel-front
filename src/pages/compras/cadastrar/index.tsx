@@ -1,4 +1,5 @@
 import { AuthProvider } from "@/context/AuthContext";
+import { ConstructionProvider } from "@/context/ConstructionContext";
 import { MaterialProvider } from "@/context/MaterialContext";
 import { PurchaseProvider } from "@/context/PurchaseContext";
 import { SupplierProvider } from "@/context/SupplierContext";
@@ -9,13 +10,15 @@ export default function PostPurchase(): JSX.Element {
   return (
     <DefaultLayout>
       <AuthProvider>
-        <MaterialProvider>
-          <SupplierProvider>
-            <PurchaseProvider>
-              <PurchasePost />
-            </PurchaseProvider>
-          </SupplierProvider>
-        </MaterialProvider>
+        <ConstructionProvider>
+          <MaterialProvider>
+            <SupplierProvider>
+              <PurchaseProvider>
+                <PurchasePost />
+              </PurchaseProvider>
+            </SupplierProvider>
+          </MaterialProvider>
+        </ConstructionProvider>
       </AuthProvider>
     </DefaultLayout>
   );

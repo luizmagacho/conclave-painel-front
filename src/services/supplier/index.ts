@@ -43,6 +43,11 @@ export async function getAllSuppliers() {
   return res.data;
 }
 
+export async function getAllSuppliersShortenedName() {
+  let res = await api.get<string[]>(`${baseUrl}/all-shortened-name`);
+  return res.data;
+}
+
 export async function deleteSupplier(supplierId: string) {
   let res = await api.delete(`${baseUrl}/${supplierId}`);
   return res.status;
