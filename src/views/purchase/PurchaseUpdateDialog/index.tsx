@@ -38,9 +38,6 @@ function PurchaseUpdateDialog({
     purchaseDateFormatted: data.purchaseDateFormatted,
     requestedDate: data.requestedDate,
     requestedDateFormatted: data.requestedDateFormatted,
-    unitValue: data.unitValue,
-    quantity: data.quantity,
-    totalValue: data.totalValue,
     type: data.type,
     userId: data.userId,
     enabled: data.enabled,
@@ -98,15 +95,6 @@ function PurchaseUpdateDialog({
     setInvalidCenterCost(
       !updatedPurchase.centerCost || updatedPurchase.centerCost === ""
     );
-    setInvalidMaterial(
-      !updatedPurchase.quantity || updatedPurchase.material === ""
-    );
-    setInvalidQuantity(
-      !updatedPurchase.unitValue || updatedPurchase.quantity === null
-    );
-    setInvalidUnitValue(
-      !updatedPurchase.unitValue || updatedPurchase.unitValue === null
-    );
     setInvalidPurchaseDate(!updatedPurchaseDate);
     setInvalidRequestDate(!updatedRequestDate);
     setInvalidCenterCost(
@@ -151,19 +139,6 @@ function PurchaseUpdateDialog({
       setConstructionsItems(_filteredConstructions);
     }, 150);
   };
-
-  useEffect(() => {
-    if (
-      updatedPurchase.unitValue &&
-      updatedPurchase.unitValue !== null &&
-      updatedPurchase.quantity
-    ) {
-      setUpdatedPurchase({
-        ...updatedPurchase,
-        totalValue: updatedPurchase.quantity * updatedPurchase.unitValue,
-      });
-    }
-  }, [updatedPurchase.unitValue, updatedPurchase.quantity]);
 
   useEffect(() => {
     setUpdatedPurchase((prevPurchase) => ({
@@ -238,32 +213,6 @@ function PurchaseUpdateDialog({
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Material"
-            htmlFor="material"
-            className="font-semibold"
-          />
-          <InputText
-            type="text"
-            onChange={(e) => {
-              setUpdatedPurchase({
-                ...updatedPurchase,
-                material: e.target.value,
-              });
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedPurchase?.material}
-          />
-          {invalidMaterial && (
-            <Message
-              severity="error"
-              text="Material é obrigatório"
-              className="smaller-text"
-            />
-          )}
-        </div>
-
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
             text="Código da Obra"
             htmlFor="centerCost"
             className="font-semibold"
@@ -291,77 +240,8 @@ function PurchaseUpdateDialog({
           </div>
         </div>
       </div>
-      <div className="card flex flex-column md:flex-row gap-3 w-11/12">
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Valor Unitário"
-            htmlFor="unitValue"
-            className="font-semibold text-sm"
-            required={true}
-          />
-          <InputNumber
-            inputId="currency-br"
-            mode="currency"
-            locale="pt-BR"
-            currency="BRL"
-            onChange={(e) => {
-              if (e.value) {
-                setUpdatedPurchase({
-                  ...updatedPurchase,
-                  unitValue: e.value * 100,
-                });
-              }
-              setInvalidUnitValue(false);
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={formatCurrency(updatedPurchase?.unitValue)}
-          />
-          {invalidUnitValue && (
-            <Message severity="error" text="Valor Unitário é obrigatório" />
-          )}
-        </div>
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Quantidade"
-            htmlFor="quantity"
-            className="font-semibold text-sm"
-            required={true}
-          />
-          <InputNumber
-            onChange={(e) => {
-              if (e.value) {
-                setUpdatedPurchase({
-                  ...updatedPurchase,
-                  quantity: e.value,
-                });
-              }
-              setInvalidQuantity(false);
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedPurchase?.quantity}
-          />
-          {invalidQuantity && (
-            <Message severity="error" text="Quantidade é obrigatório" />
-          )}
-        </div>
-      </div>
-      <div className="card flex flex-column md:flex-row gap-3 w-11/12">
-        <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle
-            text="Valor Total"
-            htmlFor="totalValue"
-            className="font-semibold text-sm"
-          />
-          <InputNumber
-            inputId="currency-br"
-            mode="currency"
-            locale="pt-BR"
-            currency="BRL"
-            value={formatCurrency(updatedPurchase?.totalValue)}
-            disabled={true}
-          />
-        </div>
-      </div>
+      <div className="card flex flex-column md:flex-row gap-3 w-11/12"></div>
+      <div className="card flex flex-column md:flex-row gap-3 w-11/12"></div>
       <div className="flex gap-2">
         <Button className="w-full" label="Cancelar" outlined onClick={onHide} />
         <Button

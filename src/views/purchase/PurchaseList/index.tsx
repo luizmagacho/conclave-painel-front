@@ -81,14 +81,6 @@ function PurchaseList() {
     });
   };
 
-  const priceUnitValuewBodyTemplate = (purchase: Purchase) => {
-    return formatCurrency(purchase.unitValue || null);
-  };
-
-  const priceTotalValuewBodyTemplate = (purchase: Purchase) => {
-    return formatCurrency(purchase.totalValue || null);
-  };
-
   async function onDeletePurchase(purchaseId: string) {
     await handleDeletePurchase(purchaseId);
     handleGetPurchases();
@@ -139,21 +131,9 @@ function PurchaseList() {
           className="smaller-text"
         >
           <Column field="centerCost" header="Obra" />
-          <Column field="purchaseDateFormatted" header="Data da Compra" />
-          <Column field="requestedDateFormatted" header="Data do Pedido" />
+          <Column field="requestedDateFormatted" header="Data" />
+          <Column field="requestTime" header="HOra" />
           <Column field="material" header="Material" />
-          <Column
-            field="unitValue"
-            body={priceUnitValuewBodyTemplate}
-            header="Valor da Unidade"
-          />
-          <Column field="quantity" header="Quantidade" />
-
-          <Column
-            field="totalValue"
-            body={priceTotalValuewBodyTemplate}
-            header="Valor Total"
-          />
           <Column header="Opções" body={columnBodyOptions.options} />
         </DataTable>
       </section>
