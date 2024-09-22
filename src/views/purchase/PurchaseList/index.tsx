@@ -6,8 +6,6 @@ import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useContext, useState } from "react";
-import PurchaseCreateDialog from "../PurchasePost";
-import PurchaseUpdateDialog from "../PurchaseUpdateDialog";
 import PurchaseDeleteDialog from "../PurchaseDeleteDialog";
 
 interface Options {
@@ -38,6 +36,7 @@ function PurchaseList() {
     loading,
     totalElements,
     handleGetPurchases,
+    handleGetPurchaseById,
     handleUpdatePurchase,
     handleDeletePurchase,
   } = useContext(PurchaseContext);
@@ -61,9 +60,9 @@ function PurchaseList() {
     options: (purchase: Purchase) => optionsBodyTemplate(options, purchase),
   };
 
-  function openDialog(purchase: Purchase) {
-    setCurrPurchase(purchase);
-    setShowDialog(true);
+  async function openDialog(purchase: Purchase) {
+    await handleGetPurchaseById(purchase.id);
+    router.push(`/compras/${purchase.id}`);
   }
 
   function openDeleteDialog(purchase: Purchase) {
@@ -132,19 +131,11 @@ function PurchaseList() {
         >
           <Column field="centerCost" header="Obra" />
           <Column field="requestedDateFormatted" header="Data" />
-          <Column field="requestTime" header="HOra" />
+          <Column field="requestedTimeFormatted" header="Hora" />
           <Column field="material" header="Material" />
           <Column header="Opções" body={columnBodyOptions.options} />
         </DataTable>
       </section>
-      {currPurchase && (
-        <PurchaseUpdateDialog
-          onUpdate={onUpdatePurchase}
-          onHide={closeUpdatedDialog}
-          data={currPurchase}
-          visible={showDialog}
-        />
-      )}
       {currDeletePurchase && (
         <PurchaseDeleteDialog
           onDelete={onDeletePurchase}

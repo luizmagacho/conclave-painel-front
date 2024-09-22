@@ -21,6 +21,11 @@ export async function postPurchase(purchase: PurchaseDTO) {
   return res.status;
 }
 
+export async function getPurchaseById(purchaseId: string) {
+  let res = await api.get<Purchase>(`${baseUrl}/${purchaseId}`);
+  return res.data;
+}
+
 export async function updatePurchase(purchase: Purchase) {
   let res = await api.put(baseUrl, purchase);
   return res.status;
