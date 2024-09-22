@@ -5,17 +5,8 @@ export function convertStringToDate(dateString: string): Date | null {
     return null; // Retorna null se a string estiver vazia
   }
 
-  const dateParts = dateString.split("-");
-
-  if (dateParts.length !== 3) {
-    return null; // Retorna null se o formato estiver incorreto
-  }
-
-  const year = parseInt(dateParts[0]);
-  const month = parseInt(dateParts[1]) - 1;
-  const day = parseInt(dateParts[2]);
-
-  const date = new Date(year, month, day);
+  // O construtor Date já entende o formato ISO 8601
+  const date = new Date(dateString);
 
   if (isNaN(date.getTime())) {
     return null; // Retorna null se a data for inválida
@@ -65,7 +56,50 @@ export function formatDateToHHMM(date: Date | null): string | null {
 
   const hours = String(date.getHours()).padStart(2, "0");
   const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  console.log("Olha ahora:: ", `${hours}:${minutes}`);
   return `${hours}:${minutes}`;
+}
+
+export function parseHHMMToDate(timeString: string): Date | null {
+  if (!timeString) {
+    return null; // Return null if the time string is empty or undefined
+  }
+
+  const [hours, minutes] = timeString.split(":");
+
+  if (
+    hours === undefined ||
+    minutes === undefined ||
+    hours.length !== 2 ||
+    minutes.length !== 2
+  ) {
+    return null; // Invalid time format
+  }
+
+  const parsedHours = parseInt(hours, 10);
+  const parsedMinutes = parseInt(minutes, 10);
+
+  if (
+    isNaN(parsedHours) ||
+    isNaN(parsedMinutes) ||
+    parsedHours < 0 ||
+    parsedHours > 23 ||
+    parsedMinutes < 0 ||
+    parsedMinutes > 59
+  ) {
+    return null; // Invalid hour or minute values
+  }
+
+  const date = new Date();
+  date.setHours(parsedHours);
+  date.setMinutes(parsedMinutes);
+  date.setSeconds(0);
+  date.setMilliseconds(0);
+
+  console.log("Opa:: ", date);
+
+  return date;
 }
 
 export const localeBR = addLocale("pt", {

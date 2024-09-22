@@ -56,7 +56,8 @@ function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
     setInvalidName(!newTool.name || newTool.name === "");
     setInvalidNewDateLoanFrom(!newDateLoanFrom);
     setInvalidResponsible(!newTool.responsible || newTool.responsible === "");
-
+    if (newDateLoanFrom && newDateLoanTo)
+      setInvalidNewDateLoanFrom(newDateLoanTo < newDateLoanFrom);
     if (!invalidNewDateLoanFrom && !invalidName && !invalidResponsible) {
       onCreate(newTool);
       onHide();

@@ -1,5 +1,6 @@
 import {
   deletePurchase,
+  getPurchaseById,
   getPurchases,
   postPurchase,
   updatePurchase,
@@ -14,10 +15,12 @@ interface ProviderProps {
 
 interface PurchaseContextProps {
   purchases: Purchase[];
+  selectedPurchase: Purchase | null;
   loading: boolean;
   totalElements: number;
   handleGetPurchases: (page?: number) => Promise<void>;
   handlePostPurchase: (purchase: PurchaseDTO) => Promise<void>;
+  handleGetPurchaseById: (purchaseId: string) => Promise<void>;
   handleUpdatePurchase: (purchase: Purchase) => void;
   handleDeletePurchase: (purchaseId: string) => Promise<void>;
 }
@@ -26,6 +29,9 @@ export const PurchaseContext = createContext({} as PurchaseContextProps);
 
 export const PurchaseProvider = ({ children }: ProviderProps) => {
   const [purchases, setPurchases] = useState<Purchase[]>([]);
+  const [selectedPurchase, setSelectedPurchase] = useState<Purchase | null>(
+    null
+  );
   const [bufferedPurchases, setBufferedPurchases] = useState<Purchase[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -53,6 +59,18 @@ export const PurchaseProvider = ({ children }: ProviderProps) => {
 
     try {
       const resp = await postPurchase(purchase);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleGetPurchaseById(purchaseId: string) {
+    setLoading(true);
+    try {
+      const purchase = await getPurchaseById(purchaseId);
+      await setSelectedPurchase(purchase);
     } catch (error) {
       console.error(error);
     } finally {
@@ -91,10 +109,12 @@ export const PurchaseProvider = ({ children }: ProviderProps) => {
     <PurchaseContext.Provider
       value={{
         purchases,
+        selectedPurchase,
         loading,
         totalElements,
         handleGetPurchases,
         handlePostPurchase,
+        handleGetPurchaseById,
         handleUpdatePurchase,
         handleDeletePurchase,
       }}

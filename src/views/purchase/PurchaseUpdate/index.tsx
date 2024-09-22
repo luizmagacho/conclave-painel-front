@@ -6,14 +6,18 @@ import { SupplierContext } from "@/context/SupplierContext";
 import { Construction } from "@/services/construction/type";
 import { Material } from "@/services/material/type";
 import {
+  MaterialPurchase,
   MaterialPurchaseDTO,
+  Purchase,
   PurchaseDTO,
+  SupplierPurchase,
   SupplierPurchaseDTO,
 } from "@/services/purchase/type";
 import {
-  convertOrderTimeToDate,
+  convertStringToDate,
   formatDateToHHMM,
   formatDateToYYYYMMDD,
+  parseHHMMToDate,
 } from "@/util/date";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
@@ -34,29 +38,37 @@ import { Message } from "primereact/message";
 import { Toolbar } from "primereact/toolbar";
 import React, { useContext, useEffect, useState } from "react";
 
-function PurchasePost() {
+function PurchaseUpdate() {
   const router = useRouter();
-
-  const [newPurchase, setNewPurchase] = useState<PurchaseDTO>({
+  const role = Cookies.get("portal.role");
+  const { handleUpdatePurchase, handleGetPurchaseById, selectedPurchase } =
+    useContext(PurchaseContext);
+  const [updatedPurchase, setUpdatedPurchase] = useState<Purchase>({
+    id: selectedPurchase?.id || "",
     material: [],
     centerCost: "",
     centerCostId: "",
-    requestedDate: "",
-    requestedTime: "",
+    requestedDate: selectedPurchase?.requestedDate || "",
+    requestedDateFormatted: "",
+    requestedTime: selectedPurchase?.requestedTime || "",
+    requestedTimeFormatted: "",
     type: "",
     userId: Cookies.get("portal.id") as string,
     enabled: true,
+    updatedAt: selectedPurchase?.updatedAt || null,
+    createdAt: selectedPurchase?.createdAt || null,
   });
 
   const [listMaterialsPurchase, setListMaterialsPurchase] = useState<
-    MaterialPurchaseDTO[]
+    MaterialPurchase[]
   >([]);
   const [selectedMaterialsPurchase, setSelectedMaterialsPurchase] = useState<
-    MaterialPurchaseDTO[]
+    MaterialPurchase[]
   >([]);
 
   const [selectedSupplierPurchase, setSelectedSupplierPurchase] =
-    useState<SupplierPurchaseDTO>({
+    useState<SupplierPurchase>({
+      id: "",
       shortenedName: "",
       unitValue: null,
       totalValue: null,
@@ -68,10 +80,14 @@ function PurchasePost() {
   const [showAddMaterial, setShowAddMaterial] = useState<boolean>(false);
   const [deleteMaterialsDialog, setDeleteMaterialsDialog] =
     useState<boolean>(false);
-  const [newQuantity, setNewQuantity] = useState<number | null>(null);
+  const [updatedQuantity, setUpdatedQuantity] = useState<number | null>(null);
 
-  const [newRequestDate, setNewRequestDate] = useState<Date | null>(null);
-  const [newRequestTime, setNewRequestTime] = useState<Date | null>(null);
+  const [updatedRequestDate, setUpdatedRequestDate] = useState<Date | null>(
+    convertStringToDate(selectedPurchase?.requestedDate || "")
+  );
+  const [updatedRequestTime, setUpdatedRequestTime] = useState<Date | null>(
+    convertStringToDate(selectedPurchase?.requestedTime || "")
+  );
   const [invalidRequestDate, setInvalidRequestDate] = useState<boolean>(false);
   const [invalidRequestTime, setInvalidRequestTime] = useState<boolean>(false);
   const [invalidMaterial, setInvalidMaterial] = useState<boolean>(false);
@@ -82,36 +98,34 @@ function PurchasePost() {
   const [invalidUnitValue, setInvalidUnitValue] = useState<boolean>(false);
   const [invalidConstructionCode, setInvalidConstructionCode] =
     useState<boolean>(false);
-
-  const { handlePostPurchase } = useContext(PurchaseContext);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log("TEste");
-    setNewPurchase((prevPurchase) => ({
+    setUpdatedPurchase((prevPurchase) => ({
       ...prevPurchase,
       requestedTime:
-        formatDateToHHMM(newRequestTime) || prevPurchase.requestedTime,
+        formatDateToYYYYMMDD(updatedRequestTime) || prevPurchase.requestedTime,
       requestedDate:
-        formatDateToYYYYMMDD(newRequestDate) || prevPurchase.requestedDate,
+        formatDateToYYYYMMDD(updatedRequestDate) || prevPurchase.requestedDate,
       userId:
         (localStorage.getItem("portal.id") as string) || prevPurchase.userId,
     }));
-  }, [newRequestTime, newRequestDate]);
+  }, [updatedRequestTime, updatedRequestDate]);
 
   async function validateFields() {
-    setNewPurchase({
-      ...newPurchase,
+    setUpdatedPurchase({
+      ...updatedPurchase,
       centerCost: selectedConstruction?.code || "",
       centerCostId: selectedConstruction?.id || "",
     });
     setInvalidConstructionCode(
-      !newPurchase.centerCost || newPurchase.centerCost === ""
+      !updatedPurchase.centerCost || updatedPurchase.centerCost === ""
     );
     setInvalidMaterial(
-      !newPurchase.material || newPurchase.material.length <= 0
+      !updatedPurchase.material || updatedPurchase.material.length <= 0
     );
-    setInvalidRequestDate(!newRequestDate);
-    setInvalidRequestTime(!newRequestTime);
+    setInvalidRequestDate(!updatedRequestDate);
+    setInvalidRequestTime(!updatedRequestTime);
 
     if (
       !invalidConstructionCode &&
@@ -119,11 +133,12 @@ function PurchasePost() {
       !invalidRequestTime &&
       !invalidRequestDate
     ) {
-      console.log("New Purchase: ", newPurchase);
-      await handlePostPurchase(newPurchase);
+      await handleUpdatePurchase(updatedPurchase);
       router.back();
     }
   }
+
+  useEffect(() => {}, []);
 
   const formatCurrency = (value: number | null) => {
     if (value) {
@@ -179,22 +194,23 @@ function PurchasePost() {
   };
 
   useEffect(() => {
-    setNewPurchase((prevPurchase) => ({
+    setUpdatedPurchase((prevPurchase) => ({
       ...prevPurchase,
       centerCost: selectedConstruction?.code || prevPurchase.centerCost,
       centerCostId: selectedConstruction?.id || prevPurchase.centerCostId,
     }));
   }, [selectedConstruction]);
 
-  const [newMaterialPurchase, setNewMaterialPurchase] =
-    useState<MaterialPurchaseDTO>({
+  const [updatedMaterialPurchase, setUpdatedMaterialPurchase] =
+    useState<MaterialPurchase>({
+      id: "",
       name: "",
       quantity: null,
       unit: "",
       supplierPurchase: [],
     });
-  const [newSupplierPurchase, setNewSupplierPurchase] = useState<
-    SupplierPurchaseDTO[]
+  const [updatedSupplierPurchase, setUpdatedSupplierPurchase] = useState<
+    SupplierPurchase[]
   >([]);
   const rightToolbarTemplate = () => {
     return (
@@ -206,8 +222,8 @@ function PurchasePost() {
             console.log(materialsItems);
             if (!materialsItems) alert("Cadastre materiais");
             setShowAddMaterial(true);
-            setNewSupplierPurchase([]);
-            setNewQuantity(null);
+            setUpdatedSupplierPurchase([]);
+            setUpdatedQuantity(null);
             setInvalidSupplierPurchase(false);
             setInvalidUnitValue(false);
           }}
@@ -235,46 +251,46 @@ function PurchasePost() {
     setInvalidName(false);
     setInvalidQuantity(false);
     setInvalidSupplierPurchase(false);
-    setNewMaterialPurchase({
+    setUpdatedMaterialPurchase({
+      id: "",
       name: "",
       quantity: null,
       unit: "",
       supplierPurchase: [],
     });
-    setNewQuantity(null);
+    setUpdatedQuantity(null);
     setSelectedSupplierPurchase({
+      id: "",
       shortenedName: "",
       unitValue: null,
       totalValue: null,
     });
-    setNewSupplierPurchase([]);
+    setUpdatedSupplierPurchase([]);
   };
 
   function validateFieldsMaterial() {
     setInvalidName(
-      !newMaterialPurchase.name || newMaterialPurchase.name === ""
+      !updatedMaterialPurchase.name || updatedMaterialPurchase.name === ""
     );
-    setInvalidQuantity(!newQuantity);
+    setInvalidQuantity(!updatedQuantity);
     setInvalidSupplierPurchase(
-      !newSupplierPurchase || newSupplierPurchase.length <= 0
+      !updatedSupplierPurchase || updatedSupplierPurchase.length <= 0
     );
-    console.log(invalidName);
-    console.log(invalidQuantity);
-    console.log(invalidSupplierPurchase);
     if (!invalidName && !invalidQuantity && !invalidSupplierPurchase) {
       setListMaterialsPurchase([
         ...listMaterialsPurchase,
         {
-          name: newMaterialPurchase.name,
-          unit: newMaterialPurchase.unit,
-          quantity: newQuantity,
-          supplierPurchase: newSupplierPurchase,
+          id: updatedMaterialPurchase.id,
+          name: updatedMaterialPurchase.name,
+          unit: updatedMaterialPurchase.unit,
+          quantity: updatedQuantity,
+          supplierPurchase: updatedSupplierPurchase,
         },
       ]);
       hideAddDialog();
       setInvalidSupplierPurchase(false);
 
-      console.log("New mAterial: ", listMaterialsPurchase);
+      console.log("Updated mAterial: ", listMaterialsPurchase);
     }
   }
 
@@ -293,8 +309,8 @@ function PurchasePost() {
   };
 
   useEffect(() => {
-    setNewPurchase({
-      ...newPurchase,
+    setUpdatedPurchase({
+      ...updatedPurchase,
       material: listMaterialsPurchase,
     });
   }, [listMaterialsPurchase]);
@@ -351,12 +367,13 @@ function PurchasePost() {
       selectedSupplierPurchase.unitValue !== null
     ) {
       // Add the validated supplier to the listSupplierPurchase
-      let listSupplier = newSupplierPurchase;
+      let listSupplier = updatedSupplierPurchase;
       listSupplier.push(selectedSupplierPurchase);
-      setNewSupplierPurchase(listSupplier);
+      setUpdatedSupplierPurchase(listSupplier);
 
       // Clear the selected supplier state for the next entry
       setSelectedSupplierPurchase({
+        id: "",
         shortenedName: "",
         unitValue: null,
         totalValue: null,
@@ -368,7 +385,48 @@ function PurchasePost() {
   useEffect(() => {
     handleGetAllShortenedName();
     handleGetAllMaterials();
+    const { id } = router.query;
+    handleGetPurchaseById(typeof id === "string" ? id : "");
   }, []);
+
+  useEffect(() => {
+    setLoading(true);
+    console.log("Vai colcoar o purchase: ", selectedPurchase);
+    try {
+      setUpdatedPurchase((prevPurchase) => ({
+        ...prevPurchase,
+        id: selectedPurchase?.id || prevPurchase.id,
+        centerCost: selectedPurchase?.centerCost || prevPurchase.centerCost,
+        centerCostId:
+          selectedPurchase?.centerCostId || prevPurchase.centerCostId,
+        requestedDate:
+          selectedPurchase?.requestedDate || prevPurchase.requestedDate,
+        requestedDateFormatted:
+          selectedPurchase?.requestedDateFormatted ||
+          prevPurchase.requestedDateFormatted,
+        requestedTime:
+          selectedPurchase?.requestedTime || prevPurchase.requestedTime,
+        userId: selectedPurchase?.userId || prevPurchase.userId,
+        type: selectedPurchase?.type || prevPurchase.type,
+        enabled: selectedPurchase?.enabled || prevPurchase.enabled,
+        material: selectedPurchase?.material || prevPurchase.material,
+        updatedAt: selectedPurchase?.updatedAt || prevPurchase.updatedAt,
+        createdAt: selectedPurchase?.createdAt || prevPurchase.createdAt,
+      }));
+      setUpdatedRequestDate(
+        convertStringToDate(selectedPurchase?.requestedDate || "")
+      );
+      setUpdatedRequestTime(
+        convertStringToDate(selectedPurchase?.requestedTime || "")
+      );
+      setListMaterialsPurchase(selectedPurchase?.material || []);
+      //   setUpdatedRequestTime(formatDateToHHMM(selectedPurchase?.requestedTime || ""))
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedPurchase]);
 
   const formatCurrencyReal = (value: number | null) => {
     if (!value) {
@@ -380,11 +438,11 @@ function PurchasePost() {
     });
   };
 
-  const priceTotalValueBodyTemplate = (supplier: SupplierPurchaseDTO) => {
+  const priceTotalValueBodyTemplate = (supplier: SupplierPurchase) => {
     return formatCurrencyReal(supplier.totalValue || null);
   };
 
-  const priceUnitValueBodyTemplate = (supplier: SupplierPurchaseDTO) => {
+  const priceUnitValueBodyTemplate = (supplier: SupplierPurchase) => {
     return formatCurrencyReal(supplier.unitValue || null);
   };
 
@@ -403,11 +461,11 @@ function PurchasePost() {
               <Calendar
                 id="buttondisplay"
                 onChange={(e) => {
-                  setNewRequestDate(e.value || null);
+                  setUpdatedRequestDate(e.value || null);
                   setInvalidRequestDate(false);
                 }}
                 style={{ height: "30px", fontSize: "0.8rem" }}
-                value={newRequestDate}
+                value={updatedRequestDate}
                 locale="pt"
                 className="ui-state-default"
                 dateFormat="dd/mm/yy"
@@ -430,11 +488,11 @@ function PurchasePost() {
               <Calendar
                 id="buttondisplay"
                 onChange={(e) => {
-                  setNewRequestTime(e.value || null);
+                  setUpdatedRequestTime(e.value || null);
                   setInvalidRequestTime(false);
                 }}
                 style={{ height: "30px", fontSize: "0.8rem" }}
-                value={newRequestTime}
+                value={updatedRequestTime}
                 locale="pt"
                 className="ui-state-default"
                 dateFormat="dd/mm/yy"
@@ -460,7 +518,7 @@ function PurchasePost() {
                 field="code"
                 dropdown
                 style={{ height: "30px", fontSize: "0.8rem" }}
-                value={selectedConstruction}
+                value={updatedPurchase.centerCost}
                 suggestions={constructionsItems}
                 completeMethod={constructionSearch}
                 onChange={(e: AutoCompleteChangeEvent) => {
@@ -560,11 +618,11 @@ function PurchasePost() {
             <AutoComplete
               type="text"
               field="name"
-              value={newMaterialPurchase}
+              value={updatedMaterialPurchase}
               suggestions={materialsItems}
               completeMethod={materialSearch}
               onChange={(e: AutoCompleteChangeEvent) => {
-                setNewMaterialPurchase(e.value);
+                setUpdatedMaterialPurchase(e.value);
                 setInvalidName(false);
               }}
               dropdown
@@ -590,12 +648,12 @@ function PurchasePost() {
             <InputText
               type="text"
               onChange={(e) => {
-                setNewMaterialPurchase({
-                  ...newMaterialPurchase,
+                setUpdatedMaterialPurchase({
+                  ...updatedMaterialPurchase,
                   unit: e.target.value,
                 });
               }}
-              value={newMaterialPurchase?.unit}
+              value={updatedMaterialPurchase?.unit}
               disabled
               style={{ height: "30px", fontSize: "0.8rem" }}
             />
@@ -610,12 +668,12 @@ function PurchasePost() {
             <InputNumber
               onChange={(e) => {
                 if (e.value) {
-                  setNewQuantity(e.value);
+                  setUpdatedQuantity(e.value);
                 }
                 setInvalidQuantity(false);
               }}
               style={{ height: "30px", fontSize: "0.8rem" }}
-              value={newQuantity}
+              value={updatedQuantity}
             />
             {invalidQuantity && (
               <Message
@@ -667,8 +725,8 @@ function PurchasePost() {
                       ...selectedSupplierPurchase,
                       unitValue: e.value * 100,
                       totalValue:
-                        newQuantity != null
-                          ? e.value * newQuantity * 100
+                        updatedQuantity != null
+                          ? e.value * updatedQuantity * 100
                           : null,
                     });
                   }
@@ -705,7 +763,7 @@ function PurchasePost() {
             <div className="field flex flex-column gap-2 w-full">
               <DataTable
                 emptyMessage="Nenhum material adicionado"
-                value={newSupplierPurchase}
+                value={updatedSupplierPurchase}
                 rows={10}
                 dataKey="id"
               >
@@ -764,4 +822,4 @@ function PurchasePost() {
   );
 }
 
-export default PurchasePost;
+export default PurchaseUpdate;

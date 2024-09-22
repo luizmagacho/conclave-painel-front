@@ -2,10 +2,10 @@ export type Purchase = {
   id: string;
   centerCost: string;
   centerCostId: string;
-  purchaseDate: string;
-  purchaseDateFormatted: string;
   requestedDate: string;
   requestedDateFormatted: string;
+  requestedTime: string;
+  requestedTimeFormatted: string;
   type: string;
   material: MaterialPurchase[];
 
@@ -19,8 +19,8 @@ export type Purchase = {
 export type PurchaseDTO = {
   centerCost: string;
   centerCostId: string;
-  purchaseDate: string;
   requestedDate: string;
+  requestedTime: string;
   type: string;
   material: MaterialPurchaseDTO[];
 
@@ -30,8 +30,8 @@ export type PurchaseDTO = {
 
 export type MaterialPurchase = {
   id: string;
-  name: number | null;
-  quantity: string;
+  name: string;
+  quantity: number | null;
   unit: string;
   supplierPurchase: SupplierPurchase[];
 };
@@ -47,8 +47,8 @@ export type SupplierPurchase = {
   id: string;
   shortenedName: string;
 
-  unitValue: number;
-  totalValue: number;
+  unitValue: number | null;
+  totalValue: number | null;
 };
 
 export type SupplierPurchaseDTO = {
