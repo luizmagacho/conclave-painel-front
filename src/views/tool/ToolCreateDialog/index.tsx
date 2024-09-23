@@ -18,6 +18,7 @@ interface ToolCreateDialog {
 
 function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
   const router = useRouter();
+  const userId = localStorage.getItem("portal.id");
   const { selectedConstruction } = useContext(ConstructionContext);
   const [newTool, setNewTool] = useState<ToolDTO>({
     name: "",
@@ -39,6 +40,7 @@ function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
   const [newDateLoanFrom, setNewDateLoanFrom] = useState<Date | null>(null);
   const [invalidNewDateLoanFrom, setInvalidNewDateLoanFrom] =
     useState<boolean>(false);
+  const [invalidDates, setInvalidDates] = useState<boolean>(false);
   const [newDateLoanTo, setNewDateLoanTo] = useState<Date | null>(null);
 
   useEffect(() => {
@@ -50,15 +52,19 @@ function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
     }));
   }, [newDateLoanFrom, newDateLoanTo]);
 
-  async function validateFields() {
-    const userId = await localStorage.getItem("portal.id");
+  function validateFields() {
     setNewTool({ ...newTool, userId: userId || "" });
     setInvalidName(!newTool.name || newTool.name === "");
     setInvalidNewDateLoanFrom(!newDateLoanFrom);
     setInvalidResponsible(!newTool.responsible || newTool.responsible === "");
     if (newDateLoanFrom && newDateLoanTo)
-      setInvalidNewDateLoanFrom(newDateLoanTo < newDateLoanFrom);
-    if (!invalidNewDateLoanFrom && !invalidName && !invalidResponsible) {
+      setInvalidDates(newDateLoanTo < newDateLoanFrom);
+    if (
+      !invalidNewDateLoanFrom &&
+      !invalidName &&
+      !invalidResponsible &&
+      !invalidDates
+    ) {
       onCreate(newTool);
       onHide();
     }
@@ -165,6 +171,8 @@ function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
             id="buttondisplay"
             onChange={(e) => {
               setNewDateLoanFrom(e.value || null);
+              setInvalidNewDateLoanFrom(false);
+              setInvalidDates(false);
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={newDateLoanFrom}
@@ -180,6 +188,13 @@ function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
               className="smaller-text"
             />
           )}
+          {invalidDates && (
+            <Message
+              severity="error"
+              text="Data de Empréstimo não pode ser menor que a Data de Devolução"
+              className="smaller-text"
+            />
+          )}
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -191,6 +206,7 @@ function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
             id="buttondisplay"
             onChange={(e) => {
               setNewDateLoanTo(e.value || null);
+              setInvalidDates(false);
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={newDateLoanTo}

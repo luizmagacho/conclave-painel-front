@@ -243,20 +243,27 @@ function ConstructionList() {
   return (
     <>
       <section className="flex flex-column gap-2 p-5 w-full">
-        <h1 className="m-0">Obras</h1>
-        {role === "Administrador" && (
-          <Button
-            style={{
-              backgroundColor: "var(--cor-primaria)",
-              border: "1px solid var(--cor-primaria)",
-            }}
-            onClick={() => {
-              setShowCreateDialog(true);
-            }}
+        <div className="flex align-items-center justify-start w-full gap-1">
+          <h1 className="m-0">Obras</h1>
+          <div
+            className="flex justify-end gap-6 w-full"
+            style={{ justifyContent: "end" }}
           >
-            Adicionar
-          </Button>
-        )}
+            {(role === "Administrador" || role === "Notas") && (
+              <Button
+                style={{
+                  backgroundColor: "var(--cor-primaria)",
+                  border: "1px solid var(--cor-primaria)",
+                }}
+                onClick={() => {
+                  setShowCreateDialog(true);
+                }}
+              >
+                Adicionar
+              </Button>
+            )}
+          </div>
+        </div>
         <div className="card flex flex-column md:flex-row gap-2 w-11/12">
           <div className="field flex flex-column gap-1 w-full">
             <LabelTitle

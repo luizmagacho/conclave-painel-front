@@ -406,7 +406,12 @@ function OrderCompleteInfo() {
                 type="text"
                 value={updatedOrder?.userRequest}
                 style={{ height: "30px", fontSize: "0.8rem" }}
-                disabled
+                onChange={(e) => {
+                  setUpdatedOrder({
+                    ...updatedOrder,
+                    userRequest: e.target.value,
+                  });
+                }}
               />
             </div>
           </div>
@@ -422,7 +427,6 @@ function OrderCompleteInfo() {
                 if (Array.isArray(e.value)) {
                   setSelectedMaterials(e.value);
                 }
-                console.log(selectedMaterials);
               }}
               dataKey="id"
               paginator

@@ -56,8 +56,6 @@ export function formatDateToHHMM(date: Date | null): string | null {
 
   const hours = String(date.getHours()).padStart(2, "0");
   const minutes = String(date.getMinutes()).padStart(2, "0");
-
-  console.log("Olha ahora:: ", `${hours}:${minutes}`);
   return `${hours}:${minutes}`;
 }
 
@@ -96,8 +94,6 @@ export function parseHHMMToDate(timeString: string): Date | null {
   date.setMinutes(parsedMinutes);
   date.setSeconds(0);
   date.setMilliseconds(0);
-
-  console.log("Opa:: ", date);
 
   return date;
 }

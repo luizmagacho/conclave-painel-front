@@ -16,6 +16,7 @@ import OutstandingInvoicesDialog from "../OutstandingInvoicesDialog";
 import OutstandingInvoicesCreateDialog from "../OutstandingInvoicesCreateDialog";
 import { OutstandingInvoicesContext } from "@/context/OutstandingInvoiceContext";
 import OutstandingInvoicesDeleteDialog from "../OutstandingInvoicesDeleteDialog";
+import { SupplierContext } from "@/context/SupplierContext";
 
 interface Options {
   icon?: string;
@@ -48,6 +49,8 @@ function OutstandingInvoicesList() {
     handleUpdateOutstandingInvoices,
     handleDeleteOutstandingInvoices,
   } = useContext(OutstandingInvoicesContext);
+
+  const { handleGetAllShortenedName } = useContext(SupplierContext);
 
   const [centerCostSearch, setCenterCostSearch] = useState<string>("");
   const [localBranchSearch, setLocalBranchSearch] = useState<string>("");
@@ -227,6 +230,7 @@ function OutstandingInvoicesList() {
 
   useEffect(() => {
     handleGetOutstandingInvoices();
+    handleGetAllShortenedName();
   }, []);
 
   const formatCurrency = (value: number | null) => {

@@ -32,6 +32,7 @@ function ToolCreateGenericDialog({
   names,
 }: ToolCreateDialog) {
   const router = useRouter();
+  const userId = localStorage.getItem("portal.id");
   const [newTool, setNewTool] = useState<ToolDTO>({
     name: "",
     centerCost: "",
@@ -54,6 +55,7 @@ function ToolCreateGenericDialog({
   const [newDateLoanFrom, setNewDateLoanFrom] = useState<Date | null>(null);
   const [invalidNewDateLoanFrom, setInvalidNewDateLoanFrom] =
     useState<boolean>(false);
+  const [invalidDates, setInvalidDates] = useState<boolean>(false);
   const [invalidCostCategory, setInvalidCostCategory] =
     useState<boolean>(false);
   const [newDateLoanTo, setNewDateLoanTo] = useState<Date | null>(null);
@@ -132,20 +134,22 @@ function ToolCreateGenericDialog({
     }));
   }, [selectedConstruction]);
 
-  async function validateFields() {
-    const userId = await localStorage.getItem("portal.id");
-    setInvalidCenterCost(!newTool.centerCost || newTool.centerCost === "");
+  function validateFields() {
+    setInvalidCenterCost(newTool.centerCost === "");
     setNewTool({ ...newTool, userId: userId || "" });
     setInvalidName(!newTool.name || newTool.name === "");
     setInvalidNewDateLoanFrom(!newDateLoanFrom);
     setInvalidResponsible(!newTool.responsible || newTool.responsible === "");
-    console.log(newDateLoanFrom);
+    if (newDateLoanTo && newDateLoanFrom) {
+      setInvalidDates(newDateLoanTo < newDateLoanFrom);
+    }
 
     if (
       !invalidNewDateLoanFrom &&
       !invalidName &&
       !invalidResponsible &&
-      !invalidCenterCost
+      !invalidCenterCost &&
+      !invalidDates
     ) {
       onCreate(newTool);
       onHide();
@@ -175,9 +179,10 @@ function ToolCreateGenericDialog({
               value={selectedConstruction}
               suggestions={constructionsItems}
               completeMethod={constructionSearch}
-              onChange={(e: AutoCompleteChangeEvent) =>
-                setSelectedConstruction(e.value)
-              }
+              onChange={(e: AutoCompleteChangeEvent) => {
+                setSelectedConstruction(e.value);
+                setInvalidCenterCost(false);
+              }}
               className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
               style={{ height: "30px", fontSize: "0.8rem" }}
             />
@@ -329,6 +334,7 @@ function ToolCreateGenericDialog({
             onChange={(e) => {
               setNewDateLoanFrom(e.value || null);
               setInvalidNewDateLoanFrom(false);
+              setInvalidDates(false);
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={newDateLoanFrom}
@@ -344,6 +350,13 @@ function ToolCreateGenericDialog({
               className="smaller-text"
             />
           )}
+          {invalidDates && (
+            <Message
+              severity="error"
+              text="Data de Empréstimo não pode ser menor que a Data de Devolução"
+              className="smaller-text"
+            />
+          )}
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -355,6 +368,7 @@ function ToolCreateGenericDialog({
             id="buttondisplay"
             onChange={(e) => {
               setNewDateLoanTo(e.value || null);
+              setInvalidDates(false);
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={newDateLoanTo}

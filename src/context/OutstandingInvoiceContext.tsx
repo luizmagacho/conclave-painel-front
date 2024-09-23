@@ -86,7 +86,6 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
     setLoading(true);
 
     try {
-      console.log(outstandingInvoices);
       const resp = await postOutstandingInvoices(outstandingInvoices);
     } catch (error) {
       console.error(error);

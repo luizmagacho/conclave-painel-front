@@ -224,7 +224,7 @@ function ToolList() {
             className="flex justify-end gap-6 w-full"
             style={{ justifyContent: "end" }}
           >
-            {role === "Administrador" && (
+            {(role === "Administrador" || role === "Notas") && (
               <Button
                 style={{
                   backgroundColor: "var(--cor-primaria)",
