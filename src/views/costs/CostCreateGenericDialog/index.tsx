@@ -29,7 +29,6 @@ function CostCreateGenericDialog({
   onHide,
 }: CostCreateGenericDialog) {
   const router = useRouter();
-  const { id } = router.query;
   const [newCost, setNewCost] = useState<CostDTO>({
     payer: "",
     centerCost: "",
@@ -97,16 +96,6 @@ function CostCreateGenericDialog({
 
     return null;
   };
-
-  // useEffect(() => {
-  //   if (newCost.workerValue !== null && newCost.materialValue) {
-  //     const totalValue = newCost.workerValue + newCost.materialValue;
-  //     setNewCost((prevCost) => ({
-  //       ...prevCost,
-  //       totalAmount: totalValue || prevCost.totalAmount,
-  //     }));
-  //   }
-  // }, [newCost.workerValue, newCost.materialValue]);
 
   const { allConstructions } = useContext(ConstructionContext);
 

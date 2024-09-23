@@ -70,10 +70,12 @@ function SupplierCreate() {
   const {
     existsCnpj,
     existsCpf,
+    existsShortenedName,
     handlePostSupplier,
     postStatus,
     handleValidateCnpj,
     handleValidateCpf,
+    handleValidateShortenedName,
   } = useContext(SupplierContext);
   const { showSuccessToast, setShowToast } = useContext(ToastContext);
   const router = useRouter();
@@ -110,6 +112,12 @@ function SupplierCreate() {
       newSupplier.cpf.replaceAll("[^0-9]", "").length >= 14
     ) {
       handleValidateCpf(newSupplier.cpf);
+    }
+  };
+
+  const validateShortenedName = () => {
+    if (newSupplier.shortenedName) {
+      handleValidateShortenedName(newSupplier.shortenedName);
     }
   };
 
@@ -165,7 +173,6 @@ function SupplierCreate() {
               value={newSupplier?.cpf}
               onBlur={validateCpf}
             />
-            {existsCpf}
             {invalidPersonalInfo && (
               <Message severity="error" text="Cpf ou Cnpj é obrigatório" />
             )}
@@ -210,9 +217,13 @@ function SupplierCreate() {
                 setInvalidShortenedName(false);
               }}
               value={newSupplier?.shortenedName}
+              onBlur={validateShortenedName}
             />
             {invalidShortenedName && (
               <Message severity="error" text="Nome Reduzido é obrigatório" />
+            )}
+            {existsShortenedName && (
+              <Message severity="error" text="Nome Reduzido já existente" />
             )}
           </div>
         </div>

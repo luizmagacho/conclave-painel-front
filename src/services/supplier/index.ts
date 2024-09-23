@@ -70,3 +70,12 @@ export async function validateCnpj(cnpj: string) {
   });
   return res.data;
 }
+
+export async function validateShortenedName(shortenedName: string) {
+  let res = await api.get(`${baseUrl}/validate-shortened-name`, {
+    params: {
+      shortenedName,
+    },
+  });
+  return res.data;
+}
