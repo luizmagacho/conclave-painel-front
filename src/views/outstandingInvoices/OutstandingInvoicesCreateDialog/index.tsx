@@ -52,7 +52,7 @@ function OutstandingInvoicesCreateDialog({
     });
   const [selectedConstruction, setSelectedConstruction] =
     useState<Construction>();
-  const [selectedSupplier, setSelectedSupplier] = useState<SupplierName>();
+  const [selectedSupplier, setSelectedSupplier] = useState<string>();
   const [newPurchaseDate, setNewPurchaseDate] = useState<Date | null>(null);
 
   const [newPaymentDeadline, setNewPaymentDeadline] = useState<Date | null>(
@@ -96,8 +96,6 @@ function OutstandingInvoicesCreateDialog({
         newOutstandingInvoices.centerCost === ""
     );
 
-    console.log(newOutstandingInvoices);
-
     if (!invalidTotalAmount && !invalidVendorName && !invalidCenterCost) {
       onCreate(newOutstandingInvoices);
       onHide();
@@ -106,12 +104,15 @@ function OutstandingInvoicesCreateDialog({
 
   const { allConstructions } = useContext(ConstructionContext);
 
-  const { suppliers } = useContext(SupplierContext);
+  const { allSuppliersShortenedName, handleGetAllShortenedName } =
+    useContext(SupplierContext);
 
   const [constructionsItems, setConstructionsItems] =
     useState<Construction[]>(allConstructions);
 
-  const [suppliersItems, setSuppliersItems] = useState<Supplier[]>(suppliers);
+  const [allSupplierItems, setAllSupplierItems] = useState<string[]>(
+    allSuppliersShortenedName
+  );
 
   const constructionSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
@@ -127,19 +128,19 @@ function OutstandingInvoicesCreateDialog({
     }, 150);
   };
 
-  const supplierSearch = (event: AutoCompleteCompleteEvent) => {
+  const suppliersSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
       let _filteredSuppliers;
       if (!event.query.trim().length) {
-        _filteredSuppliers = [...suppliers];
+        _filteredSuppliers = [...allSuppliersShortenedName];
       } else {
-        _filteredSuppliers = suppliersItems.filter((supplier) => {
-          return supplier.shortenedName
-            .toUpperCase()
-            .startsWith(event.query.toUpperCase());
+        _filteredSuppliers = allSuppliersShortenedName.filter((supplier) => {
+          return supplier
+            .toLocaleUpperCase()
+            .startsWith(event.query.toLocaleUpperCase());
         });
-        setSuppliersItems(_filteredSuppliers);
       }
+      setAllSupplierItems(_filteredSuppliers);
     }, 150);
   };
 
@@ -160,8 +161,7 @@ function OutstandingInvoicesCreateDialog({
   useEffect(() => {
     setNewOutstandingInvoices((prevOutstandingInvoices) => ({
       ...prevOutstandingInvoices,
-      vendorName:
-        selectedSupplier?.shortenedName || prevOutstandingInvoices.vendorName,
+      vendorName: selectedSupplier || prevOutstandingInvoices.vendorName,
     }));
   }, [selectedSupplier]);
 
@@ -235,13 +235,12 @@ function OutstandingInvoicesCreateDialog({
           <div className="card p-fluid">
             <AutoComplete
               type="text"
-              field="shortenedName"
               dropdown
               className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
               style={{ height: "30px", fontSize: "0.8rem" }}
               value={selectedSupplier}
-              suggestions={suppliersItems}
-              completeMethod={supplierSearch}
+              suggestions={allSupplierItems}
+              completeMethod={suppliersSearch}
               onChange={(e: AutoCompleteChangeEvent) =>
                 setSelectedSupplier(e.value)
               }

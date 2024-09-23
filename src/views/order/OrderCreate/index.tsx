@@ -64,7 +64,7 @@ function OrderCreate() {
     materials: [],
     orderDate: "",
     orderTime: "",
-    userRequest: name || "",
+    userRequest: "",
     userRequestId: id || "",
     finish: false,
   });
@@ -228,7 +228,6 @@ function OrderCreate() {
     );
     setInvalidListMaterials(!listMaterials || listMaterials.length === 0);
     if (!invalidConstructionCode && !invalidListMaterials) {
-      console.log(newOrder);
       await handlePostOrder(newOrder);
       router.push("/pedidos");
     }
@@ -393,7 +392,9 @@ function OrderCreate() {
                 type="text"
                 value={newOrder?.userRequest}
                 style={{ height: "30px", fontSize: "0.8rem" }}
-                disabled
+                onChange={(e) => {
+                  setNewOrder({ ...newOrder, userRequest: e.target.value });
+                }}
               />
             </div>
           </div>
@@ -410,7 +411,6 @@ function OrderCreate() {
                 if (Array.isArray(e.value)) {
                   setSelectedMaterials(e.value);
                 }
-                console.log(selectedMaterials);
               }}
               dataKey="id"
               paginator

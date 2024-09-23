@@ -86,7 +86,6 @@ function PurchasePost() {
   const { handlePostPurchase } = useContext(PurchaseContext);
 
   useEffect(() => {
-    console.log("TEste");
     setNewPurchase((prevPurchase) => ({
       ...prevPurchase,
       requestedTime:
@@ -119,7 +118,6 @@ function PurchasePost() {
       !invalidRequestTime &&
       !invalidRequestDate
     ) {
-      console.log("New Purchase: ", newPurchase);
       await handlePostPurchase(newPurchase);
       router.back();
     }
@@ -203,7 +201,6 @@ function PurchasePost() {
           label="Novo"
           icon="pi pi-plus"
           onClick={() => {
-            console.log(materialsItems);
             if (!materialsItems) alert("Cadastre materiais");
             setShowAddMaterial(true);
             setNewSupplierPurchase([]);
@@ -258,9 +255,7 @@ function PurchasePost() {
     setInvalidSupplierPurchase(
       !newSupplierPurchase || newSupplierPurchase.length <= 0
     );
-    console.log(invalidName);
-    console.log(invalidQuantity);
-    console.log(invalidSupplierPurchase);
+
     if (!invalidName && !invalidQuantity && !invalidSupplierPurchase) {
       setListMaterialsPurchase([
         ...listMaterialsPurchase,
@@ -273,8 +268,6 @@ function PurchasePost() {
       ]);
       hideAddDialog();
       setInvalidSupplierPurchase(false);
-
-      console.log("New mAterial: ", listMaterialsPurchase);
     }
   }
 
@@ -332,7 +325,6 @@ function PurchasePost() {
             .startsWith(event.query.toLocaleUpperCase());
         });
       }
-      console.log(_filteredSuppliers);
       setAllSupplierItems(_filteredSuppliers);
     }, 150);
   };

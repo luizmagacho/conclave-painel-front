@@ -94,7 +94,6 @@ function CostUpdateDialog({
   };
 
   useEffect(() => {
-    console.log(updatedReceiptDate);
     setUpdatedCost((prevCost) => ({
       ...prevCost,
       issueDate: formatDateToYYYYMMDD(updatedIssueDate) || prevCost.issueDate,

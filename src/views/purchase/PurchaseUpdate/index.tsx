@@ -219,7 +219,6 @@ function PurchaseUpdate() {
           label="Novo"
           icon="pi pi-plus"
           onClick={() => {
-            console.log(materialsItems);
             if (!materialsItems) alert("Cadastre materiais");
             setShowAddMaterial(true);
             setUpdatedSupplierPurchase([]);
@@ -289,8 +288,6 @@ function PurchaseUpdate() {
       ]);
       hideAddDialog();
       setInvalidSupplierPurchase(false);
-
-      console.log("Updated mAterial: ", listMaterialsPurchase);
     }
   }
 
@@ -348,7 +345,6 @@ function PurchaseUpdate() {
             .startsWith(event.query.toLocaleUpperCase());
         });
       }
-      console.log(_filteredSuppliers);
       setAllSupplierItems(_filteredSuppliers);
     }, 150);
   };
@@ -391,7 +387,6 @@ function PurchaseUpdate() {
 
   useEffect(() => {
     setLoading(true);
-    console.log("Vai colcoar o purchase: ", selectedPurchase);
     try {
       setUpdatedPurchase((prevPurchase) => ({
         ...prevPurchase,
