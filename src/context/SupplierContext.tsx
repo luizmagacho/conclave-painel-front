@@ -8,6 +8,7 @@ import {
   updateSupplier,
   validateCnpj,
   validateCpf,
+  validateShortenedName,
 } from "@/services/supplier";
 import { Supplier, SupplierDTO } from "@/services/supplier/type";
 import { Toast } from "primereact/toast";
@@ -27,6 +28,7 @@ interface SupplierContextProps {
   postStatus: number;
   existsCpf: boolean;
   existsCnpj: boolean;
+  existsShortenedName: boolean;
   handleGetSuppliers: (
     page?: number,
     completeName?: string,
@@ -40,6 +42,7 @@ interface SupplierContextProps {
   handleDeleteSupplier: (supplierId: string) => Promise<void>;
   handleValidateCpf: (cpf: string) => Promise<void>;
   handleValidateCnpj: (cnpj: string) => Promise<void>;
+  handleValidateShortenedName: (shortenedName: string) => Promise<void>;
 }
 
 export const SupplierContext = createContext({} as SupplierContextProps);
@@ -48,6 +51,8 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [existsCpf, setExistsCpf] = useState<boolean>(false);
   const [existsCnpj, setExistsCnpj] = useState<boolean>(false);
+  const [existsShortenedName, setExistsShortenedName] =
+    useState<boolean>(false);
   const [allSuppliers, setAllSuplliers] = useState<Supplier[]>([]);
   const [allSuppliersShortenedName, setAllSuplliersShortenedName] = useState<
     string[]
@@ -178,6 +183,10 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
     setExistsCnpj(await validateCnpj(cnpj));
   }
 
+  async function handleValidateShortenedName(shortenedName: string) {
+    setExistsShortenedName(await validateShortenedName(shortenedName));
+  }
+
   useEffect(() => {
     handleGetSuppliers();
   }, []);
@@ -194,6 +203,7 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
         postStatus,
         existsCpf,
         existsCnpj,
+        existsShortenedName,
         handleGetSuppliers,
         handleGetAllSuppliers,
         handleGetAllShortenedName,
@@ -203,6 +213,7 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
         handleDeleteSupplier,
         handleValidateCnpj,
         handleValidateCpf,
+        handleValidateShortenedName,
       }}
     >
       <Toast ref={toast} />
