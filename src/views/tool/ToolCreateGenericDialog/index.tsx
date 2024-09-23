@@ -151,8 +151,8 @@ function ToolCreateGenericDialog({
       !invalidCenterCost &&
       !invalidDates
     ) {
-      // onCreate(newTool);
-      // onHide();
+      onCreate(newTool);
+      onHide();
     }
   }
 

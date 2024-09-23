@@ -23,6 +23,7 @@ function ConstructionCreateDialog({
   onHide,
   onCreate,
 }: ConstructionCreateDialog) {
+  const userId = localStorage.getItem("portal.id");
   const { centerCostNumber } = useContext(ConstructionContext);
   const [newConstruction, setNewConstruction] = useState<ConstructionDTO>({
     code: centerCostNumber,
@@ -61,8 +62,7 @@ function ConstructionCreateDialog({
     }));
   }, [newOpeningDate, newClosedDate]);
 
-  async function validateFields() {
-    const userId = await Cookies.get("portal.id");
+  function validateFields() {
     setNewConstruction({ ...newConstruction, userId: userId || "" });
     setInvalidCode(!newConstruction.code || newConstruction.code === "");
     setInvalidBankBranch(
@@ -289,7 +289,7 @@ function ConstructionCreateDialog({
           {invalidClosedDate && (
             <Message
               severity="error"
-              text="Data de Encerrada é preciso ser após Data de Abertura"
+              text="Data de Encerrada não pode ser menor que a Data de Abertura"
             />
           )}
         </div>
