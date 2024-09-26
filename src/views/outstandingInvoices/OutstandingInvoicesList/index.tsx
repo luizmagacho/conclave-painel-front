@@ -208,7 +208,6 @@ function OutstandingInvoicesList() {
   }
 
   function onPaymentDeadlineFromSearch(paymentDeadlineFrom: string) {
-    console.log(paymentDeadlineFrom);
     setPaymentDeadlineFromSearch(paymentDeadlineFrom);
     handleGetOutstandingInvoices(
       0,
@@ -233,7 +232,7 @@ function OutstandingInvoicesList() {
   }
 
   function onPaymentDeadlineToSearch(paymentDeadlineTo: string) {
-    console.log(paymentDeadlineTo);
+    setPaymentDeadlineToSearch(paymentDeadlineTo);
     handleGetOutstandingInvoices(
       0,
       centerCostSearch,
