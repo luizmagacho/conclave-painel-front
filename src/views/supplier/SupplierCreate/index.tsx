@@ -38,8 +38,6 @@ function SupplierCreate() {
   });
   const [invalidPersonalInfo, setInvalidPersonalInfo] =
     useState<boolean>(false);
-  const [invalidCnpj, setInvalidCnpj] = useState<boolean>(false);
-  const [invalidCpf, setInvalidCpf] = useState<boolean>(false);
   const [invalidCompleteName, setInvalidCompleteName] =
     useState<boolean>(false);
   const [invalidShortenedName, setInvalidShortenedName] =
@@ -72,27 +70,25 @@ function SupplierCreate() {
     existsCpf,
     existsShortenedName,
     handlePostSupplier,
-    postStatus,
     handleValidateCnpj,
     handleValidateCpf,
     handleValidateShortenedName,
   } = useContext(SupplierContext);
-  const { showSuccessToast, setShowToast } = useContext(ToastContext);
   const router = useRouter();
 
-  async function validateFields() {
-    await setInvalidCpf(
-      !newSupplier.cpf || newSupplier.cpf === "" || newSupplier.cpf.length >= 11
-    );
+  function validateFields() {
+    console.log("PersonalInfo: ", invalidPersonalInfo);
+    console.log("existsCnpj: ", existsCnpj);
+    console.log("existsCpf: ", existsCpf);
+    setInvalidShortenedName(newSupplier.shortenedName === "");
+    if (
+      !invalidPersonalInfo &&
+      !existsCnpj &&
+      !existsCpf &&
+      !invalidShortenedName
+    ) {
+      handlePostSupplier(newSupplier);
 
-    await setInvalidCnpj(!newSupplier.cnpj || newSupplier.cnpj === "");
-    setInvalidPersonalInfo(invalidCpf && invalidCnpj);
-    if (!invalidPersonalInfo && !existsCnpj && !existsCpf) {
-      await handlePostSupplier(newSupplier);
-      if (postStatus === 201) {
-        await setShowToast(true);
-        await showSuccessToast("Fornecedor criado com sucesso");
-      }
       router.back();
     }
   }
@@ -123,6 +119,11 @@ function SupplierCreate() {
 
   const toast = useRef<Toast>(null);
 
+  useEffect(() => {
+    console.log("CPF: ", newSupplier.cpf);
+    setInvalidPersonalInfo(newSupplier.cnpj === "" || newSupplier.cpf === "");
+  }, [newSupplier.cnpj, newSupplier.cpf]);
+
   return (
     <Card className="m-3">
       <section className="flex flex-column gap-2 p-5 w-full overflow-y: auto">
@@ -143,6 +144,7 @@ function SupplierCreate() {
                   ...newSupplier,
                   cnpj: e.target.value || "",
                 });
+                setInvalidPersonalInfo(false);
               }}
               value={newSupplier?.cnpj}
               onBlur={validateCnpj}
@@ -169,6 +171,7 @@ function SupplierCreate() {
                   ...newSupplier,
                   cpf: e.target.value || "",
                 });
+                setInvalidPersonalInfo(false);
               }}
               value={newSupplier?.cpf}
               onBlur={validateCpf}

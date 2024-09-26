@@ -61,7 +61,6 @@ function SupplierList() {
     suppliers,
     totalElements,
     loading,
-    postStatus,
     handleGetSuppliers,
     handleGetSupplierById,
     handleDeleteSupplier,

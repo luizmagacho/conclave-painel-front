@@ -1,5 +1,6 @@
 import {
   deleteOutstandingInvoices,
+  getAllCategories,
   getOutstandingInvoices,
   postOutstandingInvoices,
   updateOutstandingInvoices,
@@ -8,7 +9,7 @@ import {
   OutstandingInvoices,
   OutstandingInvoicesDTO,
 } from "@/services/outstanding-invoices/type";
-import { ReactNode, createContext, useState } from "react";
+import { ReactNode, createContext, useEffect, useState } from "react";
 
 interface ProviderProps {
   children: ReactNode;
@@ -18,6 +19,7 @@ interface OutstandingInvoicesProps {
   outstandingInvoices: OutstandingInvoices[];
   loading: boolean;
   totalElements: number;
+  allCategories: string[];
   handleGetOutstandingInvoices: (
     page?: number,
     centerCost?: string,
@@ -35,6 +37,7 @@ interface OutstandingInvoicesProps {
   handleDeleteOutstandingInvoices: (
     outstandingInvoicesId: string
   ) => Promise<void>;
+  handleGetAllCategories: () => Promise<void>;
 }
 
 export const OutstandingInvoicesContext = createContext(
@@ -45,6 +48,7 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
   const [outstandingInvoices, setOutstandingInvoices] = useState<
     OutstandingInvoices[]
   >([]);
+  const [allCategories, setAllCategories] = useState<string[]>([]);
   const [bufferedOutstandingInvoices, setBufferedOutstandingInvoices] =
     useState<OutstandingInvoices[]>([]);
 
@@ -121,16 +125,33 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
     }
   }
 
+  async function handleGetAllCategories() {
+    setLoading(true);
+    try {
+      setAllCategories(await getAllCategories());
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    handleGetAllCategories();
+  }, []);
+
   return (
     <OutstandingInvoicesContext.Provider
       value={{
         outstandingInvoices,
+        allCategories,
         loading,
         totalElements,
         handleGetOutstandingInvoices,
         handlePostOutstandingInvoices,
         handleUpdateOutstandingInvoices,
         handleDeleteOutstandingInvoices,
+        handleGetAllCategories,
       }}
     >
       {children}

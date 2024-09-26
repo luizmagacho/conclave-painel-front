@@ -17,6 +17,8 @@ import OutstandingInvoicesCreateDialog from "../OutstandingInvoicesCreateDialog"
 import { OutstandingInvoicesContext } from "@/context/OutstandingInvoiceContext";
 import OutstandingInvoicesDeleteDialog from "../OutstandingInvoicesDeleteDialog";
 import { SupplierContext } from "@/context/SupplierContext";
+import { Calendar } from "primereact/calendar";
+import { formatDateToYYYYMMDD } from "@/util/date";
 
 interface Options {
   icon?: string;
@@ -48,6 +50,7 @@ function OutstandingInvoicesList() {
     handlePostOutstandingInvoices,
     handleUpdateOutstandingInvoices,
     handleDeleteOutstandingInvoices,
+    handleGetAllCategories,
   } = useContext(OutstandingInvoicesContext);
 
   const { handleGetAllShortenedName } = useContext(SupplierContext);
@@ -59,6 +62,9 @@ function OutstandingInvoicesList() {
     useState<string>("");
   const [paymentDeadlineToSearch, setPaymentDeadlineToSearch] =
     useState<string>("");
+
+  const [paymentDeadlineFrom, setPaymentDeadlineFrom] = useState<Date | null>();
+  const [paymentDeadlineTo, setPaymentDeadlineTo] = useState<Date | null>();
 
   const [first, setFirst] = useState<number>(0);
 
@@ -92,6 +98,7 @@ function OutstandingInvoicesList() {
       paymentDeadlineFromSearch,
       paymentDeadlineFromSearch
     );
+    handleGetAllCategories();
   }
 
   function closeCreateDialog() {
@@ -112,7 +119,15 @@ function OutstandingInvoicesList() {
     outstandingInvoices: OutstandingInvoices
   ) {
     await handleUpdateOutstandingInvoices(outstandingInvoices);
-    handleGetOutstandingInvoices();
+    handleGetOutstandingInvoices(
+      0,
+      centerCostSearch,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineFromSearch
+    );
+    handleGetAllCategories();
   }
 
   async function onDeleteOutstandingInvoices(outstandingInvoicesId: string) {
@@ -193,6 +208,7 @@ function OutstandingInvoicesList() {
   }
 
   function onPaymentDeadlineFromSearch(paymentDeadlineFrom: string) {
+    setPaymentDeadlineFromSearch(paymentDeadlineFrom);
     handleGetOutstandingInvoices(
       0,
       centerCostSearch,
@@ -205,9 +221,18 @@ function OutstandingInvoicesList() {
 
   function onChangePaymentDeadlineFrom(paymentDeadlineFrom: string) {
     setPaymentDeadlineFromSearch(paymentDeadlineFrom);
+    handleGetOutstandingInvoices(
+      0,
+      centerCostSearch,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFrom,
+      paymentDeadlineToSearch
+    );
   }
 
   function onPaymentDeadlineToSearch(paymentDeadlineTo: string) {
+    setPaymentDeadlineToSearch(paymentDeadlineTo);
     handleGetOutstandingInvoices(
       0,
       centerCostSearch,
@@ -220,6 +245,14 @@ function OutstandingInvoicesList() {
 
   function onChangePaymentDeadlineTo(paymentDeadlineTo: string) {
     setPaymentDeadlineToSearch(paymentDeadlineTo);
+    handleGetOutstandingInvoices(
+      0,
+      centerCostSearch,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineTo
+    );
   }
 
   const priceTotalValueBodyTemplate = (
@@ -299,9 +332,19 @@ function OutstandingInvoicesList() {
               htmlFor="paymentDeadlineFrom"
               className="font-semibold smaller-text"
             />
-            <InputSearch
-              onSearch={onPaymentDeadlineFromSearch}
-              onChange={onChangePaymentDeadlineFrom}
+            <Calendar
+              id="buttondisplay"
+              value={paymentDeadlineFrom}
+              onChange={(e) => {
+                setPaymentDeadlineFrom(e.value || null);
+                onPaymentDeadlineFromSearch(
+                  formatDateToYYYYMMDD(e.value || null) || ""
+                );
+              }}
+              locale="pt"
+              className="ui-state-default"
+              dateFormat="dd/mm/yy"
+              showIcon
             />
           </div>
           <div className="field flex flex-column gap-1 w-full">
@@ -310,9 +353,19 @@ function OutstandingInvoicesList() {
               htmlFor="paymentDeadlineTo"
               className="font-semibold smaller-text"
             />
-            <InputSearch
-              onSearch={onPaymentDeadlineToSearch}
-              onChange={onChangePaymentDeadlineTo}
+            <Calendar
+              id="buttondisplay"
+              value={paymentDeadlineTo}
+              onChange={(e) => {
+                setPaymentDeadlineTo(e.value || null);
+                onPaymentDeadlineToSearch(
+                  formatDateToYYYYMMDD(e.value || null) || ""
+                );
+              }}
+              locale="pt"
+              className="ui-state-default"
+              dateFormat="dd/mm/yy"
+              showIcon
             />
           </div>
         </div>
@@ -347,7 +400,7 @@ function OutstandingInvoicesList() {
           />
 
           <Column
-            field="costType"
+            field="costCategory"
             header="Categoria"
             className="smaller-text"
           />

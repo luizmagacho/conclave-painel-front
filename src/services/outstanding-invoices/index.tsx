@@ -51,3 +51,8 @@ export async function deleteOutstandingInvoices(outstandingInvoicesId: string) {
   let res = await api.delete(`${baseUrl}/${outstandingInvoicesId}`);
   return res.status;
 }
+
+export async function getAllCategories() {
+  let res = await api.get<string[]>(`${baseUrl}/category`);
+  return res.data;
+}
