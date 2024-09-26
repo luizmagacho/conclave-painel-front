@@ -64,16 +64,12 @@ function ConstructionCreateDialog({
 
   function validateFields() {
     setNewConstruction({ ...newConstruction, userId: userId || "" });
-    setInvalidCode(!newConstruction.code || newConstruction.code === "");
-    setInvalidBankBranch(
-      !newConstruction.bankBranch || newConstruction.bankBranch === ""
-    );
-    setInvalidResponsible(
-      !newConstruction.responsible || newConstruction.responsible === ""
-    );
-    setInvalidService(
-      !newConstruction.service || newConstruction.service === ""
-    );
+    setInvalidCode(newConstruction.code === "");
+    setInvalidBankBranch(newConstruction.bankBranch === "");
+    setInvalidLocal(newConstruction.local === "");
+    setInvalidResponsible(newConstruction.responsible === "");
+    setInvalidService(newConstruction.service === "");
+    setInvalidClient(newConstruction.client === "");
 
     setInvalidOpeningDate(!newOpeningDate);
 
@@ -81,14 +77,12 @@ function ConstructionCreateDialog({
       setInvalidClosedDate(newClosedDate < newOpeningDate);
 
     if (
-      !invalidCode &&
-      !invalidClient &&
-      !invalidLocal &&
-      !invalidResponsible &&
-      !invalidBankBranch &&
-      !invalidService &&
-      !invalidOpeningDate &&
-      !invalidClosedDate
+      newConstruction.code !== "" &&
+      newConstruction.client !== "" &&
+      newConstruction.local !== "" &&
+      newConstruction.responsible !== "" &&
+      newConstruction.bankBranch !== "" &&
+      newOpeningDate
     ) {
       onCreate(newConstruction);
       onHide();
@@ -101,7 +95,7 @@ function ConstructionCreateDialog({
       visible={visible}
       onHide={onHide}
       className="w-50rem"
-      style={{ width: "40vw" }}
+      style={{ width: "50vw" }}
     >
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">

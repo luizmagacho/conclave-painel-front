@@ -10,11 +10,9 @@ import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
 import { InputMask } from "primereact/inputmask";
-import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { RadioButton } from "primereact/radiobutton";
-import { Nullable } from "primereact/ts-helpers";
 import { useEffect, useState } from "react";
 
 interface ConstructionUpdateDialog {
@@ -65,6 +63,7 @@ function ConstructionUpdateDialog({
   const [invalidBankBranch, setInvalidBankBranch] = useState<boolean>(false);
   const [invalidService, setInvalidService] = useState<boolean>(false);
   const [invalidOpeningDate, setInvalidOpeningDate] = useState<boolean>(false);
+  const [invalidClosedDate, setInvalidClosedDate] = useState<boolean>(false);
 
   useEffect(() => {
     localeBR;
@@ -80,27 +79,25 @@ function ConstructionUpdateDialog({
   }, [newOpeningDate, newClosedDate]);
 
   function validateFields() {
-    setInvalidCode(
-      !updatedConstruction.code || updatedConstruction.code === ""
-    );
-    setInvalidBankBranch(
-      !updatedConstruction.bankBranch || updatedConstruction.bankBranch === ""
-    );
-    setInvalidResponsible(
-      !updatedConstruction.responsible || updatedConstruction.responsible === ""
-    );
-    setInvalidService(
-      !updatedConstruction.service || updatedConstruction.service === ""
-    );
-    setInvalidOpeningDate(!updatedConstruction.openingDate);
+    setInvalidCode(updatedConstruction.code === "");
+    setInvalidBankBranch(updatedConstruction.bankBranch === "");
+    setInvalidLocal(updatedConstruction.local === "");
+    setInvalidResponsible(updatedConstruction.responsible === "");
+    setInvalidService(updatedConstruction.service === "");
+    setInvalidClient(updatedConstruction.client === "");
+
+    setInvalidOpeningDate(!newOpeningDate);
+
+    if (newOpeningDate && newClosedDate)
+      setInvalidClosedDate(newClosedDate < newOpeningDate);
+
     if (
-      !invalidCode &&
-      !invalidClient &&
-      !invalidLocal &&
-      !invalidResponsible &&
-      !invalidBankBranch &&
-      !invalidService &&
-      !invalidOpeningDate
+      updatedConstruction.code !== "" &&
+      updatedConstruction.client !== "" &&
+      updatedConstruction.local !== "" &&
+      updatedConstruction.responsible !== "" &&
+      updatedConstruction.bankBranch !== "" &&
+      newOpeningDate
     ) {
       onUpdate(updatedConstruction);
       onHide();
@@ -287,6 +284,9 @@ function ConstructionUpdateDialog({
             showIcon
             disabled={role !== "Administrador"}
           />
+          {invalidOpeningDate && (
+            <Message severity="error" text="Data de Abertura é obrigatório" />
+          )}
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -299,12 +299,19 @@ function ConstructionUpdateDialog({
             locale="pt"
             onChange={(e) => {
               setNewClosedDate(e.value || null);
+              setInvalidClosedDate(false);
             }}
             className="ui-state-default"
             dateFormat="dd/mm/yy"
             showIcon
             disabled={role !== "Administrador"}
           />
+          {invalidClosedDate && (
+            <Message
+              severity="error"
+              text="Data de Encerrada não pode ser menor que a Data de Abertura"
+            />
+          )}
         </div>
       </div>
       <div className="card flex flex-column md:flex-row gap-3 w-full">

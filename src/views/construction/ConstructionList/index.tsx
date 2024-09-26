@@ -159,12 +159,12 @@ function ConstructionList() {
 
   async function openCosts(construction: Construction) {
     await handleGetConstructionById(construction.id);
-    router.push(`/obra/${construction.id}/custos`);
+    router.push(`/obras/${construction.id}/custos`);
   }
 
   async function openTools(construction: Construction) {
     await handleGetConstructionById(construction.id);
-    router.push(`/obra/${construction.id}/ferramentas`);
+    router.push(`/obras/${construction.id}/ferramentas`);
   }
 
   async function onCreateConstruction(construction: ConstructionDTO) {

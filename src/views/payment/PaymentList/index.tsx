@@ -531,11 +531,6 @@ function PaymentList() {
           footer={footerTemplate}
         >
           <Column
-            field="numberCheckTransfer"
-            header="Número"
-            className="smaller-text"
-          />
-          <Column
             field="paymentDateFormatted"
             header="Data"
             className="smaller-text"
@@ -551,6 +546,12 @@ function PaymentList() {
             className="smaller-text"
             body={clearedBodyTemplate}
           />
+          <Column
+            field="numberCheckTransfer"
+            header="Número"
+            className="smaller-text"
+          />
+
           <Column
             field="withdraw"
             header="Pagamento"
