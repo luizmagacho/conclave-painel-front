@@ -1,5 +1,6 @@
 import LabelTitle from "@/components/LabelTitle";
 import { ConstructionContext } from "@/context/ConstructionContext";
+import { OutstandingInvoicesContext } from "@/context/OutstandingInvoiceContext";
 import { SupplierContext } from "@/context/SupplierContext";
 import { Construction } from "@/services/construction/type";
 import { Cost } from "@/services/costs/type";
@@ -34,6 +35,7 @@ function OutstandingInvoicesDialog({
   onUpdate,
   data,
 }: OutstandingInvoicesDialog) {
+  const userId = localStorage.getItem("portal.id");
   const router = useRouter();
   const [updatedOutstandingInvoices, setUpdatedOutstandingInvoices] =
     useState<OutstandingInvoices>({
@@ -61,6 +63,10 @@ function OutstandingInvoicesDialog({
   const { constructions, handleGetConstructionById, selectedConstruction } =
     useContext(ConstructionContext);
 
+  const { allCategories, handleGetAllCategories } = useContext(
+    OutstandingInvoicesContext
+  );
+
   const [selectedSupplier, setSelectedSupplier] = useState<SupplierName>({
     shortenedName: data.vendorName,
   });
@@ -69,6 +75,9 @@ function OutstandingInvoicesDialog({
 
   const [checkedConstruction, setCheckedConstruction] =
     useState<Construction | null>(selectedConstruction);
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    data.costCategory
+  );
   const [updatedPurchaseDate, setUpdatedPurchaseDate] = useState<Date | null>(
     convertStringToDate(data.purchaseDate)
   );
@@ -81,6 +90,10 @@ function OutstandingInvoicesDialog({
   const [invalidCostCategory, setInvalidCostCategory] =
     useState<boolean>(false);
   const [invalidCenterCost, setInvalidCenterCost] = useState<boolean>(false);
+  const [
+    invalidOutstandingInvoicesCategory,
+    setInvalidOutstandingInvoicesCategory,
+  ] = useState<boolean>(false);
 
   useEffect(() => {
     setUpdatedOutstandingInvoices((prevOutstandingInvoices) => ({
@@ -94,8 +107,7 @@ function OutstandingInvoicesDialog({
     }));
   }, [updatedPurchaseDate, updatedPaymentDeadline]);
 
-  async function validateFields() {
-    const userId = await localStorage.getItem("portal.id");
+  function validateFields() {
     setUpdatedOutstandingInvoices({
       ...updatedOutstandingInvoices,
       userId: userId || "",
@@ -114,7 +126,13 @@ function OutstandingInvoicesDialog({
         updatedOutstandingInvoices.centerCost === ""
     );
 
-    if (!invalidTotalAmount && !invalidVendorName && !invalidCenterCost) {
+    if (
+      updatedOutstandingInvoices.totalAmount &&
+      (updatedOutstandingInvoices.vendorName ||
+        updatedOutstandingInvoices.vendorName !== "") &&
+      (updatedOutstandingInvoices.centerCost ||
+        updatedOutstandingInvoices.centerCost !== "")
+    ) {
       onUpdate(updatedOutstandingInvoices);
       onHide();
     }
@@ -124,6 +142,9 @@ function OutstandingInvoicesDialog({
     useState<Construction[]>(constructions);
 
   const [suppliersItems, setSuppliersItems] = useState<Supplier[]>(suppliers);
+
+  const [allCategoryItems, setAllCategoryItems] =
+    useState<string[]>(allCategories);
 
   const constructionSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
@@ -153,6 +174,22 @@ function OutstandingInvoicesDialog({
     }, 150);
   };
 
+  const categoriesSearch = (event: AutoCompleteCompleteEvent) => {
+    setTimeout(() => {
+      let _filteredCategories;
+      if (!event.query.trim().length) {
+        _filteredCategories = [...allCategories];
+      } else {
+        _filteredCategories = allCategories.filter((category) => {
+          return category
+            .toLocaleUpperCase()
+            .startsWith(event.query.toLocaleUpperCase());
+        });
+      }
+      setAllCategoryItems(_filteredCategories);
+    }, 150);
+  };
+
   useEffect(() => {
     setUpdatedOutstandingInvoices((prevOutstandingInvoices) => ({
       ...prevOutstandingInvoices,
@@ -164,8 +201,9 @@ function OutstandingInvoicesDialog({
         checkedConstruction?.bankBranch || prevOutstandingInvoices.bankBranch,
       localBank:
         checkedConstruction?.local || prevOutstandingInvoices.localBank,
+      costCategory: selectedCategory || prevOutstandingInvoices.costCategory,
     }));
-  }, [checkedConstruction]);
+  }, [checkedConstruction, selectedCategory]);
 
   useEffect(() => {
     setCheckedConstruction(selectedConstruction);
@@ -215,9 +253,10 @@ function OutstandingInvoicesDialog({
               value={checkedConstruction}
               suggestions={constructionsItems}
               completeMethod={constructionSearch}
-              onChange={(e: AutoCompleteChangeEvent) =>
-                setCheckedConstruction(e.value)
-              }
+              onChange={(e: AutoCompleteChangeEvent) => {
+                setCheckedConstruction(e.value);
+                setInvalidCenterCost(false);
+              }}
             />
             {invalidCenterCost && (
               <Message
@@ -260,9 +299,10 @@ function OutstandingInvoicesDialog({
               value={selectedSupplier}
               suggestions={suppliersItems}
               completeMethod={supplierSearch}
-              onChange={(e: AutoCompleteChangeEvent) =>
-                setSelectedSupplier(e.value)
-              }
+              onChange={(e: AutoCompleteChangeEvent) => {
+                setSelectedSupplier(e.value);
+                setInvalidVendorName(false);
+              }}
             />
             {invalidVendorName && (
               <Message
@@ -322,6 +362,7 @@ function OutstandingInvoicesDialog({
                   totalAmount: e.value * 100,
                 });
               }
+              setInvalidPaymentDeadline(false);
             }}
           />
           {invalidTotalAmount && (
@@ -334,28 +375,32 @@ function OutstandingInvoicesDialog({
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
-            text="Tipo Obra"
-            htmlFor="costType"
+            text="Categoria"
+            htmlFor="OutstandingInvoicesCategory"
             className="font-semibold"
           />
-          <InputText
-            type="text"
-            onChange={(e) => {
-              setUpdatedOutstandingInvoices({
-                ...updatedOutstandingInvoices,
-                costType: e.target.value,
-              });
-            }}
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedOutstandingInvoices?.costType}
-          />
-          {invalidCostCategory && (
-            <Message
-              severity="error"
-              text="Categoria é obrigatório"
-              className="smaller-text"
+          <div className="card p-fluid">
+            <AutoComplete
+              type="text"
+              dropdown
+              className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
+              style={{ height: "30px", fontSize: "0.8rem" }}
+              value={selectedCategory}
+              suggestions={allCategoryItems}
+              completeMethod={categoriesSearch}
+              onChange={(e: AutoCompleteChangeEvent) => {
+                setSelectedCategory(e.value);
+                setInvalidOutstandingInvoicesCategory(false);
+              }}
             />
-          )}
+            {invalidOutstandingInvoicesCategory && (
+              <Message
+                severity="error"
+                text="Categoria é obrigatório"
+                className="smaller-text"
+              />
+            )}
+          </div>
         </div>
       </div>
       <div className="card flex flex-column md:flex-row gap-3 w-full">
