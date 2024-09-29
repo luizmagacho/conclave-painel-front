@@ -1,6 +1,9 @@
 export type Payment = {
   id: string;
   numberCheckTransfer: string;
+  centerCost: string;
+  centerCostId: string;
+  bankBranchLocalBank: string;
   paymentDate: Date;
   paymentDateFormatted: Date;
   weekOfTheYear: number;
@@ -22,6 +25,9 @@ export type Payment = {
 
 export type PaymentDTO = {
   numberCheckTransfer: string;
+  centerCost: string;
+  centerCostId: string;
+  bankBranchLocalBank: string;
   paymentDate: Date | null;
   beneficiary: string;
   beneficiaryId: string | null;
