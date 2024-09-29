@@ -1,5 +1,6 @@
 import { AccountProvider } from "@/context/AccountContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { ConstructionProvider } from "@/context/ConstructionContext";
 import { PaymentProvider } from "@/context/PaymentContext";
 import { SupplierProvider } from "@/context/SupplierContext";
 import { DefaultLayout } from "@/layouts";
@@ -10,11 +11,13 @@ export default function Payment(): JSX.Element {
     <DefaultLayout>
       <AuthProvider>
         <AccountProvider>
-          <PaymentProvider>
-            <SupplierProvider>
-              <PaymentList />
-            </SupplierProvider>
-          </PaymentProvider>
+          <ConstructionProvider>
+            <PaymentProvider>
+              <SupplierProvider>
+                <PaymentList />
+              </SupplierProvider>
+            </PaymentProvider>
+          </ConstructionProvider>
         </AccountProvider>
       </AuthProvider>
     </DefaultLayout>

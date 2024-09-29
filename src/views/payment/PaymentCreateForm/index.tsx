@@ -25,6 +25,8 @@ import SubCategoryCreateDialog from "../SubCategoryCreateDialog";
 import CurrencyInput from "@/components/InputCurrency";
 import SupplierCreate from "@/views/supplier/SupplierCreate";
 import { useRouter } from "next/router";
+import { ConstructionContext } from "@/context/ConstructionContext";
+import { Construction } from "@/services/construction/type";
 
 interface PaymentCreateForm {
   accountId: string;
@@ -41,6 +43,9 @@ function PaymentCreateForm({
 }: PaymentCreateForm) {
   const router = useRouter();
   const [newPayment, setNewPayment] = useState<PaymentDTO>({
+    centerCost: "",
+    centerCostId: "",
+    bankBranchLocalBank: "",
     accountId: accountId,
     accountIdTo: null,
     balance: null,
@@ -62,8 +67,12 @@ function PaymentCreateForm({
   const [invalidBeneficiary, setInvalidBeneficiary] = useState<boolean>(false);
   const [invalidCategory, setInvalidCategory] = useState<boolean>(false);
   const [invalidSubCategory, setInvalidSubCategory] = useState<boolean>(false);
+  const [invalidConstructionCode, setInvalidConstructionCode] =
+    useState<boolean>(false);
   const [invalidDate, setInvalidDate] = useState<boolean>(false);
   const [invalidValue, setInvalidValue] = useState<boolean>(false);
+  const [selectedConstruction, setSelectedConstruction] =
+    useState<Construction>();
   const [selectedBeneficiary, setSelectedBeneficiary] =
     useState<Supplier | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
@@ -104,6 +113,29 @@ function PaymentCreateForm({
   function openCreateCategory() {
     setShowCategoryCreateDialog(true);
   }
+
+  const { allConstructions } = useContext(ConstructionContext);
+
+  const [constructionsItems, setConstructionsItems] =
+    useState<Construction[]>(allConstructions);
+
+  useEffect(() => {
+    setConstructionsItems(allConstructions);
+  }, [allConstructions]);
+
+  const constructionSearch = (event: AutoCompleteCompleteEvent) => {
+    setTimeout(() => {
+      let _filteredConstructions;
+      if (!event.query.trim().length) {
+        _filteredConstructions = [...allConstructions];
+      } else {
+        _filteredConstructions = constructionsItems.filter((construction) => {
+          return construction.code.startsWith(event.query);
+        });
+      }
+      setConstructionsItems(_filteredConstructions);
+    }, 150);
+  };
 
   async function onCreateCategory(categoryDTO: CategoryDTO) {
     await handlePostCategory(categoryDTO);
@@ -217,6 +249,20 @@ function PaymentCreateForm({
     }));
   }, [selectedBeneficiary, selectedCategory, selectedSubCategory]);
 
+  useEffect(() => {
+    setNewPayment((prevPayment) => ({
+      ...prevPayment,
+      centerCostId: selectedConstruction?.id || "",
+      centerCost: selectedConstruction?.code || "",
+      bankBranchLocalBank: selectedConstruction?.bankBranch
+        ? `${selectedConstruction?.bankBranch} - ${selectedConstruction?.local}`
+        : "" || "",
+
+      typeCenterCost: selectedConstruction?.service || "",
+      payer: selectedConstruction?.client || "",
+    }));
+  }, [selectedConstruction]);
+
   async function validateFields() {
     setInvalidBeneficiary(
       !newPayment.beneficiary || newPayment.beneficiary === ""
@@ -242,6 +288,9 @@ function PaymentCreateForm({
       setNewPayment({
         accountId: accountId,
         accountIdTo: null,
+        centerCost: "",
+        centerCostId: "",
+        bankBranchLocalBank: "",
         balance: null,
         cleared: false,
         beneficiary: "",
@@ -271,6 +320,53 @@ function PaymentCreateForm({
 
   return (
     <div>
+      <div>
+        <div className="card flex flex-column md:flex-row gap-2 w-full">
+          <div className="field flex flex-column gap-2 w-full">
+            <LabelTitle
+              text="Código da Obra"
+              htmlFor="constructionCode"
+              className="font-semibold"
+            />
+            <div className="card p-fluid">
+              <AutoComplete
+                type="text"
+                field="code"
+                dropdown
+                value={selectedConstruction}
+                suggestions={constructionsItems}
+                completeMethod={constructionSearch}
+                onChange={(e: AutoCompleteChangeEvent) => {
+                  setSelectedConstruction(e.value);
+                  setInvalidConstructionCode(false);
+                }}
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                forceSelection
+              />
+              {invalidConstructionCode && (
+                <Message
+                  severity="error"
+                  text="Obra é obrigatório"
+                  className="smaller-text"
+                />
+              )}
+            </div>
+          </div>
+          <div className="field flex flex-column gap-2 w-full">
+            <LabelTitle
+              text="Nome da Obra"
+              htmlFor="bankBranchLocalBank"
+              className="font-semibold"
+            />
+            <InputText
+              type="text"
+              style={{ height: "30px", fontSize: "0.8rem" }}
+              value={newPayment?.bankBranchLocalBank}
+              disabled
+            />
+          </div>
+        </div>
+      </div>
       <div className="card flex flex-column md:flex-row gap-2 w-11/12">
         <div className="flex flex-column gap-1 w-full">
           <LabelTitle
