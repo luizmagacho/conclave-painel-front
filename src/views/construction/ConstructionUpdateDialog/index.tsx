@@ -129,7 +129,6 @@ function ConstructionUpdateDialog({
               setInvalidCode(false);
             }}
             value={updatedConstruction.code}
-            disabled={role !== "Administrador"}
           />
           {invalidCode && (
             <Message severity="error" text="Código é obrigatório" />
@@ -152,7 +151,6 @@ function ConstructionUpdateDialog({
               setInvalidClient(false);
             }}
             value={updatedConstruction?.client}
-            disabled={role !== "Administrador"}
           />
           {invalidClient && (
             <Message severity="error" text="Cliente é obrigatório" />
@@ -177,7 +175,6 @@ function ConstructionUpdateDialog({
               setInvalidLocal(false);
             }}
             value={updatedConstruction?.local}
-            disabled={role !== "Administrador"}
           />
           {invalidLocal && (
             <Message severity="error" text="Local é obrigatório" />
@@ -200,7 +197,6 @@ function ConstructionUpdateDialog({
               setInvalidResponsible(false);
             }}
             value={updatedConstruction?.responsible}
-            disabled={role !== "Administrador"}
           />
           {invalidResponsible && (
             <Message severity="error" text="Responsável é obrigatório" />
@@ -223,7 +219,6 @@ function ConstructionUpdateDialog({
               });
             }}
             value={updatedConstruction?.service}
-            disabled={role !== "Administrador"}
           />
         </div>
         <div className="field flex flex-column gap-2 w-full">
@@ -239,7 +234,6 @@ function ConstructionUpdateDialog({
                     cad: e.value,
                   })
                 }
-                disabled={role !== "Administrador"}
                 checked={updatedConstruction.cad === true}
               />
               <label htmlFor="option1" className="ml-2">
@@ -256,7 +250,6 @@ function ConstructionUpdateDialog({
                     cad: e.value,
                   });
                 }}
-                disabled={role !== "Administrador"}
                 checked={updatedConstruction.cad === false}
               />
               <label htmlFor="option2" className="ml-2">
@@ -282,7 +275,6 @@ function ConstructionUpdateDialog({
             className="ui-state-default"
             dateFormat="dd/mm/yy"
             showIcon
-            disabled={role !== "Administrador"}
           />
           {invalidOpeningDate && (
             <Message severity="error" text="Data de Abertura é obrigatório" />
@@ -304,7 +296,6 @@ function ConstructionUpdateDialog({
             className="ui-state-default"
             dateFormat="dd/mm/yy"
             showIcon
-            disabled={role !== "Administrador"}
           />
           {invalidClosedDate && (
             <Message
@@ -331,7 +322,6 @@ function ConstructionUpdateDialog({
               setInvalidBankBranch(false);
             }}
             value={updatedConstruction?.bankBranch}
-            disabled={role !== "Administrador"}
           />
           {invalidBankBranch && (
             <Message severity="error" text="Agência é obrigatória" />
