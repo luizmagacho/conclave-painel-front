@@ -76,6 +76,8 @@ function ConstructionUpdateDialog({
         formatDateToYYYYMMDD(newOpeningDate) || prevConstruction.openingDate,
       closedDate: formatDateToYYYYMMDD(newClosedDate),
     }));
+    if (newOpeningDate && newClosedDate)
+      setInvalidClosedDate(newClosedDate < newOpeningDate);
   }, [newOpeningDate, newClosedDate]);
 
   function validateFields() {
@@ -88,16 +90,14 @@ function ConstructionUpdateDialog({
 
     setInvalidOpeningDate(!newOpeningDate);
 
-    if (newOpeningDate && newClosedDate)
-      setInvalidClosedDate(newClosedDate < newOpeningDate);
-
     if (
       updatedConstruction.code !== "" &&
       updatedConstruction.client !== "" &&
       updatedConstruction.local !== "" &&
       updatedConstruction.responsible !== "" &&
       updatedConstruction.bankBranch !== "" &&
-      newOpeningDate
+      newOpeningDate &&
+      !invalidClosedDate
     ) {
       onUpdate(updatedConstruction);
       onHide();
