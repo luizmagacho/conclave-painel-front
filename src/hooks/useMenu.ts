@@ -82,7 +82,7 @@ const useMenu = () => {
       label: "Notas",
       icon: "pi pi-fw pi-wallet",
       command: () => {
-        router.push("/custos");
+        router.push("/notas");
       },
     },
     {

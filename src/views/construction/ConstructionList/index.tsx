@@ -111,8 +111,8 @@ function ConstructionList() {
       onclick: openDialog,
     },
     {
-      ariaLabel: "Custos",
-      label: "Custos",
+      ariaLabel: "Notas",
+      label: "Notas",
       onclick: openCosts,
     },
     {
@@ -129,7 +129,13 @@ function ConstructionList() {
 
   async function onUpdateConstruction(construction: Construction) {
     await handleUpdateConstruction(construction);
-    handleGetConstructions(page, codeSearch, bankBranchSearch, localBankSearch);
+    handleGetConstructions(
+      page,
+      codeSearch,
+      bankBranchSearch,
+      localBankSearch,
+      responsibleSearch
+    );
   }
 
   function openDialog(construction: Construction) {
@@ -149,7 +155,13 @@ function ConstructionList() {
 
   async function onDeleteConstruction(constructionId: string) {
     await handleDeleteConstruction(constructionId);
-    handleGetConstructions(page, codeSearch, bankBranchSearch, localBankSearch);
+    handleGetConstructions(
+      page,
+      codeSearch,
+      bankBranchSearch,
+      localBankSearch,
+      responsibleSearch
+    );
   }
 
   function closeDialog() {
@@ -159,7 +171,7 @@ function ConstructionList() {
 
   async function openCosts(construction: Construction) {
     await handleGetConstructionById(construction.id);
-    router.push(`/obras/${construction.id}/custos`);
+    router.push(`/obras/${construction.id}/notas`);
   }
 
   async function openTools(construction: Construction) {
@@ -170,7 +182,13 @@ function ConstructionList() {
   async function onCreateConstruction(construction: ConstructionDTO) {
     await handlePostConstruction(construction);
     await handleGetCenterCostNumber();
-    handleGetConstructions(page, codeSearch, bankBranchSearch, localBankSearch);
+    handleGetConstructions(
+      page,
+      codeSearch,
+      bankBranchSearch,
+      localBankSearch,
+      responsibleSearch
+    );
   }
 
   function closeCreateDialog() {
@@ -179,7 +197,13 @@ function ConstructionList() {
 
   function onPageChange(event: PaginatorPageChangeEvent) {
     const { page, first } = event;
-    handleGetConstructions(page);
+    handleGetConstructions(
+      page,
+      codeSearch,
+      bankBranchSearch,
+      localBankSearch,
+      responsibleSearch
+    );
     setFirst(first);
     setPage(page);
   }

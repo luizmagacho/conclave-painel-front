@@ -12,6 +12,8 @@ export function convertStringToDate(dateString: string): Date | null {
     return null; // Retorna null se a data for inválida
   }
 
+  date.setHours(date.getHours() + 3);
+
   return date;
 }
 
