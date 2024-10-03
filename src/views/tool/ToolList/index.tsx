@@ -10,7 +10,6 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { useContext, useEffect, useState } from "react";
-import ToolCreateDialog from "../ToolCreateDialog";
 import ToolUpdateDialog from "../ToolUpdateDialog";
 import ToolCreateGenericDialog from "../ToolCreateGenericDialog";
 import ToolDeleteDialog from "../ToolDeleteDialog";
@@ -101,6 +100,7 @@ function ToolList() {
   }
 
   function closeUpdatedDialog() {
+    setCurrTool(null);
     setShowDialog((showDialog) => !showDialog);
   }
 

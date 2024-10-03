@@ -57,8 +57,7 @@ function ToolUpdateDialog({
       ...prevTool,
       dateLoanFrom:
         formatDateToYYYYMMDD(updatedDateLoanFrom) || prevTool.dateLoanFrom,
-      dateLoanTo:
-        formatDateToYYYYMMDD(updatedDateLoanTo) || prevTool.dateLoanTo,
+      dateLoanTo: formatDateToYYYYMMDD(updatedDateLoanTo) || "",
     }));
   }, [updatedDateLoanFrom, updatedDateLoanTo]);
 
