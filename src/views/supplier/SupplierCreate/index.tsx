@@ -65,6 +65,8 @@ function SupplierCreate() {
   const [invalidBank2, setInvalidBank2] = useState<boolean>(false);
   const [invalidBank3, setInvalidBank3] = useState<boolean>(false);
 
+  const [invalidCpfAndCnpj, setInvalidCpfAndCnpj] = useState<boolean>(false);
+
   const {
     existsCnpj,
     existsCpf,
@@ -77,15 +79,18 @@ function SupplierCreate() {
   const router = useRouter();
 
   function validateFields() {
-    console.log("PersonalInfo: ", invalidPersonalInfo);
-    console.log("existsCnpj: ", existsCnpj);
-    console.log("existsCpf: ", existsCpf);
     setInvalidShortenedName(newSupplier.shortenedName === "");
+    setInvalidPersonalInfo(newSupplier.cnpj === "" && newSupplier.cpf === "");
+    setInvalidCpfAndCnpj(newSupplier.cnpj !== "" && newSupplier.cpf !== "");
     if (
       !invalidPersonalInfo &&
       !existsCnpj &&
       !existsCpf &&
-      !invalidShortenedName
+      !invalidShortenedName &&
+      newSupplier.cnpj === "" &&
+      newSupplier.cpf === "" &&
+      newSupplier.cnpj !== "" &&
+      newSupplier.cpf !== ""
     ) {
       handlePostSupplier(newSupplier);
 
@@ -119,16 +124,11 @@ function SupplierCreate() {
 
   const toast = useRef<Toast>(null);
 
-  useEffect(() => {
-    console.log("CPF: ", newSupplier.cpf);
-    setInvalidPersonalInfo(newSupplier.cnpj === "" || newSupplier.cpf === "");
-  }, [newSupplier.cnpj, newSupplier.cpf]);
-
   return (
-    <Card className="m-3">
-      <section className="flex flex-column gap-2 p-5 w-full overflow-y: auto">
+    <Card className="m-2">
+      <section className="flex flex-column gap-1 p-5 w-full">
         <h1 className="text-xl m-0">Cadastrar Fornecedores</h1>
-        <div className="card flex flex-column md:flex-row gap-3 w-full">
+        <div className="card flex flex-column md:flex-row gap-1 w-11/12">
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="CNPJ"
@@ -145,6 +145,7 @@ function SupplierCreate() {
                   cnpj: e.target.value || "",
                 });
                 setInvalidPersonalInfo(false);
+                setInvalidCpfAndCnpj(false);
               }}
               value={newSupplier?.cnpj}
               onBlur={validateCnpj}
@@ -154,6 +155,12 @@ function SupplierCreate() {
             )}
             {existsCnpj && (
               <Message severity="error" text="Cnpj já existente" />
+            )}
+            {invalidCpfAndCnpj && (
+              <Message
+                severity="error"
+                text="Proibido Cpf e Cnpj ao mesmo tempo"
+              />
             )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
@@ -172,12 +179,19 @@ function SupplierCreate() {
                   cpf: e.target.value || "",
                 });
                 setInvalidPersonalInfo(false);
+                setInvalidCpfAndCnpj(false);
               }}
               value={newSupplier?.cpf}
               onBlur={validateCpf}
             />
             {invalidPersonalInfo && (
               <Message severity="error" text="Cpf ou Cnpj é obrigatório" />
+            )}
+            {invalidCpfAndCnpj && (
+              <Message
+                severity="error"
+                text="Proibido Cpf e Cnpj ao mesmo tempo"
+              />
             )}
             {existsCpf && <Message severity="error" text="Cpf já existente" />}
           </div>
@@ -230,7 +244,7 @@ function SupplierCreate() {
             )}
           </div>
         </div>
-        <div className="card flex flex-column md:flex-row gap-3 w-11/12">
+        <div className="card flex flex-column md:flex-row gap-1 w-11/12">
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="Logradouro"
@@ -317,8 +331,8 @@ function SupplierCreate() {
             )}
           </div>
         </div>
-        <Divider />
-        <div className="card flex flex-column md:flex-row gap-3 w-11/12">
+        <Divider className="gap-1" />
+        <div className="card flex flex-column md:flex-row gap-1 w-11/12">
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="Nome Vendedor"
@@ -409,7 +423,7 @@ function SupplierCreate() {
             )}
           </div>
         </div>
-        <div className="card flex flex-column md:flex-row gap-3 w-11/12">
+        <div className="card flex flex-column md:flex-row gap-1 w-11/12">
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="Nome Financeiro"
@@ -507,7 +521,7 @@ function SupplierCreate() {
           </div>
         </div>
         <Divider />
-        <div className="card flex flex-column md:flex-row gap-3 w-11/12">
+        <div className="card flex flex-column md:flex-row gap-1 w-11/12">
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="Banco 1"

@@ -22,6 +22,7 @@ function SupplierCompleteInfo() {
     handleUpdateSupplier,
     handleValidateCnpj,
     handleValidateCpf,
+    handleValidateShortenedName,
   } = useContext(SupplierContext);
   const [loading, setLoading] = useState<boolean>(false);
   const [updatedSupplier, setUpdatedSupplier] = useState<Supplier>({
@@ -81,22 +82,38 @@ function SupplierCompleteInfo() {
   const [invalidBank2, setInvalidBank2] = useState<boolean>(false);
   const [invalidBank3, setInvalidBank3] = useState<boolean>(false);
 
+  const [invalidCpfAndCnpj, setInvalidCpfAndCnpj] = useState<boolean>(false);
+
   const [showDisabled, setShowDisabled] = useState<boolean>(true);
 
   const router = useRouter();
 
-  async function validateFields() {
-    await setInvalidCpf(
+  function validateFields() {
+    setInvalidCpf(
       !updatedSupplier.cpf ||
         updatedSupplier.cpf === "" ||
         updatedSupplier.cpf.length >= 11
     );
 
-    await setInvalidCnpj(!updatedSupplier.cnpj || updatedSupplier.cnpj === "");
-    setInvalidPersonalInfo(invalidCpf && invalidCnpj);
-    if (!invalidPersonalInfo) {
-      await handleUpdateSupplier(updatedSupplier);
-      router.push("/fornecedores");
+    setInvalidCnpj(!updatedSupplier.cnpj || updatedSupplier.cnpj === "");
+    setInvalidPersonalInfo(
+      updatedSupplier.cnpj === "" && updatedSupplier.cpf === ""
+    );
+    setInvalidCpfAndCnpj(
+      updatedSupplier.cnpj !== "" && updatedSupplier.cpf !== ""
+    );
+    if (
+      !invalidPersonalInfo &&
+      !existsCnpj &&
+      !existsCpf &&
+      !invalidShortenedName &&
+      updatedSupplier.cnpj === "" &&
+      updatedSupplier.cpf === "" &&
+      updatedSupplier.cnpj !== "" &&
+      updatedSupplier.cpf !== ""
+    ) {
+      handleUpdateSupplier(updatedSupplier);
+      router.back();
     }
   }
 
@@ -150,6 +167,30 @@ function SupplierCompleteInfo() {
     }
   }, [selectedSupplier]);
 
+  const validateCnpj = () => {
+    if (
+      updatedSupplier.cnpj &&
+      updatedSupplier.cnpj.replaceAll("[^0-9]", "").length >= 18
+    ) {
+      handleValidateCnpj(updatedSupplier.cnpj);
+    }
+  };
+
+  const validateCpf = () => {
+    if (
+      updatedSupplier.cpf &&
+      updatedSupplier.cpf.replaceAll("[^0-9]", "").length >= 14
+    ) {
+      handleValidateCpf(updatedSupplier.cpf);
+    }
+  };
+
+  const validateShortenedName = () => {
+    if (updatedSupplier.shortenedName) {
+      handleValidateShortenedName(updatedSupplier.shortenedName);
+    }
+  };
+
   return (
     <Card className="m-2">
       <section className="flex flex-column gap-1 p-5 w-full">
@@ -187,13 +228,25 @@ function SupplierCompleteInfo() {
                     ...updatedSupplier,
                     cnpj: e.target.value || "",
                   });
+                  setInvalidPersonalInfo(false);
+                  setInvalidCpfAndCnpj(false);
                 }}
                 value={updatedSupplier?.cnpj}
                 disabled={showDisabled}
+                onBlur={validateCnpj}
               />
             )}
             {invalidPersonalInfo && (
               <Message severity="error" text="Cpf ou Cnpj é obrigatório" />
+            )}
+            {existsCnpj && (
+              <Message severity="error" text="Cnpj já existente" />
+            )}
+            {invalidCpfAndCnpj && (
+              <Message
+                severity="error"
+                text="Proibido Cpf e Cnpj ao mesmo tempo"
+              />
             )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
@@ -211,12 +264,22 @@ function SupplierCompleteInfo() {
                   ...updatedSupplier,
                   cpf: e.target.value || "",
                 });
+                setInvalidPersonalInfo(false);
+                setInvalidCpfAndCnpj(false);
               }}
               value={updatedSupplier?.cpf}
+              onBlur={validateCpf}
               disabled={showDisabled}
             />
             {invalidPersonalInfo && (
               <Message severity="error" text="Cpf ou Cnpj é obrigatório" />
+            )}
+            {existsCpf && <Message severity="error" text="Cpf já existente" />}
+            {invalidCpfAndCnpj && (
+              <Message
+                severity="error"
+                text="Proibido Cpf e Cnpj ao mesmo tempo"
+              />
             )}
           </div>
           <div className="field flex flex-column gap-2 w-full">
@@ -260,6 +323,7 @@ function SupplierCompleteInfo() {
               }}
               value={updatedSupplier?.shortenedName}
               disabled={showDisabled}
+              onBlur={validateShortenedName}
             />
             {invalidShortenedName && (
               <Message severity="error" text="Nome Reduzido é obrigatório" />
@@ -388,8 +452,8 @@ function SupplierCompleteInfo() {
               className="font-semibold text-sm"
             />
             <InputMask
-              mask="(99) 99999-9999"
-              placeholder="(99) 99999-9999"
+              mask="(99) 9999-9999?9"
+              placeholder="(99) 9999-99999"
               onChange={(e) => {
                 setUpdatedSupplier({
                   ...updatedSupplier,
@@ -414,8 +478,8 @@ function SupplierCompleteInfo() {
               className="font-semibold text-sm"
             />
             <InputMask
-              mask="(99) 99999-9999"
-              placeholder="(99) 99999-9999"
+              mask="(99) 9999-9999?9"
+              placeholder="(99) 9999-99999"
               onChange={(e) => {
                 setUpdatedSupplier({
                   ...updatedSupplier,
@@ -453,7 +517,7 @@ function SupplierCompleteInfo() {
             )}
           </div>
         </div>
-        <div className="card flex flex-column md:flex-row gap-3 w-11/12">
+        <div className="card flex flex-column md:flex-row gap-1 w-11/12">
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
               text="Nome Financeiro"
@@ -483,8 +547,8 @@ function SupplierCompleteInfo() {
               className="font-semibold text-sm"
             />
             <InputMask
-              mask="(99) 99999-9999"
-              placeholder="(99) 99999-9999"
+              mask="(99) 9999-9999?9"
+              placeholder="(99) 9999-99999"
               onChange={(e) => {
                 setUpdatedSupplier({
                   ...updatedSupplier,
@@ -509,8 +573,8 @@ function SupplierCompleteInfo() {
               className="font-semibold text-sm"
             />
             <InputMask
-              mask="(99) 99999-9999"
-              placeholder="(99) 99999-9999"
+              mask="(99) 9999-9999?9"
+              placeholder="(99) 9999-99999"
               onChange={(e) => {
                 setUpdatedSupplier({
                   ...updatedSupplier,
@@ -632,7 +696,7 @@ function SupplierCompleteInfo() {
             label="Cancelar"
             outlined
             onClick={() => {
-              router.push("/fornecedores");
+              router.back();
             }}
           />
           {!showDisabled && (
