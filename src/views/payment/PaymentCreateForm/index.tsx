@@ -82,8 +82,11 @@ function PaymentCreateForm({
     useState<SubCategory | null>(null);
   const [newPaymentDate, setNewPaymentDate] = useState<Date | null>();
 
-  const { allSuppliers, handleGetAllSuppliers, handlePostSupplier } =
-    useContext(SupplierContext);
+  const {
+    allSuppliersShortenedName,
+    handleGetAllShortenedName,
+    handlePostSupplier,
+  } = useContext(SupplierContext);
   const [showCategoryCreateDialog, setShowCategoryCreateDialog] =
     useState<boolean>(false);
   const [showSubCategoryCreateDialog, setShowSubCategoryCreateDialog] =
@@ -101,8 +104,9 @@ function PaymentCreateForm({
     handlePostSubCategory,
   } = useContext(PaymentContext);
 
-  const [allSupplierItems, setAllSupplierItems] =
-    useState<Supplier[]>(allSuppliers);
+  const [allSupplierItems, setAllSupplierItems] = useState<string[]>(
+    allSuppliersShortenedName
+  );
 
   const [allCategoriesItems, setAllCategoriesItems] =
     useState<Category[]>(allCategories);
@@ -186,10 +190,10 @@ function PaymentCreateForm({
     setTimeout(() => {
       let _filteredSuppliers;
       if (!event.query.trim().length) {
-        _filteredSuppliers = [...allSuppliers];
+        _filteredSuppliers = [...allSuppliersShortenedName];
       } else {
-        _filteredSuppliers = allSuppliers.filter((supplier) => {
-          return supplier.shortenedName
+        _filteredSuppliers = allSuppliersShortenedName.filter((supplier) => {
+          return supplier
             .toLocaleUpperCase()
             .startsWith(event.query.toLocaleUpperCase());
         });
@@ -231,7 +235,7 @@ function PaymentCreateForm({
   };
 
   useEffect(() => {
-    handleGetAllSuppliers();
+    handleGetAllShortenedName();
     handleGetCategories();
     handleGetSubCategories();
   }, []);
@@ -378,7 +382,6 @@ function PaymentCreateForm({
             <div className="flex flex-column gap-1 w-full">
               <AutoComplete
                 suggestions={allSupplierItems}
-                field="shortenedName"
                 dropdown
                 style={{ height: "30px", fontSize: "0.75rem" }}
                 value={selectedBeneficiary}
