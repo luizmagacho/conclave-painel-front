@@ -72,6 +72,7 @@ function SupplierCreate() {
     existsCpf,
     existsShortenedName,
     handlePostSupplier,
+    handleGetSuppliers,
     handleValidateCnpj,
     handleValidateCpf,
     handleValidateShortenedName,
@@ -86,13 +87,13 @@ function SupplierCreate() {
       !invalidPersonalInfo &&
       !existsCnpj &&
       !existsCpf &&
+      !existsShortenedName &&
       !invalidShortenedName &&
-      newSupplier.cnpj === "" &&
-      newSupplier.cpf === "" &&
-      newSupplier.cnpj !== "" &&
-      newSupplier.cpf !== ""
+      ((newSupplier.cnpj !== "" && newSupplier.cpf === "") ||
+        (newSupplier.cnpj === "" && newSupplier.cpf !== ""))
     ) {
       handlePostSupplier(newSupplier);
+      handleGetSuppliers();
 
       router.back();
     }
@@ -103,7 +104,7 @@ function SupplierCreate() {
       newSupplier.cnpj &&
       newSupplier.cnpj.replaceAll("[^0-9]", "").length >= 18
     ) {
-      handleValidateCnpj(newSupplier.cnpj);
+      handleValidateCnpj("", newSupplier.cnpj);
     }
   };
 
@@ -112,13 +113,13 @@ function SupplierCreate() {
       newSupplier.cpf &&
       newSupplier.cpf.replaceAll("[^0-9]", "").length >= 14
     ) {
-      handleValidateCpf(newSupplier.cpf);
+      handleValidateCpf("", newSupplier.cpf);
     }
   };
 
   const validateShortenedName = () => {
     if (newSupplier.shortenedName) {
-      handleValidateShortenedName(newSupplier.shortenedName);
+      handleValidateShortenedName("", newSupplier.shortenedName);
     }
   };
 

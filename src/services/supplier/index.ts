@@ -9,6 +9,7 @@ export async function getSuppliers({
   page,
   size,
   completeName,
+  shortenedName,
   type,
 }: SupplierPaginationParam) {
   let res = await api.get<Pagination<Supplier>>(baseUrl, {
@@ -16,6 +17,7 @@ export async function getSuppliers({
       page,
       size,
       completeName,
+      shortenedName,
       type,
     },
   });
@@ -53,29 +55,29 @@ export async function deleteSupplier(supplierId: string) {
   return res.status;
 }
 
-export async function validateCpf(cpf: string) {
+export async function validateCpf(id: string, cpf: string) {
   let res = await api.get(`${baseUrl}/validate-cpf`, {
     params: {
+      id,
       cpf,
     },
   });
   return res.data;
 }
 
-export async function validateCnpj(cnpj: string) {
+export async function validateCnpj(id: string, cnpj: string) {
   let res = await api.get(`${baseUrl}/validate-cnpj`, {
     params: {
+      id,
       cnpj,
     },
   });
   return res.data;
 }
 
-export async function validateShortenedName(shortenedName: string) {
+export async function validateShortenedName(id: string, shortenedName: string) {
   let res = await api.get(`${baseUrl}/validate-shortened-name`, {
-    params: {
-      shortenedName,
-    },
+    params: { id, shortenedName },
   });
   return res.data;
 }

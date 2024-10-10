@@ -11,7 +11,6 @@ import ConstructionCreateDialog from "../ConstructionCreateDialog";
 import ConstructionUpdateDialog from "../ConstructionUpdateDialog";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
-import { TabPanel, TabView } from "primereact/tabview";
 import ConstructionDeleteDialog from "../ConstructionDeleteDialog";
 import LabelTitle from "@/components/LabelTitle";
 import ConstructionReactiveDialog from "../ConstructionReactiveDialog";
