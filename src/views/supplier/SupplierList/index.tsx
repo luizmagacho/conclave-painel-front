@@ -11,6 +11,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import SupplierDeleteDialog from "../SupplierDeleteDialog";
 import { ToastContext } from "@/context/ToastContext";
 import Cookies from "js-cookie";
+import LabelTitle from "@/components/LabelTitle";
 
 interface Options {
   icon?: string;
@@ -28,6 +29,10 @@ const columns = [
   {
     field: "completeName",
     header: "Nome Completo",
+  },
+  {
+    field: "shortenedName",
+    header: "Nome Reduzido",
   },
   {
     field: "sellerName",
@@ -48,10 +53,10 @@ function SupplierList() {
   const router = useRouter();
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [nameSearch, setNameSearch] = useState<string>("");
+  const [shortenedNameSearch, setShortenedNameSearch] = useState<string>("");
   const [optionType, setOptionType] = useState<OptionType>({
     type: "Nome",
   });
-  const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
   const [currDeleteSupplier, setCurrDeleteSupplier] = useState<Supplier | null>(
     null
   );
@@ -118,11 +123,20 @@ function SupplierList() {
   }
 
   function onSearch(name: string) {
-    handleGetSuppliers(0, name, optionType.type);
+    handleGetSuppliers(0, name, shortenedNameSearch, optionType.type);
+  }
+
+  function onSearchShortenedName(shortenedName: string) {
+    console.log(shortenedName);
+    handleGetSuppliers(0, nameSearch, shortenedName, optionType.type);
   }
 
   function onChangeSearch(name: string) {
     setNameSearch(name);
+  }
+
+  function onChangeShortenedNameSearch(name: string) {
+    setShortenedNameSearch(name);
   }
 
   useEffect(() => {
@@ -141,26 +155,52 @@ function SupplierList() {
       <section className="flex flex-column gap-2 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
           <h1 className="m-0">Fornecedores</h1>
-          <InputSearch
-            onSearch={onSearch}
-            onChange={onChangeSearch}
-            inputType={optionType.type}
-          />
-          {(role === "Administrador" ||
-            role === "Compras" ||
-            role === "Contas") && (
-            <Button
-              style={{
-                backgroundColor: "var(--cor-primaria)",
-                border: "1px solid var(--cor-primaria)",
-              }}
-              onClick={() => {
-                openCreatePage();
-              }}
-            >
-              Adicionar
-            </Button>
-          )}
+          <div
+            className="flex justify-end gap-6 w-full"
+            style={{ justifyContent: "end" }}
+          >
+            {(role === "Administrador" ||
+              role === "Compras" ||
+              role === "Contas") && (
+              <Button
+                style={{
+                  backgroundColor: "var(--cor-primaria)",
+                  border: "1px solid var(--cor-primaria)",
+                }}
+                onClick={() => {
+                  openCreatePage();
+                }}
+              >
+                Adicionar
+              </Button>
+            )}
+          </div>
+        </div>
+        <div className="card flex flex-column md:flex-row gap-2 w-11/12">
+          <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="Nome Completo"
+              htmlFor="completeName"
+              className="font-semibold smaller-text"
+            />
+            <InputSearch
+              onSearch={onSearch}
+              onChange={onChangeSearch}
+              inputType={optionType.type}
+            />
+          </div>
+          <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="Nome Reduzido"
+              htmlFor="completeName"
+              className="font-semibold smaller-text"
+            />
+            <InputSearch
+              onSearch={onSearchShortenedName}
+              onChange={onChangeShortenedNameSearch}
+              inputType={optionType.type}
+            />
+          </div>
         </div>
         <DataTable
           emptyMessage="Nenhum fornecedor encontrado."

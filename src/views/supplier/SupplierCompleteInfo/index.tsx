@@ -18,7 +18,9 @@ function SupplierCompleteInfo() {
     selectedSupplier,
     existsCnpj,
     existsCpf,
+    existsShortenedName,
     handleGetSupplierById,
+    handleGetSuppliers,
     handleUpdateSupplier,
     handleValidateCnpj,
     handleValidateCpf,
@@ -106,13 +108,13 @@ function SupplierCompleteInfo() {
       !invalidPersonalInfo &&
       !existsCnpj &&
       !existsCpf &&
+      !existsShortenedName &&
       !invalidShortenedName &&
-      updatedSupplier.cnpj === "" &&
-      updatedSupplier.cpf === "" &&
-      updatedSupplier.cnpj !== "" &&
-      updatedSupplier.cpf !== ""
+      ((updatedSupplier.cnpj !== "" && updatedSupplier.cpf === "") ||
+        (updatedSupplier.cnpj === "" && updatedSupplier.cpf !== ""))
     ) {
       handleUpdateSupplier(updatedSupplier);
+      handleGetSuppliers();
       router.back();
     }
   }
@@ -172,7 +174,7 @@ function SupplierCompleteInfo() {
       updatedSupplier.cnpj &&
       updatedSupplier.cnpj.replaceAll("[^0-9]", "").length >= 18
     ) {
-      handleValidateCnpj(updatedSupplier.cnpj);
+      handleValidateCnpj(updatedSupplier.id, updatedSupplier.cnpj);
     }
   };
 
@@ -181,13 +183,17 @@ function SupplierCompleteInfo() {
       updatedSupplier.cpf &&
       updatedSupplier.cpf.replaceAll("[^0-9]", "").length >= 14
     ) {
-      handleValidateCpf(updatedSupplier.cpf);
+      handleValidateCpf(updatedSupplier.id, updatedSupplier.cpf);
     }
   };
 
   const validateShortenedName = () => {
+    console.log(updatedSupplier.shortenedName);
     if (updatedSupplier.shortenedName) {
-      handleValidateShortenedName(updatedSupplier.shortenedName);
+      handleValidateShortenedName(
+        updatedSupplier.id,
+        updatedSupplier.shortenedName
+      );
     }
   };
 
@@ -327,6 +333,9 @@ function SupplierCompleteInfo() {
             />
             {invalidShortenedName && (
               <Message severity="error" text="Nome Reduzido é obrigatório" />
+            )}
+            {existsShortenedName && (
+              <Message severity="error" text="Nome Reduzido já existente" />
             )}
           </div>
         </div>

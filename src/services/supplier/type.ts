@@ -57,5 +57,6 @@ export type SupplierPaginationParam = {
   size: number;
   page: number;
   completeName?: string;
+  shortenedName?: string;
   type?: string;
 };

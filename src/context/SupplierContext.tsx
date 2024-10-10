@@ -32,6 +32,7 @@ interface SupplierContextProps {
   handleGetSuppliers: (
     page?: number,
     completeName?: string,
+    shortenedName?: string,
     type?: string
   ) => Promise<void>;
   handleGetAllSuppliers: () => Promise<void>;
@@ -40,9 +41,12 @@ interface SupplierContextProps {
   handleGetSupplierById: (supplierId: string) => Promise<void>;
   handleUpdateSupplier: (supplier: Supplier) => Promise<void>;
   handleDeleteSupplier: (supplierId: string) => Promise<void>;
-  handleValidateCpf: (cpf: string) => Promise<void>;
-  handleValidateCnpj: (cnpj: string) => Promise<void>;
-  handleValidateShortenedName: (shortenedName: string) => Promise<void>;
+  handleValidateCpf: (id: string, cpf: string) => Promise<void>;
+  handleValidateCnpj: (id: string, cnpj: string) => Promise<void>;
+  handleValidateShortenedName: (
+    id: string,
+    shortenedName: string
+  ) => Promise<void>;
 }
 
 export const SupplierContext = createContext({} as SupplierContextProps);
@@ -71,14 +75,17 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
   async function handleGetSuppliers(
     page: number = 0,
     completeName: string = "",
+    shortenedName: string = "",
     type = "Nome"
   ) {
     setLoading(true);
     try {
+      console.log("1: ", shortenedName);
       const { content, totalElements } = await getSuppliers({
         page,
         size: 15,
         completeName,
+        shortenedName,
         type,
       });
       setBufferedSuppliers(content || []);
@@ -175,16 +182,19 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
     }
   }
 
-  async function handleValidateCpf(cpf: string) {
-    setExistsCpf(await validateCpf(cpf));
+  async function handleValidateCpf(id: string, cpf: string) {
+    setExistsCpf(await validateCpf(id, cpf));
   }
 
-  async function handleValidateCnpj(cnpj: string) {
-    setExistsCnpj(await validateCnpj(cnpj));
+  async function handleValidateCnpj(id: string, cnpj: string) {
+    setExistsCnpj(await validateCnpj(id, cnpj));
   }
 
-  async function handleValidateShortenedName(shortenedName: string) {
-    setExistsShortenedName(await validateShortenedName(shortenedName));
+  async function handleValidateShortenedName(
+    id: string,
+    shortenedName: string
+  ) {
+    setExistsShortenedName(await validateShortenedName(id, shortenedName));
   }
 
   useEffect(() => {
