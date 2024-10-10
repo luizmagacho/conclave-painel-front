@@ -67,6 +67,10 @@ function ToolCreateGenericDialog({
         formatDateToYYYYMMDD(newDateLoanFrom) || prevTool.dateLoanFrom,
       dateLoanTo: formatDateToYYYYMMDD(newDateLoanTo) || prevTool.dateLoanTo,
     }));
+
+    if (newDateLoanTo && newDateLoanFrom) {
+      setInvalidDates(newDateLoanTo < newDateLoanFrom);
+    }
   }, [newDateLoanFrom, newDateLoanTo]);
 
   const { allConstructions } = useContext(ConstructionContext);
@@ -140,9 +144,6 @@ function ToolCreateGenericDialog({
     setInvalidName(!newTool.name || newTool.name === "");
     setInvalidNewDateLoanFrom(!newDateLoanFrom);
     setInvalidResponsible(!newTool.responsible || newTool.responsible === "");
-    if (newDateLoanTo && newDateLoanFrom) {
-      setInvalidDates(newDateLoanTo < newDateLoanFrom);
-    }
 
     if (
       !invalidNewDateLoanFrom &&

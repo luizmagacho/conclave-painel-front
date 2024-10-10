@@ -1,13 +1,20 @@
 import LabelTitle from "@/components/LabelTitle";
+import { ConstructionContext } from "@/context/ConstructionContext";
+import { Construction } from "@/services/construction/type";
 import { Tool } from "@/services/tool/type";
 import { convertStringToDate, formatDateToYYYYMMDD } from "@/util/date";
 import { useRouter } from "next/router";
+import {
+  AutoComplete,
+  AutoCompleteChangeEvent,
+  AutoCompleteCompleteEvent,
+} from "primereact/autocomplete";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 interface ToolUpdateDialog {
   visible: boolean;
@@ -23,6 +30,7 @@ function ToolUpdateDialog({
   data,
 }: ToolUpdateDialog) {
   const router = useRouter();
+  const userId = localStorage.getItem("portal.id");
   const [updatedTool, setUpdatedTool] = useState<Tool>({
     id: data.id,
     name: data.name,
@@ -41,6 +49,8 @@ function ToolUpdateDialog({
     updatedAt: data.updatedAt,
     createdAt: data.createdAt,
   });
+  const [selectedConstruction, setSelectedConstruction] =
+    useState<Construction>();
   const [updatedDateLoanFrom, setUpdatedDateLoanFrom] = useState<Date | null>(
     convertStringToDate(data.dateLoanFrom)
   );
@@ -51,6 +61,12 @@ function ToolUpdateDialog({
   );
   const [invalidName, setInvalidName] = useState<boolean>(false);
   const [invalidResponsible, setInvalidResponsible] = useState<boolean>(false);
+  const [invalidCenterCost, setInvalidCenterCost] = useState<boolean>(false);
+  const [invalidDates, setInvalidDates] = useState<boolean>(false);
+  const { allConstructions } = useContext(ConstructionContext);
+
+  const [constructionsItems, setConstructionsItems] =
+    useState<Construction[]>(allConstructions);
 
   useEffect(() => {
     setUpdatedTool((prevTool) => ({
@@ -59,10 +75,23 @@ function ToolUpdateDialog({
         formatDateToYYYYMMDD(updatedDateLoanFrom) || prevTool.dateLoanFrom,
       dateLoanTo: formatDateToYYYYMMDD(updatedDateLoanTo) || "",
     }));
+
+    if (updatedDateLoanTo && updatedDateLoanFrom)
+      setInvalidDates(updatedDateLoanTo < updatedDateLoanFrom);
   }, [updatedDateLoanFrom, updatedDateLoanTo]);
 
-  async function validateFields() {
-    const userId = await localStorage.getItem("portal.id");
+  useEffect(() => {
+    const fetchConstruction = async () => {
+      const relatedConstruction = allConstructions.find(
+        (construction) => construction.id === data.centerCostId // Substitua por ID relacionado
+      );
+      setSelectedConstruction(relatedConstruction);
+    };
+    fetchConstruction();
+  }, []);
+
+  function validateFields() {
+    setInvalidCenterCost(updatedTool.centerCost === "");
     setUpdatedTool({ ...updatedTool, userId: userId || "" });
     setInvalidName(!updatedTool.name || updatedTool.name === "");
     setInvalidResponsible(
@@ -70,11 +99,45 @@ function ToolUpdateDialog({
     );
     setInvalidDateLoanFrom(!updatedDateLoanFrom);
 
-    if (!invalidName && !invalidResponsible && !invalidDateLoanFrom) {
+    if (
+      !invalidCenterCost &&
+      !invalidName &&
+      !invalidResponsible &&
+      !invalidDateLoanFrom &&
+      !invalidDates
+    ) {
       onUpdate(updatedTool);
       onHide();
     }
   }
+
+  useEffect(() => {
+    setUpdatedTool((prevCost) => ({
+      ...prevCost,
+      centerCostId: selectedConstruction?.id || "",
+      centerCost: selectedConstruction?.code || "",
+      bankBranchLocalBank: selectedConstruction?.bankBranch
+        ? `${selectedConstruction?.bankBranch} - ${selectedConstruction?.local}`
+        : "" || "",
+
+      typeCenterCost: selectedConstruction?.service || "",
+      payer: selectedConstruction?.client || "",
+    }));
+  }, [selectedConstruction]);
+
+  const constructionSearch = (event: AutoCompleteCompleteEvent) => {
+    setTimeout(() => {
+      let _filteredConstructions;
+      if (!event.query.trim().length) {
+        _filteredConstructions = [...allConstructions];
+      } else {
+        _filteredConstructions = constructionsItems.filter((construction) => {
+          return construction.code.startsWith(event.query);
+        });
+      }
+      setConstructionsItems(_filteredConstructions);
+    }, 150);
+  };
 
   return (
     <Dialog
@@ -91,12 +154,29 @@ function ToolUpdateDialog({
             htmlFor="code"
             className="font-semibold"
           />
-          <InputText
-            type="text"
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedTool?.centerCost}
-            disabled={true}
-          />
+          <div className="card p-fluid">
+            <AutoComplete
+              type="text"
+              field="code"
+              dropdown
+              value={selectedConstruction}
+              suggestions={constructionsItems}
+              completeMethod={constructionSearch}
+              onChange={(e: AutoCompleteChangeEvent) => {
+                setSelectedConstruction(e.value);
+                setInvalidCenterCost(false);
+              }}
+              className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
+              style={{ height: "30px", fontSize: "0.8rem" }}
+            />
+            {invalidCenterCost && (
+              <Message
+                severity="error"
+                text="Obra é obrigatório"
+                style={{ height: "30px", fontSize: "0.4rem" }}
+              />
+            )}
+          </div>
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -165,6 +245,8 @@ function ToolUpdateDialog({
             id="buttondisplay"
             onChange={(e) => {
               setUpdatedDateLoanFrom(e.value || null);
+              setInvalidDateLoanFrom(false);
+              setInvalidDates(false);
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={updatedDateLoanFrom}
@@ -180,6 +262,13 @@ function ToolUpdateDialog({
               className="smaller-text"
             />
           )}
+          {invalidDates && (
+            <Message
+              severity="error"
+              text="Data de Empréstimo não pode ser menor que a Data de Devolução"
+              className="smaller-text"
+            />
+          )}
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -191,6 +280,7 @@ function ToolUpdateDialog({
             id="buttondisplay"
             onChange={(e) => {
               setUpdatedDateLoanTo(e.value || null);
+              setInvalidDates(false);
             }}
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={updatedDateLoanTo}
