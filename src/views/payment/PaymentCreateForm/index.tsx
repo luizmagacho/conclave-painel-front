@@ -8,7 +8,11 @@ import {
   SubCategory,
   SubCategoryDTO,
 } from "@/services/payment/type";
-import { Supplier, SupplierDTO } from "@/services/supplier/type";
+import {
+  Supplier,
+  SupplierDTO,
+  SupplierRecord,
+} from "@/services/supplier/type";
 import {
   AutoComplete,
   AutoCompleteChangeEvent,
@@ -22,7 +26,6 @@ import { Message } from "primereact/message";
 import { useContext, useEffect, useState } from "react";
 import CategoryCreateDialog from "../CategoryCreateDialog";
 import SubCategoryCreateDialog from "../SubCategoryCreateDialog";
-import CurrencyInput from "@/components/InputCurrency";
 import SupplierCreate from "@/views/supplier/SupplierCreate";
 import { useRouter } from "next/router";
 import { ConstructionContext } from "@/context/ConstructionContext";
@@ -72,7 +75,7 @@ function PaymentCreateForm({
   const [invalidDate, setInvalidDate] = useState<boolean>(false);
   const [invalidValue, setInvalidValue] = useState<boolean>(false);
   const [selectedConstruction, setSelectedConstruction] =
-    useState<Construction>();
+    useState<Construction | null>(null);
   const [selectedBeneficiary, setSelectedBeneficiary] =
     useState<Supplier | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
@@ -104,7 +107,7 @@ function PaymentCreateForm({
     handlePostSubCategory,
   } = useContext(PaymentContext);
 
-  const [allSupplierItems, setAllSupplierItems] = useState<string[]>(
+  const [allSupplierItems, setAllSupplierItems] = useState<SupplierRecord[]>(
     allSuppliersShortenedName
   );
 
@@ -193,7 +196,7 @@ function PaymentCreateForm({
         _filteredSuppliers = [...allSuppliersShortenedName];
       } else {
         _filteredSuppliers = allSuppliersShortenedName.filter((supplier) => {
-          return supplier
+          return supplier.shortenedName
             .toLocaleUpperCase()
             .startsWith(event.query.toLocaleUpperCase());
         });
@@ -241,6 +244,7 @@ function PaymentCreateForm({
   }, []);
 
   useEffect(() => {
+    console.log(selectedBeneficiary);
     setNewPayment((prevPayment) => ({
       ...prevPayment,
       beneficiaryId: selectedBeneficiary?.id || prevPayment.beneficiaryId,
@@ -267,7 +271,7 @@ function PaymentCreateForm({
     }));
   }, [selectedConstruction]);
 
-  async function validateFields() {
+  function validateFields() {
     setInvalidBeneficiary(
       !newPayment.beneficiary || newPayment.beneficiary === ""
     );
@@ -284,11 +288,13 @@ function PaymentCreateForm({
     );
 
     if (!invalidBeneficiary || !invalidDate || !invalidValue) {
-      await onCreate(newPayment);
+      onCreate(newPayment);
       setSelectedBeneficiary(null);
       setSelectedCategory(null);
       setSelectedSubCategory(null);
-      setNewPaymentDate(new Date());
+      setSelectedConstruction(null);
+      setNewPaymentDate(null);
+      setInvalidValue(false);
       setNewPayment({
         accountId: accountId,
         accountIdTo: null,
@@ -383,6 +389,7 @@ function PaymentCreateForm({
               <AutoComplete
                 suggestions={allSupplierItems}
                 dropdown
+                field="shortenedName"
                 style={{ height: "30px", fontSize: "0.75rem" }}
                 value={selectedBeneficiary}
                 completeMethod={suppliersSearch}
