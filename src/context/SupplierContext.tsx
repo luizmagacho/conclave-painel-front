@@ -10,7 +10,11 @@ import {
   validateCpf,
   validateShortenedName,
 } from "@/services/supplier";
-import { Supplier, SupplierDTO } from "@/services/supplier/type";
+import {
+  Supplier,
+  SupplierDTO,
+  SupplierRecord,
+} from "@/services/supplier/type";
 import { Toast } from "primereact/toast";
 import { ReactNode, createContext, useEffect, useRef, useState } from "react";
 
@@ -22,7 +26,7 @@ interface SupplierContextProps {
   suppliers: Supplier[];
   selectedSupplier: Supplier | null;
   allSuppliers: Supplier[];
-  allSuppliersShortenedName: string[];
+  allSuppliersShortenedName: SupplierRecord[];
   loading: boolean;
   totalElements: number;
   postStatus: number;
@@ -59,7 +63,7 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
     useState<boolean>(false);
   const [allSuppliers, setAllSuplliers] = useState<Supplier[]>([]);
   const [allSuppliersShortenedName, setAllSuplliersShortenedName] = useState<
-    string[]
+    SupplierRecord[]
   >([]);
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
     null
