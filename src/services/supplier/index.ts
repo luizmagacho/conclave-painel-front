@@ -1,5 +1,10 @@
 import { Pagination } from "@/types/pagination";
-import { Supplier, SupplierDTO, SupplierPaginationParam } from "./type";
+import {
+  Supplier,
+  SupplierDTO,
+  SupplierPaginationParam,
+  SupplierRecord,
+} from "./type";
 import { getAPIClient } from "../axios";
 
 const baseUrl = "/supplier";
@@ -46,7 +51,7 @@ export async function getAllSuppliers() {
 }
 
 export async function getAllSuppliersShortenedName() {
-  let res = await api.get<string[]>(`${baseUrl}/all-shortened-name`);
+  let res = await api.get<SupplierRecord[]>(`${baseUrl}/all-shortened-name`);
   return res.data;
 }
 

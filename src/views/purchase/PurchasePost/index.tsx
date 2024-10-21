@@ -10,6 +10,7 @@ import {
   PurchaseDTO,
   SupplierPurchaseDTO,
 } from "@/services/purchase/type";
+import { SupplierRecord } from "@/services/supplier/type";
 import {
   convertOrderTimeToDate,
   formatDateToHHMM,
@@ -153,7 +154,7 @@ function PurchasePost() {
   const { allSuppliersShortenedName, handleGetAllShortenedName } =
     useContext(SupplierContext);
 
-  const [suppliersItems, setSuppliersItems] = useState<string[]>(
+  const [suppliersItems, setSuppliersItems] = useState<SupplierRecord[]>(
     allSuppliersShortenedName
   );
 
@@ -309,7 +310,7 @@ function PurchasePost() {
     </React.Fragment>
   );
 
-  const [allSupplierItems, setAllSupplierItems] = useState<string[]>(
+  const [allSupplierItems, setAllSupplierItems] = useState<SupplierRecord[]>(
     allSuppliersShortenedName
   );
 
@@ -320,7 +321,7 @@ function PurchasePost() {
         _filteredSuppliers = [...allSuppliersShortenedName];
       } else {
         _filteredSuppliers = allSuppliersShortenedName.filter((supplier) => {
-          return supplier
+          return supplier.shortenedName
             .toLocaleUpperCase()
             .startsWith(event.query.toLocaleUpperCase());
         });
