@@ -4,7 +4,11 @@ import { OutstandingInvoicesContext } from "@/context/OutstandingInvoiceContext"
 import { SupplierContext } from "@/context/SupplierContext";
 import { Construction } from "@/services/construction/type";
 import { OutstandingInvoicesDTO } from "@/services/outstanding-invoices/type";
-import { Supplier, SupplierName } from "@/services/supplier/type";
+import {
+  Supplier,
+  SupplierName,
+  SupplierRecord,
+} from "@/services/supplier/type";
 import { formatDateToYYYYMMDD } from "@/util/date";
 import { useRouter } from "next/router";
 import {
@@ -116,7 +120,7 @@ function OutstandingInvoicesCreateDialog({
   const [constructionsItems, setConstructionsItems] =
     useState<Construction[]>(allConstructions);
 
-  const [allSupplierItems, setAllSupplierItems] = useState<string[]>(
+  const [allSupplierItems, setAllSupplierItems] = useState<SupplierRecord[]>(
     allSuppliersShortenedName
   );
 
@@ -144,7 +148,7 @@ function OutstandingInvoicesCreateDialog({
         _filteredSuppliers = [...allSuppliersShortenedName];
       } else {
         _filteredSuppliers = allSuppliersShortenedName.filter((supplier) => {
-          return supplier
+          return supplier.shortenedName
             .toLocaleUpperCase()
             .startsWith(event.query.toLocaleUpperCase());
         });
