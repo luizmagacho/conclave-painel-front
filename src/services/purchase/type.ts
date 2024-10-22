@@ -52,6 +52,7 @@ export type SupplierPurchase = {
 };
 
 export type SupplierPurchaseDTO = {
+  supplierId?: string;
   shortenedName: string;
 
   unitValue: number | null;
