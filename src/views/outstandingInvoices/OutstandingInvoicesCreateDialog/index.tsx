@@ -59,7 +59,7 @@ function OutstandingInvoicesCreateDialog({
   const [selectedConstruction, setSelectedConstruction] =
     useState<Construction>();
   const [selectedCategory, setSelectedCategory] = useState<string>();
-  const [selectedSupplier, setSelectedSupplier] = useState<string>();
+  const [selectedSupplier, setSelectedSupplier] = useState<SupplierRecord>();
   const [newPurchaseDate, setNewPurchaseDate] = useState<Date | null>(null);
 
   const [newPaymentDeadline, setNewPaymentDeadline] = useState<Date | null>(
@@ -191,7 +191,8 @@ function OutstandingInvoicesCreateDialog({
   useEffect(() => {
     setNewOutstandingInvoices((prevOutstandingInvoices) => ({
       ...prevOutstandingInvoices,
-      vendorName: selectedSupplier || prevOutstandingInvoices.vendorName,
+      vendorName:
+        selectedSupplier?.shortenedName || prevOutstandingInvoices.vendorName,
     }));
   }, [selectedSupplier]);
 
@@ -267,6 +268,7 @@ function OutstandingInvoicesCreateDialog({
             <AutoComplete
               type="text"
               dropdown
+              field="shortenedName"
               className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
               style={{ height: "30px", fontSize: "0.8rem" }}
               value={selectedSupplier}

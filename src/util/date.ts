@@ -56,9 +56,13 @@ export function formatDateToHHMM(date: Date | null): string | null {
     return null; // Retorna null se a data for null
   }
 
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
   const hours = String(date.getHours()).padStart(2, "0");
   const minutes = String(date.getMinutes()).padStart(2, "0");
-  return `${hours}:${minutes}`;
+  return `${year}-${month}-${day}T${hours}:${minutes}:00Z`;
 }
 
 export function parseHHMMToDate(timeString: string): Date | null {

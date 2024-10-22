@@ -62,6 +62,6 @@ export type SupplierPaginationParam = {
 };
 
 export type SupplierRecord = {
-  id: string;
+  id?: string;
   shortenedName: string;
 };

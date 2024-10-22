@@ -58,6 +58,7 @@ function PurchasePost() {
 
   const [selectedSupplierPurchase, setSelectedSupplierPurchase] =
     useState<SupplierPurchaseDTO>({
+      supplierId: "",
       shortenedName: "",
       unitValue: null,
       totalValue: null,
@@ -65,6 +66,8 @@ function PurchasePost() {
 
   const [selectedConstruction, setSelectedConstruction] =
     useState<Construction>();
+
+  const [selectedSupplier, setSelectedSupplier] = useState<SupplierRecord>();
 
   const [showAddMaterial, setShowAddMaterial] = useState<boolean>(false);
   const [deleteMaterialsDialog, setDeleteMaterialsDialog] =
@@ -87,6 +90,7 @@ function PurchasePost() {
   const { handlePostPurchase } = useContext(PurchaseContext);
 
   useEffect(() => {
+    console.log(newRequestTime);
     setNewPurchase((prevPurchase) => ({
       ...prevPurchase,
       requestedTime:
@@ -154,7 +158,7 @@ function PurchasePost() {
   const { allSuppliersShortenedName, handleGetAllShortenedName } =
     useContext(SupplierContext);
 
-  const [suppliersItems, setSuppliersItems] = useState<SupplierRecord[]>(
+  const [allSupplierItems, setAllSupplierItems] = useState<SupplierRecord[]>(
     allSuppliersShortenedName
   );
 
@@ -241,6 +245,7 @@ function PurchasePost() {
     });
     setNewQuantity(null);
     setSelectedSupplierPurchase({
+      supplierId: "",
       shortenedName: "",
       unitValue: null,
       totalValue: null,
@@ -310,10 +315,6 @@ function PurchasePost() {
     </React.Fragment>
   );
 
-  const [allSupplierItems, setAllSupplierItems] = useState<SupplierRecord[]>(
-    allSuppliersShortenedName
-  );
-
   const suppliersSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
       let _filteredSuppliers;
@@ -350,6 +351,7 @@ function PurchasePost() {
 
       // Clear the selected supplier state for the next entry
       setSelectedSupplierPurchase({
+        supplierId: "",
         shortenedName: "",
         unitValue: null,
         totalValue: null,
@@ -362,6 +364,17 @@ function PurchasePost() {
     handleGetAllShortenedName();
     handleGetAllMaterials();
   }, []);
+
+  useEffect(() => {
+    setSelectedSupplierPurchase((prevSelectedSupplierPurchase) => ({
+      ...prevSelectedSupplierPurchase,
+      supplierId:
+        selectedSupplier?.id || prevSelectedSupplierPurchase.supplierId,
+      shortenedName:
+        selectedSupplier?.shortenedName ||
+        prevSelectedSupplierPurchase.shortenedName,
+    }));
+  }, [selectedSupplier]);
 
   const formatCurrencyReal = (value: number | null) => {
     if (!value) {
@@ -632,13 +645,11 @@ function PurchasePost() {
                 suggestions={allSupplierItems}
                 dropdown
                 style={{ height: "30px", fontSize: "0.75rem" }}
+                field="shortenedName"
                 value={selectedSupplierPurchase.shortenedName}
                 completeMethod={suppliersSearch}
                 onChange={(e: AutoCompleteChangeEvent) => {
-                  setSelectedSupplierPurchase({
-                    ...selectedSupplierPurchase,
-                    shortenedName: e.value,
-                  });
+                  setSelectedSupplier(e.value);
                   setInvalidSupplierPurchase(false);
                 }}
               />

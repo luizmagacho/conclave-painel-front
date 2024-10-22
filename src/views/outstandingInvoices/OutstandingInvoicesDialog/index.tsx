@@ -5,7 +5,11 @@ import { SupplierContext } from "@/context/SupplierContext";
 import { Construction } from "@/services/construction/type";
 import { Cost } from "@/services/costs/type";
 import { OutstandingInvoices } from "@/services/outstanding-invoices/type";
-import { Supplier, SupplierName } from "@/services/supplier/type";
+import {
+  Supplier,
+  SupplierName,
+  SupplierRecord,
+} from "@/services/supplier/type";
 import { convertStringToDate, formatDateToYYYYMMDD } from "@/util/date";
 import { useRouter } from "next/router";
 import {
@@ -67,11 +71,11 @@ function OutstandingInvoicesDialog({
     OutstandingInvoicesContext
   );
 
-  const [selectedSupplier, setSelectedSupplier] = useState<SupplierName>({
+  const [selectedSupplier, setSelectedSupplier] = useState<SupplierRecord>({
     shortenedName: data.vendorName,
   });
 
-  const { suppliers } = useContext(SupplierContext);
+  const { allSuppliersShortenedName } = useContext(SupplierContext);
 
   const [checkedConstruction, setCheckedConstruction] =
     useState<Construction | null>(selectedConstruction);
@@ -141,7 +145,9 @@ function OutstandingInvoicesDialog({
   const [constructionsItems, setConstructionsItems] =
     useState<Construction[]>(constructions);
 
-  const [suppliersItems, setSuppliersItems] = useState<Supplier[]>(suppliers);
+  const [allSupplierItems, setAllSupplierItems] = useState<SupplierRecord[]>(
+    allSuppliersShortenedName
+  );
 
   const [allCategoryItems, setAllCategoryItems] =
     useState<string[]>(allCategories);
@@ -164,13 +170,15 @@ function OutstandingInvoicesDialog({
     setTimeout(() => {
       let _filteredSuppliers;
       if (!event.query.trim().length) {
-        _filteredSuppliers = [...suppliers];
+        _filteredSuppliers = [...allSuppliersShortenedName];
       } else {
-        _filteredSuppliers = suppliersItems.filter((supplier) => {
-          return supplier.shortenedName.startsWith(event.query);
+        _filteredSuppliers = allSuppliersShortenedName.filter((supplier) => {
+          return supplier.shortenedName
+            .toLocaleUpperCase()
+            .startsWith(event.query);
         });
-        setSuppliersItems(_filteredSuppliers);
       }
+      setAllSupplierItems(_filteredSuppliers);
     }, 150);
   };
 
@@ -297,7 +305,7 @@ function OutstandingInvoicesDialog({
               className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
               style={{ height: "30px", fontSize: "0.8rem" }}
               value={selectedSupplier}
-              suggestions={suppliersItems}
+              suggestions={allSupplierItems}
               completeMethod={supplierSearch}
               onChange={(e: AutoCompleteChangeEvent) => {
                 setSelectedSupplier(e.value);
