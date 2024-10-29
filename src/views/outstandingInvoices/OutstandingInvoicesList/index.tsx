@@ -381,33 +381,14 @@ function OutstandingInvoicesList() {
           size="small"
           className="smaller-text"
         >
-          <Column field="centerCost" header="Obra" className="smaller-text" />
-          <Column
-            field="localBank"
-            header="Local da Agência"
-            className="smaller-text"
-          />
-
-          <Column
-            field="vendorName"
-            header="Favorecido"
-            className="smaller-text"
-          />
           <Column
             field="paymentDeadlineFormatted"
             header="Data de Vencimento"
             className="smaller-text"
           />
-
           <Column
-            field="costCategory"
-            header="Categoria"
-            className="smaller-text"
-          />
-          <Column
-            field="totalAmount"
-            body={priceTotalValueBodyTemplate}
-            header="Valor"
+            field="vendorName"
+            header="Favorecido"
             className="smaller-text"
           />
           <Column
@@ -416,6 +397,20 @@ function OutstandingInvoicesList() {
             className="smaller-text"
             body={clearedBodyTemplate}
           />
+          <Column field="centerCost" header="Obra" className="smaller-text" />
+          <Column
+            field="additionalDetails"
+            header="Memo"
+            className="smaller-text"
+          />
+
+          <Column
+            field="totalAmount"
+            body={priceTotalValueBodyTemplate}
+            header="Valor"
+            className="smaller-text"
+          />
+
           <Column header="Opções" body={columnBodyOptions.options} />
         </DataTable>
         <Paginator
