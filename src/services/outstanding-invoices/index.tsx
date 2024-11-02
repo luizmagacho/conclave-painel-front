@@ -33,6 +33,16 @@ export async function getOutstandingInvoices({
   return res.data;
 }
 
+export async function getOutstandingInvoicesByCenterCostId(
+  centerCostId: string,
+  { page, size }: OutstandingInvoicesPaginationParam
+) {
+  let res = await api.get<Pagination<OutstandingInvoices>>(
+    `${baseUrl}/center-cost/${centerCostId}`
+  );
+  return res.data;
+}
+
 export async function postOutstandingInvoices(
   outstandingInvoices: OutstandingInvoicesDTO
 ) {

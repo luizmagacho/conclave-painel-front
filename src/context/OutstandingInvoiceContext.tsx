@@ -2,6 +2,7 @@ import {
   deleteOutstandingInvoices,
   getAllCategories,
   getOutstandingInvoices,
+  getOutstandingInvoicesByCenterCostId,
   postOutstandingInvoices,
   updateOutstandingInvoices,
 } from "@/services/outstanding-invoices";
@@ -27,6 +28,10 @@ interface OutstandingInvoicesProps {
     vendorName?: string,
     paymentDeadlineFrom?: string,
     paymentDeadlineTo?: string
+  ) => Promise<void>;
+  handleGetOutstandingInvoicesByCenterCostId: (
+    centerCostId: string,
+    page?: number
   ) => Promise<void>;
   handlePostOutstandingInvoices: (
     outstandingInvoices: OutstandingInvoicesDTO
@@ -84,6 +89,29 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
       setLoading(false);
     }
   }
+
+  async function handleGetOutstandingInvoicesByCenterCostId(
+    centerCostId: string,
+    page: number = 0
+  ) {
+    setLoading(true);
+    try {
+      const { content, totalElements } =
+        await getOutstandingInvoicesByCenterCostId(centerCostId, {
+          page,
+          size: 20,
+        });
+
+      setBufferedOutstandingInvoices(content || []);
+      setOutstandingInvoices(content || []);
+      setTotalElements(totalElements);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function handlePostOutstandingInvoices(
     outstandingInvoices: OutstandingInvoicesDTO
   ) {
@@ -148,6 +176,7 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
         loading,
         totalElements,
         handleGetOutstandingInvoices,
+        handleGetOutstandingInvoicesByCenterCostId,
         handlePostOutstandingInvoices,
         handleUpdateOutstandingInvoices,
         handleDeleteOutstandingInvoices,

@@ -114,6 +114,7 @@ function ConstructionList() {
       label: "Notas",
       onclick: openCosts,
     },
+    { ariaLabel: "Contas", label: "Contas", onclick: openOutstadingInvoice },
     {
       ariaLabel: "Ferramentas",
       label: "Ferramentas",
@@ -171,6 +172,11 @@ function ConstructionList() {
   async function openCosts(construction: Construction) {
     await handleGetConstructionById(construction.id);
     router.push(`/obras/${construction.id}/notas`);
+  }
+
+  async function openOutstadingInvoice(construction: Construction) {
+    await handleGetConstructionById(construction.id);
+    router.push(`/obras/${construction.id}/contas-a-pagar`);
   }
 
   async function openTools(construction: Construction) {
