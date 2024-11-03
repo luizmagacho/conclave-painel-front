@@ -16,6 +16,7 @@ import { useContext, useEffect, useState } from "react";
 import OutstadingInvoicesConstructionCreateDialog from "../OutstadingInvoicesConstructionCreateDialog";
 import { SupplierContext } from "@/context/SupplierContext";
 import OutstandingInvoicesDeleteDialog from "../OutstandingInvoicesDeleteDialog";
+import OutstandingConstructionUpdateDialog from "../OutstadingConstructionUpdateDialog";
 
 interface Options {
   icon?: string;
@@ -301,14 +302,14 @@ function OutstandingInvoicesConstructionList() {
             onCreate={onCreateOutstandingInvoices}
           />
         )}
-        {/* {currOutstandingInvoices && (
-          <OutstandingInvoicesDialog
+        {currOutstandingInvoices && (
+          <OutstandingConstructionUpdateDialog
             visible={showDialog}
             onHide={closeUpdateDialog}
             onUpdate={onUpateOutstandingInvoices}
             data={currOutstandingInvoices}
           />
-        )} */}
+        )}
         {currDeleteOutstandingInvoices && (
           <OutstandingInvoicesDeleteDialog
             visible={showDeleteDialog}
