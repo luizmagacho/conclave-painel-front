@@ -15,6 +15,7 @@ import { classNames } from "primereact/utils";
 import { useContext, useEffect, useState } from "react";
 import OutstadingInvoicesConstructionCreateDialog from "../OutstadingInvoicesConstructionCreateDialog";
 import { SupplierContext } from "@/context/SupplierContext";
+import OutstandingInvoicesDeleteDialog from "../OutstandingInvoicesDeleteDialog";
 
 interface Options {
   icon?: string;
@@ -38,7 +39,11 @@ function OutstandingInvoicesConstructionList() {
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
-
+  const [vendorNameSearch, setVendorNameSearch] = useState<string>("");
+  const [paymentDeadlineFromSearch, setPaymentDeadlineFromSearch] =
+    useState<string>("");
+  const [paymentDeadlineToSearch, setPaymentDeadlineToSearch] =
+    useState<string>("");
   const {
     outstandingInvoices,
     loading,
@@ -47,6 +52,7 @@ function OutstandingInvoicesConstructionList() {
     handlePostOutstandingInvoices,
     handleUpdateOutstandingInvoices,
     handleGetAllCategories,
+    handleDeleteOutstandingInvoices,
   } = useContext(OutstandingInvoicesContext);
 
   const { handleGetAllShortenedName } = useContext(SupplierContext);
@@ -108,18 +114,37 @@ function OutstandingInvoicesConstructionList() {
     setShowCreateDialog((showCreateDialog) => !showCreateDialog);
   }
 
-  async function onUpateCost(outstandingInvoices: OutstandingInvoices) {
+  async function onUpateOutstandingInvoices(
+    outstandingInvoices: OutstandingInvoices
+  ) {
     await handleUpdateOutstandingInvoices(outstandingInvoices);
     const { id } = router.query;
     handleGetOutstandingInvoicesByCenterCostId(
-      typeof id === "string" ? id : ""
+      typeof id === "string" ? id : "",
+      0,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineFromSearch
     );
-    handleGetConstructionById(typeof id === "string" ? id : "");
+    handleGetAllCategories();
   }
 
   function closeUpdateDialog() {
     setShowDialog((showDialog) => !showDialog);
     setCurrOutstandingInvoices(null);
+  }
+
+  async function onDeleteOutstandingInvoices(outstandingInvoicesId: string) {
+    const { id } = router.query;
+    await handleDeleteOutstandingInvoices(outstandingInvoicesId);
+    handleGetOutstandingInvoicesByCenterCostId(
+      typeof id === "string" ? id : ""
+    );
+  }
+
+  function closeDeleteDialog() {
+    setCurrDeleteOutstandingInvoices(null);
+    setShowDeleteDialog((showDeleteDialog) => !showDeleteDialog);
   }
 
   useEffect(() => {
@@ -165,7 +190,7 @@ function OutstandingInvoicesConstructionList() {
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
-          <h1 className="m-0">Contas a Pagar 2</h1>
+          <h1 className="m-0">Contas a Pagar</h1>
         </div>
         <div className="card flex flex-column md:flex-row gap-2 w-11/12">
           <div className="flex flex-column gap-1 w-full">
@@ -274,6 +299,22 @@ function OutstandingInvoicesConstructionList() {
             visible={showCreateDialog}
             onHide={closeCreateDialog}
             onCreate={onCreateOutstandingInvoices}
+          />
+        )}
+        {/* {currOutstandingInvoices && (
+          <OutstandingInvoicesDialog
+            visible={showDialog}
+            onHide={closeUpdateDialog}
+            onUpdate={onUpateOutstandingInvoices}
+            data={currOutstandingInvoices}
+          />
+        )} */}
+        {currDeleteOutstandingInvoices && (
+          <OutstandingInvoicesDeleteDialog
+            visible={showDeleteDialog}
+            data={currDeleteOutstandingInvoices}
+            onDelete={onDeleteOutstandingInvoices}
+            onHide={closeDeleteDialog}
           />
         )}
       </section>
