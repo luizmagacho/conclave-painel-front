@@ -31,7 +31,10 @@ interface OutstandingInvoicesProps {
   ) => Promise<void>;
   handleGetOutstandingInvoicesByCenterCostId: (
     centerCostId: string,
-    page?: number
+    page?: number,
+    vendorName?: string,
+    paymentDeadlineFrom?: string,
+    paymentDeadlineTo?: string
   ) => Promise<void>;
   handlePostOutstandingInvoices: (
     outstandingInvoices: OutstandingInvoicesDTO
