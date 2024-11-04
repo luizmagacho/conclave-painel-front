@@ -161,7 +161,6 @@ function OutstandingInvoicesConstructionList() {
       <i
         className={classNames("pi", {
           "true-icon pi-check-circle": outstandingInvoices.paymentStatus,
-          "false-icon pi-times-circle": !outstandingInvoices.paymentStatus,
         })}
       ></i>
     );

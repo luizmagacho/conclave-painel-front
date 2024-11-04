@@ -64,7 +64,7 @@ function OutstandingInvoicesDialog({
       updatedAt: data.updatedAt,
       createdAt: data.createdAt,
     });
-  const { constructions, handleGetConstructionById, selectedConstruction } =
+  const { allConstructions, handleGetConstructionById, selectedConstruction } =
     useContext(ConstructionContext);
 
   const { allCategories, handleGetAllCategories } = useContext(
@@ -143,7 +143,7 @@ function OutstandingInvoicesDialog({
   }
 
   const [constructionsItems, setConstructionsItems] =
-    useState<Construction[]>(constructions);
+    useState<Construction[]>(allConstructions);
 
   const [allSupplierItems, setAllSupplierItems] = useState<SupplierRecord[]>(
     allSuppliersShortenedName
@@ -156,7 +156,7 @@ function OutstandingInvoicesDialog({
     setTimeout(() => {
       let _filteredConstructions;
       if (!event.query.trim().length) {
-        _filteredConstructions = [...constructions];
+        _filteredConstructions = [...allConstructions];
       } else {
         _filteredConstructions = constructionsItems.filter((construction) => {
           return construction.code.startsWith(event.query);
