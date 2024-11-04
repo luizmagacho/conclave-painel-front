@@ -170,7 +170,7 @@ function ToolListCenterCost() {
           totalRecords={totalElements}
           size="small"
         >
-          <Column field="name" header="Nome" />
+          <Column field="name" header="Ferramenta" />
           <Column field="responsible" header="Responsável" />
           <Column field="dateLoanFromFormatted" header="Data de Empréstimo" />
           <Column field="dateLoanToFormatted" header="Data de Devolução" />

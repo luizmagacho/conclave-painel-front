@@ -266,7 +266,11 @@ function ToolCreateGenericDialog({
       </div>
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle text="Nome" htmlFor="name" className="font-semibold" />
+          <LabelTitle
+            text="Ferramenta"
+            htmlFor="name"
+            className="font-semibold"
+          />
           <div className="card p-fluid">
             <AutoComplete
               type="text"
@@ -284,7 +288,7 @@ function ToolCreateGenericDialog({
             {invalidName && (
               <Message
                 severity="error"
-                text="Nome é obrigatório"
+                text="Ferramenta é obrigatória"
                 className="smaller-text"
               />
             )}

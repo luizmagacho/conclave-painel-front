@@ -344,7 +344,6 @@ function PaymentList() {
       <i
         className={classNames("pi", {
           "true-icon pi-check-circle": payment.cleared,
-          "false-icon pi-times-circle": !payment.cleared,
         })}
       ></i>
     );
