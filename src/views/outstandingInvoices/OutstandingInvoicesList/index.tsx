@@ -58,6 +58,8 @@ function OutstandingInvoicesList() {
   const [centerCostSearch, setCenterCostSearch] = useState<string>("");
   const [localBranchSearch, setLocalBranchSearch] = useState<string>("");
   const [vendorNameSearch, setVendorNameSearch] = useState<string>("");
+  const [additionalDetailsSearch, setAdditionalDetailsSearch] =
+    useState<string>("");
   const [paymentDeadlineFromSearch, setPaymentDeadlineFromSearch] =
     useState<string>("");
   const [paymentDeadlineToSearch, setPaymentDeadlineToSearch] =
@@ -96,7 +98,8 @@ function OutstandingInvoicesList() {
       localBranchSearch,
       vendorNameSearch,
       paymentDeadlineFromSearch,
-      paymentDeadlineFromSearch
+      paymentDeadlineFromSearch,
+      additionalDetailsSearch
     );
     handleGetAllCategories();
   }
@@ -125,7 +128,8 @@ function OutstandingInvoicesList() {
       localBranchSearch,
       vendorNameSearch,
       paymentDeadlineFromSearch,
-      paymentDeadlineFromSearch
+      paymentDeadlineFromSearch,
+      additionalDetailsSearch
     );
     handleGetAllCategories();
   }
@@ -168,7 +172,8 @@ function OutstandingInvoicesList() {
       localBranchSearch,
       vendorNameSearch,
       paymentDeadlineFromSearch,
-      paymentDeadlineToSearch
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
     );
   }
 
@@ -183,7 +188,8 @@ function OutstandingInvoicesList() {
       localBranch,
       vendorNameSearch,
       paymentDeadlineFromSearch,
-      paymentDeadlineToSearch
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
     );
   }
 
@@ -198,7 +204,8 @@ function OutstandingInvoicesList() {
       localBranchSearch,
       vendorName,
       paymentDeadlineFromSearch,
-      paymentDeadlineFromSearch
+      paymentDeadlineFromSearch,
+      additionalDetailsSearch
     );
   }
 
@@ -214,7 +221,8 @@ function OutstandingInvoicesList() {
       localBranchSearch,
       vendorNameSearch,
       paymentDeadlineFrom,
-      paymentDeadlineToSearch
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
     );
   }
 
@@ -226,7 +234,8 @@ function OutstandingInvoicesList() {
       localBranchSearch,
       vendorNameSearch,
       paymentDeadlineFrom,
-      paymentDeadlineToSearch
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
     );
   }
 
@@ -238,7 +247,8 @@ function OutstandingInvoicesList() {
       localBranchSearch,
       vendorNameSearch,
       paymentDeadlineFromSearch,
-      paymentDeadlineTo
+      paymentDeadlineTo,
+      additionalDetailsSearch
     );
   }
 
@@ -250,8 +260,25 @@ function OutstandingInvoicesList() {
       localBranchSearch,
       vendorNameSearch,
       paymentDeadlineFromSearch,
-      paymentDeadlineTo
+      paymentDeadlineTo,
+      additionalDetailsSearch
     );
+  }
+
+  function onAdditionalDetailsSearch(additionalDetails: string) {
+    handleGetOutstandingInvoices(
+      0,
+      centerCostSearch,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineFromSearch,
+      additionalDetails
+    );
+  }
+
+  function onChangeAditionalDetails(additionalDetails: string) {
+    setAdditionalDetailsSearch(additionalDetails);
   }
 
   const priceTotalValueBodyTemplate = (
@@ -365,6 +392,17 @@ function OutstandingInvoicesList() {
               className="ui-state-default"
               dateFormat="dd/mm/yy"
               showIcon
+            />
+          </div>
+          <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="Memo"
+              htmlFor="additionalDetails"
+              className="font-semibold smaller-text"
+            />
+            <InputSearch
+              onSearch={onAdditionalDetailsSearch}
+              onChange={onChangeAditionalDetails}
             />
           </div>
         </div>

@@ -302,6 +302,7 @@ function ToolList() {
           <Column field="centerCost" header="Obra" />
           <Column field="bankBranchLocalBank" header="Agência" />
           <Column body={clearedBodyTemplate} header="Obra Finalizada?" />
+          <Column field="additionalDetails" header="Memo" />
 
           <Column header="Opções" body={columnBodyOptions.options} />
         </DataTable>

@@ -17,6 +17,7 @@ export async function getOutstandingInvoices({
   vendorName,
   paymentDeadlineFrom,
   paymentDeadlineTo,
+  additionalDetails,
 }: OutstandingInvoicesPaginationParam) {
   let res = await api.get<Pagination<OutstandingInvoices>>(baseUrl, {
     params: {
@@ -27,6 +28,7 @@ export async function getOutstandingInvoices({
       vendorName,
       paymentDeadlineFrom,
       paymentDeadlineTo,
+      additionalDetails,
     },
   });
 

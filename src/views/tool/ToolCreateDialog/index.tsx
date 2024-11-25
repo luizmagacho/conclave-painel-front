@@ -34,6 +34,7 @@ function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
     responsible: "",
     userId: localStorage.getItem("portal.id") as string,
     enabled: true,
+    additionalDetails: "",
   });
   const [invalidName, setInvalidName] = useState<boolean>(false);
   const [invalidResponsible, setInvalidResponsible] = useState<boolean>(false);
@@ -218,6 +219,26 @@ function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
             className="ui-state-default"
             dateFormat="dd/mm/yy"
             showIcon
+          />
+        </div>
+      </div>
+      <div className="card flex flex-column md:flex-row gap-3 w-full">
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Memo"
+            htmlFor="additionalDetails"
+            className="font-semibold"
+          />
+          <InputText
+            type="text"
+            onChange={(e) => {
+              setNewTool({
+                ...newTool,
+                additionalDetails: e.target.value,
+              });
+            }}
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={newTool?.additionalDetails}
           />
         </div>
       </div>
