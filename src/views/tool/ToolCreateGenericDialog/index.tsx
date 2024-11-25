@@ -384,6 +384,26 @@ function ToolCreateGenericDialog({
           />
         </div>
       </div>
+      <div className="card flex flex-column md:flex-row gap-3 w-full">
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Memo"
+            htmlFor="additionalDetails"
+            className="font-semibold"
+          />
+          <InputText
+            type="text"
+            onChange={(e) => {
+              setNewTool({
+                ...newTool,
+                additionalDetails: e.target.value,
+              });
+            }}
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={newTool?.additionalDetails}
+          />
+        </div>
+      </div>
       <div className="flex gap-2">
         <Button className="w-full" label="Cancelar" outlined onClick={onHide} />
         <Button

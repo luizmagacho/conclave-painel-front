@@ -27,14 +27,16 @@ interface OutstandingInvoicesProps {
     localBranch?: string,
     vendorName?: string,
     paymentDeadlineFrom?: string,
-    paymentDeadlineTo?: string
+    paymentDeadlineTo?: string,
+    additionalDetails?: string
   ) => Promise<void>;
   handleGetOutstandingInvoicesByCenterCostId: (
     centerCostId: string,
     page?: number,
     vendorName?: string,
     paymentDeadlineFrom?: string,
-    paymentDeadlineTo?: string
+    paymentDeadlineTo?: string,
+    additionalDetails?: string
   ) => Promise<void>;
   handlePostOutstandingInvoices: (
     outstandingInvoices: OutstandingInvoicesDTO
@@ -70,7 +72,8 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
     localBank?: string,
     vendorName?: string,
     paymentDeadlineFrom?: string,
-    paymentDeadlineTo?: string
+    paymentDeadlineTo?: string,
+    additionalDetails?: string
   ) {
     setLoading(true);
     try {
@@ -82,6 +85,7 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
         vendorName,
         paymentDeadlineFrom,
         paymentDeadlineTo,
+        additionalDetails,
       });
       setBufferedOutstandingInvoices(content || []);
       setOutstandingInvoices(content || []);

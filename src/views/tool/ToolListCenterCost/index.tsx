@@ -175,6 +175,7 @@ function ToolListCenterCost() {
           <Column field="dateLoanFromFormatted" header="Data de Empréstimo" />
           <Column field="dateLoanToFormatted" header="Data de Devolução" />
           <Column header="Opções" body={columnBodyOptions.options} />
+          <Column field="additionalDetails" header="Memo" />
         </DataTable>
         <Paginator
           first={first}

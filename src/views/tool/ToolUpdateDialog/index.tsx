@@ -46,6 +46,7 @@ function ToolUpdateDialog({
     responsible: data.responsible,
     userId: data.userId,
     enabled: data.enabled,
+    additionalDetails: data.additionalDetails,
     updatedAt: data.updatedAt,
     createdAt: data.createdAt,
   });
@@ -292,6 +293,26 @@ function ToolUpdateDialog({
             className="ui-state-default"
             dateFormat="dd/mm/yy"
             showIcon
+          />
+        </div>
+      </div>
+      <div className="card flex flex-column md:flex-row gap-3 w-full">
+        <div className="field flex flex-column gap-2 w-full">
+          <LabelTitle
+            text="Memo"
+            htmlFor="additionalDetails"
+            className="font-semibold"
+          />
+          <InputText
+            type="text"
+            onChange={(e) => {
+              setUpdatedTool({
+                ...updatedTool,
+                additionalDetails: e.target.value,
+              });
+            }}
+            style={{ height: "30px", fontSize: "0.8rem" }}
+            value={updatedTool?.additionalDetails}
           />
         </div>
       </div>

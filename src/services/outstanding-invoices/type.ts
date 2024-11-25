@@ -47,4 +47,5 @@ export type OutstandingInvoicesPaginationParam = {
   vendorName?: string;
   paymentDeadlineFrom?: string;
   paymentDeadlineTo?: string;
+  additionalDetails?: string;
 };

@@ -14,6 +14,7 @@ export type Tool = {
   dateLoanFromFormatted: string;
   enabled: boolean;
   isFinishedConstruction?: boolean;
+  additionalDetails?: string;
 
   createdAt: Date | null;
   updatedAt: Date | null;
@@ -31,6 +32,7 @@ export type ToolDTO = {
   dateLoanTo: string;
   dateLoanFrom: string;
   enabled?: boolean;
+  additionalDetails?: string;
 };
 
 export type CostPaginationParam = {
