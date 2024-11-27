@@ -278,7 +278,9 @@ function ConstructionList() {
             className="flex justify-end gap-6 w-full"
             style={{ justifyContent: "end" }}
           >
-            {(role === "Administrador" || role === "Notas") && (
+            {(role === "Administrador" ||
+              role === "Notas" ||
+              role === "Compras") && (
               <Button
                 style={{
                   backgroundColor: "var(--cor-primaria)",
@@ -414,6 +416,7 @@ function ConstructionList() {
             <>
               {(role === "Administrador" ||
                 role === "Notas" ||
+                role === "Compras" ||
                 el.label !== "Editar") && (
                 <Button
                   key={index}
