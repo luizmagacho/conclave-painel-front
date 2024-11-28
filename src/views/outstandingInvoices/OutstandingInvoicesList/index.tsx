@@ -19,6 +19,7 @@ import OutstandingInvoicesDeleteDialog from "../OutstandingInvoicesDeleteDialog"
 import { SupplierContext } from "@/context/SupplierContext";
 import { Calendar } from "primereact/calendar";
 import { formatDateToYYYYMMDD } from "@/util/date";
+import ExportExcel from "@/components/ExportExcel";
 
 interface Options {
   icon?: string;
@@ -405,6 +406,12 @@ function OutstandingInvoicesList() {
               onChange={onChangeAditionalDetails}
             />
           </div>
+        </div>
+        <div
+          className="flex justify-end gap-6 w-full"
+          style={{ justifyContent: "end" }}
+        >
+          <ExportExcel data={outstandingInvoices} />
         </div>
         <DataTable
           emptyMessage="Nenhum custo encontrado."

@@ -17,6 +17,7 @@ import OutstadingInvoicesConstructionCreateDialog from "../OutstadingInvoicesCon
 import { SupplierContext } from "@/context/SupplierContext";
 import OutstandingInvoicesDeleteDialog from "../OutstandingInvoicesDeleteDialog";
 import OutstandingConstructionUpdateDialog from "../OutstadingConstructionUpdateDialog";
+import ExportExcel from "@/components/ExportExcel";
 
 interface Options {
   icon?: string;
@@ -221,6 +222,12 @@ function OutstandingInvoicesConstructionList() {
               className="font-semibold"
             />
           </div>
+        </div>
+        <div
+          className="flex justify-end gap-6 w-full"
+          style={{ justifyContent: "end" }}
+        >
+          <ExportExcel data={outstandingInvoices} />
         </div>
         <DataTable
           emptyMessage="Nenhum custo encontrado."
