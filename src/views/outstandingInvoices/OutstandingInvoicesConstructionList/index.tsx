@@ -17,7 +17,11 @@ import OutstadingInvoicesConstructionCreateDialog from "../OutstadingInvoicesCon
 import { SupplierContext } from "@/context/SupplierContext";
 import OutstandingInvoicesDeleteDialog from "../OutstandingInvoicesDeleteDialog";
 import OutstandingConstructionUpdateDialog from "../OutstadingConstructionUpdateDialog";
-import ExportExcel from "@/components/ExportExcel";
+
+import * as XLSX from "xlsx";
+import { Calendar } from "primereact/calendar";
+import InputSearch from "@/components/InputSearch";
+import { formatDateToYYYYMMDD } from "@/util/date";
 
 interface Options {
   icon?: string;
@@ -42,15 +46,23 @@ function OutstandingInvoicesConstructionList() {
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
   const [vendorNameSearch, setVendorNameSearch] = useState<string>("");
+  const [additionalDetailsSearch, setAdditionalDetailsSearch] =
+    useState<string>("");
   const [paymentDeadlineFromSearch, setPaymentDeadlineFromSearch] =
     useState<string>("");
   const [paymentDeadlineToSearch, setPaymentDeadlineToSearch] =
     useState<string>("");
+
+  const [paymentDeadlineFrom, setPaymentDeadlineFrom] = useState<Date | null>();
+  const [paymentDeadlineTo, setPaymentDeadlineTo] = useState<Date | null>();
+
   const {
     outstandingInvoices,
+    outstandingInvoicesVendorExport,
     loading,
     totalElements,
     handleGetOutstandingInvoicesByCenterCostId,
+    handleGetOutstandingInvoicesToExport,
     handlePostOutstandingInvoices,
     handleUpdateOutstandingInvoices,
     handleGetAllCategories,
@@ -149,6 +161,90 @@ function OutstandingInvoicesConstructionList() {
     setShowDeleteDialog((showDeleteDialog) => !showDeleteDialog);
   }
 
+  function onVendorNameSearch(vendorName: string) {
+    const { id } = router.query;
+    handleGetOutstandingInvoicesByCenterCostId(
+      typeof id === "string" ? id : "",
+      0,
+      vendorName,
+      paymentDeadlineFromSearch,
+      paymentDeadlineFromSearch,
+      additionalDetailsSearch
+    );
+  }
+
+  function onChangeVendorName(vendorName: string) {
+    setVendorNameSearch(vendorName);
+  }
+
+  function onPaymentDeadlineFromSearch(paymentDeadlineFrom: string) {
+    setPaymentDeadlineFromSearch(paymentDeadlineFrom);
+    const { id } = router.query;
+    handleGetOutstandingInvoicesByCenterCostId(
+      typeof id === "string" ? id : "",
+      0,
+      vendorNameSearch,
+      paymentDeadlineFrom,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
+  }
+
+  function onChangePaymentDeadlineFrom(paymentDeadlineFrom: string) {
+    setPaymentDeadlineFromSearch(paymentDeadlineFrom);
+    const { id } = router.query;
+    handleGetOutstandingInvoicesByCenterCostId(
+      typeof id === "string" ? id : "",
+      0,
+      vendorNameSearch,
+      paymentDeadlineFrom,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
+  }
+
+  function onPaymentDeadlineToSearch(paymentDeadlineTo: string) {
+    setPaymentDeadlineToSearch(paymentDeadlineTo);
+    const { id } = router.query;
+    handleGetOutstandingInvoicesByCenterCostId(
+      typeof id === "string" ? id : "",
+      0,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineTo,
+      additionalDetailsSearch
+    );
+  }
+
+  function onChangePaymentDeadlineTo(paymentDeadlineTo: string) {
+    setPaymentDeadlineToSearch(paymentDeadlineTo);
+    const { id } = router.query;
+    handleGetOutstandingInvoicesByCenterCostId(
+      typeof id === "string" ? id : "",
+      0,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineTo,
+      additionalDetailsSearch
+    );
+  }
+
+  function onAdditionalDetailsSearch(additionalDetails: string) {
+    const { id } = router.query;
+    handleGetOutstandingInvoicesByCenterCostId(
+      typeof id === "string" ? id : "",
+      0,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineFromSearch,
+      additionalDetails
+    );
+  }
+
+  function onChangeAditionalDetails(additionalDetails: string) {
+    setAdditionalDetailsSearch(additionalDetails);
+  }
+
   useEffect(() => {
     const { id } = router.query;
     handleGetConstructionById(typeof id === "string" ? id : "");
@@ -187,6 +283,84 @@ function OutstandingInvoicesConstructionList() {
     handleGetAllShortenedName();
   }, []);
 
+  function onClickExport() {
+    handleGetOutstandingInvoicesToExport(
+      0,
+      selectedConstruction?.code,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch
+    );
+  }
+
+  useEffect(() => {
+    if (outstandingInvoicesVendorExport.length > 0) {
+      const sheetData: (string | number)[][] = [];
+
+      outstandingInvoicesVendorExport.forEach((favorecido) => {
+        sheetData.push([favorecido.periodOfDate]);
+        sheetData.push([]);
+        // Add a row for the favorecido's name
+        sheetData.push([`${favorecido.name}`]);
+
+        // Add headers for invoices
+        sheetData.push([
+          "",
+          "Data",
+          "Favorecido",
+          "C",
+          "Conta",
+          "Memo",
+          "Montante",
+        ]);
+        // Add rows for each invoice
+        favorecido.outstandingInvoices.forEach((invoice) => {
+          sheetData.push([
+            "",
+            invoice.paymentDeadlineFormatted || "",
+            invoice.vendorName || "",
+            invoice.paymentStatus ? "C" : "",
+            `${invoice.centerCost || ""} - ${invoice.localBank}`,
+            invoice.additionalDetails || "",
+
+            formatCurrency(invoice.totalAmount || null) || "",
+          ]);
+        });
+        sheetData.push([
+          `Total: ${favorecido.name}`,
+          "",
+          "",
+          "",
+          "",
+          "",
+          ` ${formatCurrency(favorecido.sumAmount || null)}`,
+        ]);
+        // Add a blank row after each favorecido's data
+        sheetData.push([]);
+      });
+
+      // Create a worksheet
+      const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+
+      worksheet["!cols"] = [
+        { wch: 20 },
+        { wch: 10 },
+        { wch: 15 },
+        { wch: 3 },
+        { wch: 15 },
+        { wch: 30 },
+        { wch: 10 },
+      ];
+
+      // Create a workbook and append the worksheet
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet);
+
+      // Generate and download the Excel file
+      XLSX.writeFile(workbook, "Relatório.xlsx");
+    }
+  }, [outstandingInvoicesVendorExport]);
+
   return (
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
@@ -223,11 +397,82 @@ function OutstandingInvoicesConstructionList() {
             />
           </div>
         </div>
+        <div className="card flex flex-column md:flex-row gap-2 w-11/12">
+          <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="Favorecido"
+              htmlFor="vendorName"
+              className="font-semibold smaller-text"
+            />
+            <InputSearch
+              onSearch={onVendorNameSearch}
+              onChange={onChangeVendorName}
+            />
+          </div>
+          <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="De:"
+              htmlFor="paymentDeadlineFrom"
+              className="font-semibold smaller-text"
+            />
+            <Calendar
+              id="buttondisplay"
+              value={paymentDeadlineFrom}
+              onChange={(e) => {
+                setPaymentDeadlineFrom(e.value || null);
+                onPaymentDeadlineFromSearch(
+                  formatDateToYYYYMMDD(e.value || null) || ""
+                );
+              }}
+              locale="pt"
+              className="ui-state-default"
+              dateFormat="dd/mm/yy"
+              showIcon
+            />
+          </div>
+          <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="Até:"
+              htmlFor="paymentDeadlineTo"
+              className="font-semibold smaller-text"
+            />
+            <Calendar
+              id="buttondisplay"
+              value={paymentDeadlineTo}
+              onChange={(e) => {
+                setPaymentDeadlineTo(e.value || null);
+                onPaymentDeadlineToSearch(
+                  formatDateToYYYYMMDD(e.value || null) || ""
+                );
+              }}
+              locale="pt"
+              className="ui-state-default"
+              dateFormat="dd/mm/yy"
+              showIcon
+            />
+          </div>
+          <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="Memo"
+              htmlFor="additionalDetails"
+              className="font-semibold smaller-text"
+            />
+            <InputSearch
+              onSearch={onAdditionalDetailsSearch}
+              onChange={onChangeAditionalDetails}
+            />
+          </div>
+        </div>
         <div
           className="flex justify-end gap-6 w-full"
           style={{ justifyContent: "end" }}
         >
-          <ExportExcel data={outstandingInvoices} />
+          <Button
+            className="rounded-md px-3 text-sm"
+            label="Exportar para Excel"
+            severity="danger"
+            onClick={onClickExport}
+          ></Button>
         </div>
         <DataTable
           emptyMessage="Nenhum custo encontrado."

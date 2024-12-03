@@ -127,7 +127,6 @@ function SupplierList() {
   }
 
   function onSearchShortenedName(shortenedName: string) {
-    console.log(shortenedName);
     handleGetSuppliers(0, nameSearch, shortenedName, optionType.type);
   }
 

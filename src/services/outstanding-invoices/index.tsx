@@ -3,7 +3,9 @@ import { getAPIClient } from "../axios";
 import {
   OutstandingInvoices,
   OutstandingInvoicesDTO,
+  OutstandingInvoicesDateExport,
   OutstandingInvoicesPaginationParam,
+  OutstandingInvoicesVendorExport,
 } from "./type";
 
 const baseUrl = "/outstanding-invoices";
@@ -62,6 +64,31 @@ export async function updateOutstandingInvoices(
 export async function deleteOutstandingInvoices(outstandingInvoicesId: string) {
   let res = await api.delete(`${baseUrl}/${outstandingInvoicesId}`);
   return res.status;
+}
+
+export async function getOutstandingInvoicesToExport({
+  page,
+  size,
+  centerCost,
+  vendorName,
+  paymentDeadlineFrom,
+  paymentDeadlineTo,
+}: OutstandingInvoicesPaginationParam) {
+  let res = await api.get<OutstandingInvoicesVendorExport[]>(
+    `${baseUrl}/prepare-export`,
+    {
+      params: {
+        page,
+        size,
+        centerCost,
+        vendorName,
+        paymentDeadlineFrom,
+        paymentDeadlineTo,
+      },
+    }
+  );
+
+  return res.data;
 }
 
 export async function getAllCategories() {

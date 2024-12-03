@@ -3,12 +3,15 @@ import {
   getAllCategories,
   getOutstandingInvoices,
   getOutstandingInvoicesByCenterCostId,
+  getOutstandingInvoicesToExport,
   postOutstandingInvoices,
   updateOutstandingInvoices,
 } from "@/services/outstanding-invoices";
 import {
   OutstandingInvoices,
   OutstandingInvoicesDTO,
+  OutstandingInvoicesDateExport,
+  OutstandingInvoicesVendorExport,
 } from "@/services/outstanding-invoices/type";
 import { ReactNode, createContext, useEffect, useState } from "react";
 
@@ -18,6 +21,7 @@ interface ProviderProps {
 
 interface OutstandingInvoicesProps {
   outstandingInvoices: OutstandingInvoices[];
+  outstandingInvoicesVendorExport: OutstandingInvoicesVendorExport[];
   loading: boolean;
   totalElements: number;
   allCategories: string[];
@@ -37,6 +41,13 @@ interface OutstandingInvoicesProps {
     paymentDeadlineFrom?: string,
     paymentDeadlineTo?: string,
     additionalDetails?: string
+  ) => Promise<void>;
+  handleGetOutstandingInvoicesToExport: (
+    page?: number,
+    centerCost?: string,
+    vendorName?: string,
+    paymentDeadlineFrom?: string,
+    paymentDeadlineTo?: string
   ) => Promise<void>;
   handlePostOutstandingInvoices: (
     outstandingInvoices: OutstandingInvoicesDTO
@@ -58,6 +69,8 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
   const [outstandingInvoices, setOutstandingInvoices] = useState<
     OutstandingInvoices[]
   >([]);
+  const [outstandingInvoicesVendorExport, setOutstandingInvoicesVendorExport] =
+    useState<OutstandingInvoicesVendorExport[]>([]);
   const [allCategories, setAllCategories] = useState<string[]>([]);
   const [bufferedOutstandingInvoices, setBufferedOutstandingInvoices] =
     useState<OutstandingInvoices[]>([]);
@@ -112,6 +125,32 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
       setBufferedOutstandingInvoices(content || []);
       setOutstandingInvoices(content || []);
       setTotalElements(totalElements);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleGetOutstandingInvoicesToExport(
+    page: number = 0,
+    centerCost?: string,
+    vendorName?: string,
+    paymentDeadlineFrom?: string,
+    paymentDeadlineTo?: string
+  ) {
+    setLoading(true);
+    try {
+      setOutstandingInvoicesVendorExport(
+        await getOutstandingInvoicesToExport({
+          page,
+          size: 15,
+          centerCost,
+          vendorName,
+          paymentDeadlineFrom,
+          paymentDeadlineTo,
+        })
+      );
     } catch (error) {
       console.error(error);
     } finally {
@@ -179,11 +218,13 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
     <OutstandingInvoicesContext.Provider
       value={{
         outstandingInvoices,
+        outstandingInvoicesVendorExport,
         allCategories,
         loading,
         totalElements,
         handleGetOutstandingInvoices,
         handleGetOutstandingInvoicesByCenterCostId,
+        handleGetOutstandingInvoicesToExport,
         handlePostOutstandingInvoices,
         handleUpdateOutstandingInvoices,
         handleDeleteOutstandingInvoices,

@@ -90,7 +90,6 @@ function PurchasePost() {
   const { handlePostPurchase } = useContext(PurchaseContext);
 
   useEffect(() => {
-    console.log(newRequestTime);
     setNewPurchase((prevPurchase) => ({
       ...prevPurchase,
       requestedTime:

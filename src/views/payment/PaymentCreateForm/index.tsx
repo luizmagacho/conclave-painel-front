@@ -244,7 +244,6 @@ function PaymentCreateForm({
   }, []);
 
   useEffect(() => {
-    console.log(selectedBeneficiary);
     setNewPayment((prevPayment) => ({
       ...prevPayment,
       beneficiaryId: selectedBeneficiary?.id || prevPayment.beneficiaryId,
