@@ -22,6 +22,7 @@
     "fast-csv": "^5.0.1",
     "husky": "^8.0.3",
     "js-cookie": "^3.0.5",
+    "jspdf": "^2.5.2",
     "next": "^14.2.4",
     "nookies": "^2.5.2",
     "primeflex": "^3.3.1",

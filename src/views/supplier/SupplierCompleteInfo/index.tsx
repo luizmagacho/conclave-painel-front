@@ -188,7 +188,6 @@ function SupplierCompleteInfo() {
   };
 
   const validateShortenedName = () => {
-    console.log(updatedSupplier.shortenedName);
     if (updatedSupplier.shortenedName) {
       handleValidateShortenedName(
         updatedSupplier.id,

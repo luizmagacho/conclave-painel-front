@@ -19,7 +19,9 @@ import OutstandingInvoicesDeleteDialog from "../OutstandingInvoicesDeleteDialog"
 import { SupplierContext } from "@/context/SupplierContext";
 import { Calendar } from "primereact/calendar";
 import { formatDateToYYYYMMDD } from "@/util/date";
-import ExportExcel from "@/components/ExportExcel";
+
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
 
 interface Options {
   icon?: string;
@@ -45,9 +47,11 @@ function OutstandingInvoicesList() {
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
   const {
     outstandingInvoices,
+    outstandingInvoicesVendorExport,
     loading,
     totalElements,
     handleGetOutstandingInvoices,
+    handleGetOutstandingInvoicesToExport,
     handlePostOutstandingInvoices,
     handleUpdateOutstandingInvoices,
     handleDeleteOutstandingInvoices,
@@ -303,6 +307,84 @@ function OutstandingInvoicesList() {
     });
   };
 
+  function onClickExport() {
+    handleGetOutstandingInvoicesToExport(
+      0,
+      centerCostSearch,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch
+    );
+  }
+
+  useEffect(() => {
+    if (outstandingInvoicesVendorExport.length > 0) {
+      const sheetData: (string | number)[][] = [];
+
+      outstandingInvoicesVendorExport.forEach((favorecido) => {
+        sheetData.push([favorecido.periodOfDate]);
+        sheetData.push([]);
+        // Add a row for the favorecido's name
+        sheetData.push([`${favorecido.name}`]);
+
+        // Add headers for invoices
+        sheetData.push([
+          "",
+          "Data",
+          "Favorecido",
+          "C",
+          "Conta",
+          "Memo",
+          "Montante",
+        ]);
+        // Add rows for each invoice
+        favorecido.outstandingInvoices.forEach((invoice) => {
+          sheetData.push([
+            "",
+            invoice.paymentDeadlineFormatted || "",
+            invoice.vendorName || "",
+            invoice.paymentStatus ? "C" : "",
+            `${invoice.centerCost || ""} - ${invoice.localBank}`,
+            invoice.additionalDetails || "",
+
+            formatCurrency(invoice.totalAmount || null) || "",
+          ]);
+        });
+        sheetData.push([
+          `Total: ${favorecido.name}`,
+          "",
+          "",
+          "",
+          "",
+          "",
+          ` ${formatCurrency(favorecido.sumAmount || null)}`,
+        ]);
+        // Add a blank row after each favorecido's data
+        sheetData.push([]);
+      });
+
+      // Create a worksheet
+      const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+
+      worksheet["!cols"] = [
+        { wch: 20 },
+        { wch: 10 },
+        { wch: 15 },
+        { wch: 3 },
+        { wch: 15 },
+        { wch: 30 },
+        { wch: 10 },
+      ];
+
+      // Create a workbook and append the worksheet
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet);
+
+      // Generate and download the Excel file
+      XLSX.writeFile(workbook, "Relatório.xlsx");
+    }
+  }, [outstandingInvoicesVendorExport]);
+
   return (
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
@@ -411,7 +493,12 @@ function OutstandingInvoicesList() {
           className="flex justify-end gap-6 w-full"
           style={{ justifyContent: "end" }}
         >
-          <ExportExcel data={outstandingInvoices} />
+          <Button
+            className="rounded-md px-3 text-sm"
+            label="Exportar para Excel"
+            severity="danger"
+            onClick={onClickExport}
+          ></Button>
         </div>
         <DataTable
           emptyMessage="Nenhum custo encontrado."
