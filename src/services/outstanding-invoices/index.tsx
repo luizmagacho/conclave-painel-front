@@ -91,6 +91,13 @@ export async function getOutstandingInvoicesToExport({
   return res.data;
 }
 
+export async function getAdditionalDetailsFromVendor(vendorName: string) {
+  let res = await api.get<string>(
+    `${baseUrl}/vendor/${vendorName}/latest-additional-details`
+  );
+  return res.data;
+}
+
 export async function getAllCategories() {
   let res = await api.get<string[]>(`${baseUrl}/category`);
   return res.data;

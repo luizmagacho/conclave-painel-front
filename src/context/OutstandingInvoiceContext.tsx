@@ -1,5 +1,6 @@
 import {
   deleteOutstandingInvoices,
+  getAdditionalDetailsFromVendor,
   getAllCategories,
   getOutstandingInvoices,
   getOutstandingInvoicesByCenterCostId,
@@ -24,6 +25,7 @@ interface OutstandingInvoicesProps {
   outstandingInvoicesVendorExport: OutstandingInvoicesVendorExport[];
   loading: boolean;
   totalElements: number;
+  latestAdditionalDetails: string;
   allCategories: string[];
   handleGetOutstandingInvoices: (
     page?: number,
@@ -58,6 +60,7 @@ interface OutstandingInvoicesProps {
   handleDeleteOutstandingInvoices: (
     outstandingInvoicesId: string
   ) => Promise<void>;
+  handleGetLatestAdditionalDetails: (vendorName: string) => Promise<void>;
   handleGetAllCategories: () => Promise<void>;
 }
 
@@ -74,6 +77,9 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
   const [allCategories, setAllCategories] = useState<string[]>([]);
   const [bufferedOutstandingInvoices, setBufferedOutstandingInvoices] =
     useState<OutstandingInvoices[]>([]);
+
+  const [latestAdditionalDetails, setLatestAdditionalDetails] =
+    useState<string>("");
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -199,6 +205,19 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
     }
   }
 
+  async function handleGetLatestAdditionalDetails(vendorName: string) {
+    setLoading(true);
+    try {
+      setLatestAdditionalDetails(
+        await getAdditionalDetailsFromVendor(vendorName)
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function handleGetAllCategories() {
     setLoading(true);
     try {
@@ -219,6 +238,7 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
       value={{
         outstandingInvoices,
         outstandingInvoicesVendorExport,
+        latestAdditionalDetails,
         allCategories,
         loading,
         totalElements,
@@ -228,6 +248,7 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
         handlePostOutstandingInvoices,
         handleUpdateOutstandingInvoices,
         handleDeleteOutstandingInvoices,
+        handleGetLatestAdditionalDetails,
         handleGetAllCategories,
       }}
     >

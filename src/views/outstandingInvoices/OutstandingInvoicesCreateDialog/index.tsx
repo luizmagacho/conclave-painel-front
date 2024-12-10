@@ -74,6 +74,7 @@ function OutstandingInvoicesCreateDialog({
     invalidOutstandingInvoicesCategory,
     setInvalidOutstandingInvoicesCategory,
   ] = useState<boolean>(false);
+
   useEffect(() => {
     setNewOutstandingInvoices((prevOutstandingInvoices) => ({
       ...prevOutstandingInvoices,
@@ -113,9 +114,12 @@ function OutstandingInvoicesCreateDialog({
   const { allSuppliersShortenedName, handleGetAllShortenedName } =
     useContext(SupplierContext);
 
-  const { allCategories, handleGetAllCategories } = useContext(
-    OutstandingInvoicesContext
-  );
+  const {
+    allCategories,
+    handleGetAllCategories,
+    latestAdditionalDetails,
+    handleGetLatestAdditionalDetails,
+  } = useContext(OutstandingInvoicesContext);
 
   const [constructionsItems, setConstructionsItems] =
     useState<Construction[]>(allConstructions);
@@ -194,6 +198,9 @@ function OutstandingInvoicesCreateDialog({
       vendorName:
         selectedSupplier?.shortenedName || prevOutstandingInvoices.vendorName,
     }));
+    if (selectedSupplier?.shortenedName) {
+      handleGetLatestAdditionalDetails(selectedSupplier.shortenedName);
+    }
   }, [selectedSupplier]);
 
   const formatCurrency = (value: number | null) => {
@@ -203,6 +210,13 @@ function OutstandingInvoicesCreateDialog({
 
     return null;
   };
+
+  useEffect(() => {
+    setNewOutstandingInvoices({
+      ...newOutstandingInvoices,
+      additionalDetails: latestAdditionalDetails,
+    });
+  }, [latestAdditionalDetails]);
 
   return (
     <Dialog

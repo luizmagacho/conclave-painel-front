@@ -325,11 +325,9 @@ function OutstandingInvoicesList() {
         sheetData.push([favorecido.periodOfDate]);
         sheetData.push([]);
         // Add a row for the favorecido's name
-        sheetData.push([`${favorecido.name}`]);
 
         // Add headers for invoices
         sheetData.push([
-          "",
           "Data",
           "Favorecido",
           "C",
@@ -340,7 +338,6 @@ function OutstandingInvoicesList() {
         // Add rows for each invoice
         favorecido.outstandingInvoices.forEach((invoice) => {
           sheetData.push([
-            "",
             invoice.paymentDeadlineFormatted || "",
             invoice.vendorName || "",
             invoice.paymentStatus ? "C" : "",
@@ -356,7 +353,6 @@ function OutstandingInvoicesList() {
           "",
           "",
           "",
-          "",
           ` ${formatCurrency(favorecido.sumAmount || null)}`,
         ]);
         // Add a blank row after each favorecido's data
@@ -367,13 +363,12 @@ function OutstandingInvoicesList() {
       const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
 
       worksheet["!cols"] = [
-        { wch: 20 },
         { wch: 10 },
         { wch: 15 },
         { wch: 3 },
+        { wch: 20 },
+        { wch: 45 },
         { wch: 15 },
-        { wch: 30 },
-        { wch: 10 },
       ];
 
       // Create a workbook and append the worksheet
