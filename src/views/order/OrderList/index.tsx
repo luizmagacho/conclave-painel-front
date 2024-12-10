@@ -8,6 +8,7 @@ import { DataTable } from "primereact/datatable";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { TabPanel, TabView } from "primereact/tabview";
 import { useContext, useState } from "react";
+import * as XLSX from "xlsx";
 
 interface Options {
   icon?: string;
@@ -116,6 +117,58 @@ function OrderList() {
     setConstructionCodeSearch(constructionCode);
   }
 
+  function onClickExport() {
+    const sheetData: (string | number)[][] = [];
+
+    ordersNotFinished.forEach((order) => {
+      sheetData.push([
+        "Código da Obra",
+        "Nome da Obra",
+        "Data",
+        "Hora",
+        "Solicitante",
+      ]);
+      sheetData.push([
+        order.centerCost,
+        order.bankBranchLocalBank,
+        order.orderDateFormatted,
+        order.orderTime,
+        order.userRequest,
+      ]);
+
+      sheetData.push(["", "Materiais"]);
+      sheetData.push(["", "", "Nome", "Quantidade", "Unidade"]);
+
+      order.materials.forEach((material) => {
+        sheetData.push([
+          "",
+          "",
+          material.name,
+          material.quantity || 0,
+          material.unit,
+        ]);
+      });
+    });
+
+    // Create a worksheet
+    const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+
+    worksheet["!cols"] = [
+      { wch: 15 },
+      { wch: 20 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 15 },
+    ];
+
+    // Create a workbook and append the worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet);
+
+    // Generate and download the Excel file
+    XLSX.writeFile(workbook, "Pedidos.xlsx");
+  }
+
   return (
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
@@ -133,6 +186,17 @@ function OrderList() {
           >
             Adicionar
           </Button>
+        </div>
+        <div
+          className="flex justify-end gap-6 w-full"
+          style={{ justifyContent: "end" }}
+        >
+          <Button
+            className="rounded-md px-3 text-sm"
+            label="Exportar para Excel"
+            severity="danger"
+            onClick={onClickExport}
+          ></Button>
         </div>
         <TabView>
           <TabPanel header="Abertos">
