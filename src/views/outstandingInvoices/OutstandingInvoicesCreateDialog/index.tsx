@@ -193,14 +193,18 @@ function OutstandingInvoicesCreateDialog({
   }, [selectedConstruction, selectedCategory]);
 
   useEffect(() => {
+    if (selectedSupplier?.shortenedName) {
+      handleGetLatestAdditionalDetails(selectedSupplier.shortenedName);
+      setNewOutstandingInvoices({
+        ...newOutstandingInvoices,
+        additionalDetails: latestAdditionalDetails,
+      });
+    }
     setNewOutstandingInvoices((prevOutstandingInvoices) => ({
       ...prevOutstandingInvoices,
       vendorName:
         selectedSupplier?.shortenedName || prevOutstandingInvoices.vendorName,
     }));
-    if (selectedSupplier?.shortenedName) {
-      handleGetLatestAdditionalDetails(selectedSupplier.shortenedName);
-    }
   }, [selectedSupplier]);
 
   const formatCurrency = (value: number | null) => {
@@ -212,10 +216,12 @@ function OutstandingInvoicesCreateDialog({
   };
 
   useEffect(() => {
-    setNewOutstandingInvoices({
-      ...newOutstandingInvoices,
-      additionalDetails: latestAdditionalDetails,
-    });
+    if (newOutstandingInvoices.vendorName) {
+      setNewOutstandingInvoices({
+        ...newOutstandingInvoices,
+        additionalDetails: latestAdditionalDetails,
+      });
+    }
   }, [latestAdditionalDetails]);
 
   return (
