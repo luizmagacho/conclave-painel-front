@@ -76,6 +76,11 @@ function OrderList() {
       label: "Fechar Pedido",
       onClick: finishOrderDialog,
     },
+    {
+      ariaLabel: "Exportar",
+      label: "Exportar",
+      onClick: onClickExport,
+    },
   ];
 
   const columnBodyOptions = {
@@ -117,41 +122,36 @@ function OrderList() {
     setConstructionCodeSearch(constructionCode);
   }
 
-  function onClickExport() {
+  function onClickExport(order: Order) {
     const sheetData: (string | number)[][] = [];
-
-    ordersNotFinished.forEach((order) => {
+    sheetData.push(new Array(4).fill(""));
+    // Set the desired title in the first cell (A1)
+    sheetData[0][0] = "Pedido de Material de Compra";
+    sheetData.push([
+      `Data: ${order.orderDateFormatted}`,
+      "",
+      "",
+      `Hora: ${order.orderTime}`,
+      `Obra N°: ${order.centerCost}`,
+    ]);
+    sheetData.push([
+      `Nome da Obra: ${order.bankBranchLocalBank}`,
+      `Solicitante: ${order.userRequest}`,
+    ]);
+    sheetData.push(["QUANT.", "UNID.", "Discriminação", "", "", "Observação"]);
+    order.materials.forEach((material, index) => {
       sheetData.push([
-        "Código da Obra",
-        "Nome da Obra",
-        "Data",
-        "Hora",
-        "Solicitante",
+        material.quantity || 0,
+        material.unit,
+        material.name,
+        "",
+        "",
       ]);
-      sheetData.push([
-        order.centerCost,
-        order.bankBranchLocalBank,
-        order.orderDateFormatted,
-        order.orderTime,
-        order.userRequest,
-      ]);
-
-      sheetData.push(["", "Materiais"]);
-      sheetData.push(["", "", "Nome", "Quantidade", "Unidade"]);
-
-      order.materials.forEach((material) => {
-        sheetData.push([
-          "",
-          "",
-          material.name,
-          material.quantity || 0,
-          material.unit,
-        ]);
-      });
     });
 
     // Create a worksheet
     const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+    const startRow = 4;
 
     worksheet["!cols"] = [
       { wch: 15 },
@@ -159,10 +159,54 @@ function OrderList() {
       { wch: 15 },
       { wch: 15 },
       { wch: 15 },
+      { wch: 15 },
     ];
 
     // Create a workbook and append the worksheet
     const workbook = XLSX.utils.book_new();
+    worksheet["!merges"] = [
+      {
+        s: { r: 0, c: 0 },
+        e: { r: 0, c: 5 },
+      },
+      {
+        s: { r: 1, c: 0 },
+        e: { r: 1, c: 2 },
+      },
+      {
+        s: { r: 1, c: 4 },
+        e: { r: 1, c: 5 },
+      },
+
+      {
+        s: { r: 2, c: 0 },
+        e: { r: 2, c: 2 },
+      },
+
+      {
+        s: { r: 2, c: 3 },
+        e: { r: 2, c: 5 },
+      },
+      {
+        s: { r: 3, c: 2 },
+        e: { r: 3, c: 4 },
+      },
+    ];
+    order.materials.forEach((material, index) => {
+      worksheet["!merges"]?.push({
+        s: { r: startRow + index, c: 2 }, // Começa na coluna "Discriminação"
+        e: { r: startRow + index, c: 4 },
+      });
+    });
+    const styles = {
+      font: { bold: true, sz: 14 },
+      alignment: { horizontal: "center" },
+    };
+
+    worksheet["!styles"]?.push({
+      font: { bold: true, sz: 14 },
+      alignment: { horizontal: "center" },
+    });
     XLSX.utils.book_append_sheet(workbook, worksheet);
 
     // Generate and download the Excel file
@@ -190,14 +234,7 @@ function OrderList() {
         <div
           className="flex justify-end gap-6 w-full"
           style={{ justifyContent: "end" }}
-        >
-          <Button
-            className="rounded-md px-3 text-sm"
-            label="Exportar para Excel"
-            severity="danger"
-            onClick={onClickExport}
-          ></Button>
-        </div>
+        ></div>
         <TabView>
           <TabPanel header="Abertos">
             <DataTable

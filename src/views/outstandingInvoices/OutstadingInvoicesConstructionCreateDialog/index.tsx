@@ -104,9 +104,12 @@ function OutstadingInvoicesConstructionCreateDialog({
   const { allSuppliersShortenedName, handleGetAllShortenedName } =
     useContext(SupplierContext);
 
-  const { allCategories, handleGetAllCategories } = useContext(
-    OutstandingInvoicesContext
-  );
+  const {
+    allCategories,
+    latestAdditionalDetails,
+    handleGetLatestAdditionalDetails,
+    handleGetAllCategories,
+  } = useContext(OutstandingInvoicesContext);
 
   const [allSupplierItems, setAllSupplierItems] = useState<SupplierRecord[]>(
     allSuppliersShortenedName
@@ -171,6 +174,15 @@ function OutstadingInvoicesConstructionCreateDialog({
 
     return null;
   };
+
+  useEffect(() => {
+    if (newOutstandingInvoices.vendorName) {
+      setNewOutstandingInvoices({
+        ...newOutstandingInvoices,
+        additionalDetails: latestAdditionalDetails,
+      });
+    }
+  }, [latestAdditionalDetails]);
 
   return (
     <Dialog

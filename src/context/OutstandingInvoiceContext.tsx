@@ -231,6 +231,7 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
 
   useEffect(() => {
     handleGetAllCategories();
+    handleGetLatestAdditionalDetails("");
   }, []);
 
   return (
