@@ -18,10 +18,9 @@ import { OutstandingInvoicesContext } from "@/context/OutstandingInvoiceContext"
 import OutstandingInvoicesDeleteDialog from "../OutstandingInvoicesDeleteDialog";
 import { SupplierContext } from "@/context/SupplierContext";
 import { Calendar } from "primereact/calendar";
-import { formatDateToYYYYMMDD } from "@/util/date";
+import { formatDateToYYYYMMDD, formatarDataBR } from "@/util/date";
 
 import * as XLSX from "xlsx";
-import jsPDF from "jspdf";
 
 interface Options {
   icon?: string;
@@ -320,7 +319,22 @@ function OutstandingInvoicesList() {
   useEffect(() => {
     if (outstandingInvoicesVendorExport.length > 0) {
       const sheetData: (string | number)[][] = [];
-
+      sheetData.push([
+        "Despesas dos Favorecidos",
+        "",
+        "",
+        "",
+        "",
+        `Data ${formatarDataBR(new Date())}`,
+      ]);
+      sheetData.push([
+        centerCostSearch
+          ? "Obra " +
+            centerCostSearch +
+            " - " +
+            outstandingInvoices[0].localBank
+          : "Todas as obras",
+      ]);
       outstandingInvoicesVendorExport.forEach((favorecido) => {
         sheetData.push([favorecido.periodOfDate]);
         sheetData.push([]);

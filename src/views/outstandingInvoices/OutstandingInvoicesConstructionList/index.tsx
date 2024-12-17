@@ -21,7 +21,7 @@ import OutstandingConstructionUpdateDialog from "../OutstadingConstructionUpdate
 import * as XLSX from "xlsx";
 import { Calendar } from "primereact/calendar";
 import InputSearch from "@/components/InputSearch";
-import { formatDateToYYYYMMDD } from "@/util/date";
+import { formatDateToYYYYMMDD, formatarDataBR } from "@/util/date";
 
 interface Options {
   icon?: string;
@@ -296,16 +296,29 @@ function OutstandingInvoicesConstructionList() {
   useEffect(() => {
     if (outstandingInvoicesVendorExport.length > 0) {
       const sheetData: (string | number)[][] = [];
-
+      sheetData.push([
+        "Despesas dos Favorecidos",
+        "",
+        "",
+        "",
+        "",
+        `Data: ${formatarDataBR(new Date())}`,
+      ]);
+      sheetData.push([
+        selectedConstruction?.code
+          ? "Obra " +
+            selectedConstruction?.code +
+            " - " +
+            outstandingInvoices[0].localBank
+          : "Todas as obras",
+      ]);
       outstandingInvoicesVendorExport.forEach((favorecido) => {
         sheetData.push([favorecido.periodOfDate]);
         sheetData.push([]);
         // Add a row for the favorecido's name
-        sheetData.push([`${favorecido.name}`]);
 
         // Add headers for invoices
         sheetData.push([
-          "",
           "Data",
           "Favorecido",
           "C",
@@ -316,7 +329,6 @@ function OutstandingInvoicesConstructionList() {
         // Add rows for each invoice
         favorecido.outstandingInvoices.forEach((invoice) => {
           sheetData.push([
-            "",
             invoice.paymentDeadlineFormatted || "",
             invoice.vendorName || "",
             invoice.paymentStatus ? "C" : "",
@@ -332,7 +344,6 @@ function OutstandingInvoicesConstructionList() {
           "",
           "",
           "",
-          "",
           ` ${formatCurrency(favorecido.sumAmount || null)}`,
         ]);
         // Add a blank row after each favorecido's data
@@ -343,13 +354,12 @@ function OutstandingInvoicesConstructionList() {
       const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
 
       worksheet["!cols"] = [
-        { wch: 20 },
         { wch: 10 },
         { wch: 15 },
         { wch: 3 },
+        { wch: 20 },
+        { wch: 45 },
         { wch: 15 },
-        { wch: 30 },
-        { wch: 10 },
       ];
 
       // Create a workbook and append the worksheet

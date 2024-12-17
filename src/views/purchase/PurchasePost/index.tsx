@@ -1,4 +1,5 @@
 import LabelTitle from "@/components/LabelTitle";
+import MaterialAccordion from "@/components/MaterialAccordion";
 import { ConstructionContext } from "@/context/ConstructionContext";
 import { MaterialContext } from "@/context/MaterialContext";
 import { PurchaseContext } from "@/context/PurchaseContext";
@@ -520,6 +521,7 @@ function PurchasePost() {
                 style={{ minWidth: "12rem" }}
               ></Column>
             </DataTable>
+            {/* <MaterialAccordion /> */}
           </Card>
           {invalidMaterial && (
             <Message
@@ -707,7 +709,7 @@ function PurchasePost() {
             </div>
             <div className="field flex flex-column gap-2 w-full">
               <DataTable
-                emptyMessage="Nenhum material adicionado"
+                emptyMessage="Nenhum fornecedor adicionado"
                 value={newSupplierPurchase}
                 rows={10}
                 dataKey="id"
@@ -726,6 +728,7 @@ function PurchasePost() {
               </DataTable>
             </div>
           </div>
+          <div></div>
         </Card>
         <div className="flex gap-2 m-1">
           <Button

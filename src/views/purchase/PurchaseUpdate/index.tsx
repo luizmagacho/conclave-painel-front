@@ -758,7 +758,7 @@ function PurchaseUpdate() {
             </div>
             <div className="field flex flex-column gap-2 w-full">
               <DataTable
-                emptyMessage="Nenhum material adicionado"
+                emptyMessage="Nenhum fornecedor adicionado"
                 value={updatedSupplierPurchase}
                 rows={10}
                 dataKey="id"
