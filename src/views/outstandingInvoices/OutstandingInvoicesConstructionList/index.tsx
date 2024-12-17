@@ -296,6 +296,7 @@ function OutstandingInvoicesConstructionList() {
   useEffect(() => {
     if (outstandingInvoicesVendorExport.length > 0) {
       const sheetData: (string | number)[][] = [];
+      let sumTotal = 0;
       sheetData.push([
         "Despesas dos Favorecidos",
         "",
@@ -312,20 +313,13 @@ function OutstandingInvoicesConstructionList() {
             outstandingInvoices[0].localBank
           : "Todas as obras",
       ]);
-      outstandingInvoicesVendorExport.forEach((favorecido) => {
-        sheetData.push([favorecido.periodOfDate]);
-        sheetData.push([]);
-        // Add a row for the favorecido's name
+      sheetData.push([outstandingInvoicesVendorExport[0].periodOfDate]);
+      sheetData.push([]);
+      // Add a row for the favorecido's name
 
-        // Add headers for invoices
-        sheetData.push([
-          "Data",
-          "Favorecido",
-          "C",
-          "Conta",
-          "Memo",
-          "Montante",
-        ]);
+      // Add headers for invoices
+      sheetData.push(["Data", "Favorecido", "C", "Conta", "Memo", "Montante"]);
+      outstandingInvoicesVendorExport.forEach((favorecido) => {
         // Add rows for each invoice
         favorecido.outstandingInvoices.forEach((invoice) => {
           sheetData.push([
@@ -337,28 +331,39 @@ function OutstandingInvoicesConstructionList() {
 
             formatCurrency(invoice.totalAmount || null) || "",
           ]);
+          sumTotal += invoice.totalAmount || 0;
         });
+
         sheetData.push([
-          `Total: ${favorecido.name}`,
           "",
           "",
           "",
           "",
-          ` ${formatCurrency(favorecido.sumAmount || null)}`,
+          "",
+          `Total: ${formatCurrency(favorecido.sumAmount || null)}`,
         ]);
         // Add a blank row after each favorecido's data
         sheetData.push([]);
       });
+      sheetData.push([]);
+      sheetData.push([
+        "",
+        "",
+        "",
+        "",
+        "",
+        `Total: ${formatCurrency(sumTotal || null)}`,
+      ]);
 
       // Create a worksheet
       const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
 
       worksheet["!cols"] = [
-        { wch: 10 },
+        { wch: 15 },
         { wch: 15 },
         { wch: 3 },
         { wch: 20 },
-        { wch: 45 },
+        { wch: 50 },
         { wch: 15 },
       ];
 
