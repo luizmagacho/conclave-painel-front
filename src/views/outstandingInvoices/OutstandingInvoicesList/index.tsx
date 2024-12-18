@@ -351,8 +351,12 @@ function OutstandingInvoicesList() {
             invoice.paymentStatus ? "C" : "",
             `${invoice.centerCost || ""} - ${invoice.localBank}`,
             invoice.additionalDetails || "",
-
-            formatCurrency(invoice.totalAmount || null) || "",
+            invoice.totalAmount
+              ? ((invoice.totalAmount / 100) * -1).toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })
+              : "0,00",
           ]);
           sumTotal += invoice.totalAmount || 0;
         });
@@ -362,7 +366,13 @@ function OutstandingInvoicesList() {
           "",
           "",
           "",
-          `Total: ${formatCurrency(favorecido.sumAmount || null)}`,
+          `Total: ${((favorecido.sumAmount / 100) * -1).toLocaleString(
+            "pt-BR",
+            {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }
+          )}`,
         ]);
         // Add a blank row after each favorecido's data
         sheetData.push([]);
@@ -374,7 +384,10 @@ function OutstandingInvoicesList() {
         "",
         "",
         "",
-        `Total: ${formatCurrency(sumTotal || null)}`,
+        `Total: ${((sumTotal / 100) * -1).toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`,
       ]);
 
       // Create a worksheet
