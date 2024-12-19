@@ -47,7 +47,7 @@ function OutstadingInvoicesConstructionCreateDialog({
       localBank: "",
       purchaseDate: "",
       paymentDeadline: "",
-      totalAmount: null,
+      totalAmount: 0,
       userId: localStorage.getItem("portal.id") as string,
       enabled: true,
       additionalDetails: "",

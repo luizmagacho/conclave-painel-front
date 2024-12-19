@@ -4,11 +4,7 @@ import { OutstandingInvoicesContext } from "@/context/OutstandingInvoiceContext"
 import { SupplierContext } from "@/context/SupplierContext";
 import { Construction } from "@/services/construction/type";
 import { OutstandingInvoicesDTO } from "@/services/outstanding-invoices/type";
-import {
-  Supplier,
-  SupplierName,
-  SupplierRecord,
-} from "@/services/supplier/type";
+import { SupplierRecord } from "@/services/supplier/type";
 import { formatDateToYYYYMMDD } from "@/util/date";
 import { useRouter } from "next/router";
 import {
@@ -50,7 +46,7 @@ function OutstandingInvoicesCreateDialog({
       localBank: "",
       purchaseDate: "",
       paymentDeadline: "",
-      totalAmount: null,
+      totalAmount: 0,
       userId: localStorage.getItem("portal.id") as string,
       enabled: true,
       additionalDetails: "",
@@ -87,18 +83,26 @@ function OutstandingInvoicesCreateDialog({
     }));
   }, [newPurchaseDate, newPaymentDeadline]);
 
-  async function validateFields() {
+  function validateFields() {
     setNewOutstandingInvoices({
       ...newOutstandingInvoices,
       userId: userId || "",
     });
-    await setInvalidVendorName(newOutstandingInvoices.vendorName === "");
-    await setInvalidTotalAmount(!newOutstandingInvoices.totalAmount);
 
-    await setInvalidCenterCost(newOutstandingInvoices.centerCost === "");
+    if (newOutstandingInvoices.totalAmount) {
+      setNewOutstandingInvoices({ ...newOutstandingInvoices, totalAmount: 0 });
+    }
+    setInvalidVendorName(newOutstandingInvoices.vendorName === "");
+    setInvalidTotalAmount(!newOutstandingInvoices.totalAmount);
 
+    setInvalidCenterCost(newOutstandingInvoices.centerCost === "");
+    console.log(
+      newOutstandingInvoices.totalAmount ||
+        newOutstandingInvoices.totalAmount === null
+    );
     if (
-      newOutstandingInvoices.totalAmount &&
+      (newOutstandingInvoices.totalAmount ||
+        newOutstandingInvoices.totalAmount !== null) &&
       (newOutstandingInvoices.vendorName ||
         newOutstandingInvoices.vendorName !== "") &&
       (newOutstandingInvoices.centerCost ||
@@ -207,12 +211,12 @@ function OutstandingInvoicesCreateDialog({
     }));
   }, [selectedSupplier]);
 
-  const formatCurrency = (value: number | null) => {
+  const formatCurrency = (value: number) => {
     if (value) {
       return value / 100;
     }
 
-    return null;
+    return 0;
   };
 
   useEffect(() => {
@@ -348,7 +352,7 @@ function OutstandingInvoicesCreateDialog({
             locale="pt-BR"
             currency="BRL"
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={formatCurrency(newOutstandingInvoices?.totalAmount)}
+            value={formatCurrency(newOutstandingInvoices.totalAmount)}
             onChange={(e) => {
               if (e.value) {
                 setNewOutstandingInvoices({

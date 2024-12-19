@@ -120,9 +120,10 @@ function OutstandingInvoicesDialog({
       !updatedOutstandingInvoices.vendorName ||
         updatedOutstandingInvoices.vendorName === ""
     );
+    console.log(updatedOutstandingInvoices.totalAmount);
     setInvalidTotalAmount(
       !updatedOutstandingInvoices.totalAmount ||
-        updatedOutstandingInvoices.totalAmount >= 0
+        updatedOutstandingInvoices.totalAmount < 0
     );
 
     setInvalidCenterCost(
@@ -131,7 +132,8 @@ function OutstandingInvoicesDialog({
     );
 
     if (
-      updatedOutstandingInvoices.totalAmount &&
+      (updatedOutstandingInvoices.totalAmount ||
+        updatedOutstandingInvoices.totalAmount >= 0) &&
       (updatedOutstandingInvoices.vendorName ||
         updatedOutstandingInvoices.vendorName !== "") &&
       (updatedOutstandingInvoices.centerCost ||
@@ -233,7 +235,7 @@ function OutstandingInvoicesDialog({
       return value / 100;
     }
 
-    return null;
+    return 0;
   };
 
   return (
@@ -362,9 +364,9 @@ function OutstandingInvoicesDialog({
             locale="pt-BR"
             currency="BRL"
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={formatCurrency(updatedOutstandingInvoices?.totalAmount)}
+            value={formatCurrency(updatedOutstandingInvoices.totalAmount)}
             onChange={(e) => {
-              if (e.value) {
+              if (e.value !== null) {
                 setUpdatedOutstandingInvoices({
                   ...updatedOutstandingInvoices,
                   totalAmount: e.value * 100,
