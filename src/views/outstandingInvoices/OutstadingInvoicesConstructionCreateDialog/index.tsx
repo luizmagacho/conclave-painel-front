@@ -93,7 +93,8 @@ function OutstadingInvoicesConstructionCreateDialog({
     setInvalidVendorName(newOutstandingInvoices.vendorName === "");
     setInvalidTotalAmount(!newOutstandingInvoices.totalAmount);
     if (
-      newOutstandingInvoices.totalAmount &&
+      (newOutstandingInvoices.totalAmount ||
+        newOutstandingInvoices.totalAmount !== null) &&
       newOutstandingInvoices.vendorName !== ""
     ) {
       onCreate(newOutstandingInvoices);
@@ -172,7 +173,7 @@ function OutstadingInvoicesConstructionCreateDialog({
       return value / 100;
     }
 
-    return null;
+    return 0;
   };
 
   useEffect(() => {
@@ -263,9 +264,9 @@ function OutstadingInvoicesConstructionCreateDialog({
             locale="pt-BR"
             currency="BRL"
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={formatCurrency(newOutstandingInvoices?.totalAmount)}
+            value={formatCurrency(newOutstandingInvoices.totalAmount)}
             onChange={(e) => {
-              if (e.value) {
+              if (e.value !== null) {
                 setNewOutstandingInvoices({
                   ...newOutstandingInvoices,
                   totalAmount: e.value * 100,
