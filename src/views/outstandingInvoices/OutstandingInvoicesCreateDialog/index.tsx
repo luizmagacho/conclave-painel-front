@@ -354,7 +354,7 @@ function OutstandingInvoicesCreateDialog({
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={formatCurrency(newOutstandingInvoices.totalAmount)}
             onChange={(e) => {
-              if (e.value) {
+              if (e.value !== null) {
                 setNewOutstandingInvoices({
                   ...newOutstandingInvoices,
                   totalAmount: e.value * 100,
