@@ -32,7 +32,7 @@ export type OutstandingInvoicesDTO = {
   costCategory: string;
   name: string;
   vendorName: string;
-  totalAmount: number | null;
+  totalAmount: number;
   userId: string;
   enabled: boolean;
   additionalDetails: string;

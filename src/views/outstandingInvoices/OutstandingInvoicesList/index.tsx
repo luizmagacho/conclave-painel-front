@@ -288,7 +288,7 @@ function OutstandingInvoicesList() {
   const priceTotalValueBodyTemplate = (
     outstandingInvoices: OutstandingInvoices
   ) => {
-    return formatCurrency(outstandingInvoices.totalAmount || null);
+    return formatCurrency(outstandingInvoices.totalAmount);
   };
 
   useEffect(() => {
@@ -296,9 +296,12 @@ function OutstandingInvoicesList() {
     handleGetAllShortenedName();
   }, []);
 
-  const formatCurrency = (value: number | null) => {
+  const formatCurrency = (value: number) => {
     if (!value) {
-      return "-";
+      return value.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      });
     }
     return (value / 100).toLocaleString("pt-BR", {
       style: "currency",

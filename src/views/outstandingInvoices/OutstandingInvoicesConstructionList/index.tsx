@@ -266,12 +266,18 @@ function OutstandingInvoicesConstructionList() {
   const priceTotalValueBodyTemplate = (
     outstandingInvoices: OutstandingInvoices
   ) => {
-    return formatCurrency(outstandingInvoices.totalAmount || null);
+    return formatCurrency(outstandingInvoices.totalAmount || 0);
   };
 
-  const formatCurrency = (value: number | null) => {
-    if (!value) {
+  const formatCurrency = (value: number) => {
+    if (value < 0) {
       return "-";
+    }
+    if (value === 0) {
+      return value.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      });
     }
     return (value / 100).toLocaleString("pt-BR", {
       style: "currency",

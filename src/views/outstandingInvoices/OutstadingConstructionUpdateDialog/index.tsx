@@ -109,13 +109,15 @@ function OutstandingConstructionUpdateDialog({
       !updatedOutstandingInvoices.vendorName ||
         updatedOutstandingInvoices.vendorName === ""
     );
+    console.log(updatedOutstandingInvoices.totalAmount);
     setInvalidTotalAmount(
       !updatedOutstandingInvoices.totalAmount ||
-        updatedOutstandingInvoices.totalAmount >= 0
+        updatedOutstandingInvoices.totalAmount < 0
     );
 
     if (
-      updatedOutstandingInvoices.totalAmount &&
+      (updatedOutstandingInvoices.totalAmount ||
+        updatedOutstandingInvoices.totalAmount >= 0) &&
       (updatedOutstandingInvoices.vendorName ||
         updatedOutstandingInvoices.vendorName !== "")
     ) {
@@ -178,12 +180,15 @@ function OutstandingConstructionUpdateDialog({
     }));
   }, [selectedSupplier]);
 
-  const formatCurrency = (value: number | null) => {
+  const formatCurrency = (value: number) => {
+    if (value === 0) {
+      return value;
+    }
     if (value) {
       return value / 100;
     }
 
-    return null;
+    return 0;
   };
 
   return (
@@ -266,9 +271,9 @@ function OutstandingConstructionUpdateDialog({
             locale="pt-BR"
             currency="BRL"
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={formatCurrency(updatedOutstandingInvoices?.totalAmount)}
+            value={formatCurrency(updatedOutstandingInvoices.totalAmount)}
             onChange={(e) => {
-              if (e.value) {
+              if (e.value !== null) {
                 setUpdatedOutstandingInvoices({
                   ...updatedOutstandingInvoices,
                   totalAmount: e.value * 100,
