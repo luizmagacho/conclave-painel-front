@@ -155,7 +155,15 @@ function OutstandingInvoicesList() {
 
   function onPageChange(event: PaginatorPageChangeEvent) {
     const { page, first } = event;
-    handleGetOutstandingInvoices();
+    handleGetOutstandingInvoices(
+      page,
+      centerCostSearch,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
     setFirst(first);
   }
 

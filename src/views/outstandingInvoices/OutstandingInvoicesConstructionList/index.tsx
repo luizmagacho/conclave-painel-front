@@ -108,7 +108,11 @@ function OutstandingInvoicesConstructionList() {
     const { id } = router.query;
     handleGetOutstandingInvoicesByCenterCostId(
       typeof id === "string" ? id : "",
-      page
+      page,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
     );
     setFirst(first);
   }
@@ -401,6 +405,17 @@ function OutstandingInvoicesConstructionList() {
         <div className="flex align-items-center justify-start w-full gap-2">
           <h1 className="m-0">Contas a Pagar</h1>
         </div>
+        <div
+          className="flex justify-end gap-6 w-full"
+          style={{ justifyContent: "end" }}
+        >
+          <Button
+            className="rounded-md px-3 text-sm"
+            label="Exportar para Excel"
+            severity="danger"
+            onClick={onClickExport}
+          ></Button>
+        </div>
         <div className="card flex flex-column md:flex-row gap-2 w-11/12">
           <div className="flex flex-column gap-1 w-full">
             <LabelTitle
@@ -497,17 +512,7 @@ function OutstandingInvoicesConstructionList() {
             />
           </div>
         </div>
-        <div
-          className="flex justify-end gap-6 w-full"
-          style={{ justifyContent: "end" }}
-        >
-          <Button
-            className="rounded-md px-3 text-sm"
-            label="Exportar para Excel"
-            severity="danger"
-            onClick={onClickExport}
-          ></Button>
-        </div>
+
         <DataTable
           emptyMessage="Nenhum custo encontrado."
           value={outstandingInvoices}
