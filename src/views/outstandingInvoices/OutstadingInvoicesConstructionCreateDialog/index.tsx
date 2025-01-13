@@ -269,7 +269,7 @@ function OutstadingInvoicesConstructionCreateDialog({
               if (e.value !== null) {
                 setNewOutstandingInvoices({
                   ...newOutstandingInvoices,
-                  totalAmount: e.value * 100,
+                  totalAmount: Math.round(e.value * 100),
                 });
                 setInvalidTotalAmount(false);
               }
