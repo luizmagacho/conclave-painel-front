@@ -84,10 +84,10 @@ function OutstandingInvoicesCreateDialog({
   }, [newPurchaseDate, newPaymentDeadline]);
 
   function validateFields() {
-    console.log("Valores: ", newOutstandingInvoices.totalAmount);
     setNewOutstandingInvoices({
       ...newOutstandingInvoices,
       userId: userId || "",
+      totalAmount: Math.round(newOutstandingInvoices.totalAmount),
     });
 
     if (newOutstandingInvoices.totalAmount) {
@@ -97,10 +97,7 @@ function OutstandingInvoicesCreateDialog({
     setInvalidTotalAmount(!newOutstandingInvoices.totalAmount);
 
     setInvalidCenterCost(newOutstandingInvoices.centerCost === "");
-    console.log(
-      newOutstandingInvoices.totalAmount ||
-        newOutstandingInvoices.totalAmount === null
-    );
+
     if (
       (newOutstandingInvoices.totalAmount ||
         newOutstandingInvoices.totalAmount !== null) &&
@@ -109,8 +106,8 @@ function OutstandingInvoicesCreateDialog({
       (newOutstandingInvoices.centerCost ||
         newOutstandingInvoices.centerCost !== "")
     ) {
-      // onCreate(newOutstandingInvoices);
-      // onHide();
+      onCreate(newOutstandingInvoices);
+      onHide();
     }
   }
 
