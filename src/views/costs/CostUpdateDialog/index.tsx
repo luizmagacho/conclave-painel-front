@@ -347,10 +347,10 @@ function CostUpdateDialog({
               if (e.value) {
                 setUpdatedCost({
                   ...updatedCost,
-                  totalAmount: e.value * 100,
-                  workerValue: (e.value / 2) * 100,
-                  materialValue: (e.value / 2) * 100,
-                  inssValue: (e.value / 2) * 100 * 0.11,
+                  totalAmount: Math.round(e.value * 100),
+                  workerValue: Math.round((e.value / 2) * 100),
+                  materialValue: Math.round((e.value / 2) * 100),
+                  inssValue: Math.round((e.value / 2) * 100 * 0.1),
                 });
               }
             }}

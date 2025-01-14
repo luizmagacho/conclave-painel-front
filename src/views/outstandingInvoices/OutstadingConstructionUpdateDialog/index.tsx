@@ -276,7 +276,7 @@ function OutstandingConstructionUpdateDialog({
               if (e.value !== null) {
                 setUpdatedOutstandingInvoices({
                   ...updatedOutstandingInvoices,
-                  totalAmount: e.value * 100,
+                  totalAmount: Math.round(e.value * 100),
                 });
               }
               setInvalidPaymentDeadline(false);
