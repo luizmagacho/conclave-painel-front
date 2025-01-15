@@ -186,10 +186,8 @@ function OutstandingInvoicesCreateDialog({
         selectedConstruction?.id || prevOutstandingInvoices.centerCostId,
       centerCost:
         selectedConstruction?.code || prevOutstandingInvoices.centerCost,
-      bankBranch:
-        selectedConstruction?.bankBranch || prevOutstandingInvoices.bankBranch,
-      localBank:
-        selectedConstruction?.local || prevOutstandingInvoices.localBank,
+      bankBranch: selectedConstruction?.bankBranch || "",
+      localBank: selectedConstruction?.local || "",
       costCategory: selectedCategory || prevOutstandingInvoices.costCategory,
     }));
   }, [selectedConstruction, selectedCategory]);

@@ -323,7 +323,8 @@ function OutstandingInvoicesList() {
       centerCostSearch,
       vendorNameSearch,
       paymentDeadlineFromSearch,
-      paymentDeadlineToSearch
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
     );
   }
 
@@ -395,7 +396,7 @@ function OutstandingInvoicesList() {
         "",
         "",
         "",
-        `Total: ${((sumTotal / 100) * -1).toLocaleString("pt-BR", {
+        `${((sumTotal / 100) * -1).toLocaleString("pt-BR", {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })}`,

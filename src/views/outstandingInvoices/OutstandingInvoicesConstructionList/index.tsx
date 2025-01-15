@@ -299,7 +299,8 @@ function OutstandingInvoicesConstructionList() {
       selectedConstruction?.code,
       vendorNameSearch,
       paymentDeadlineFromSearch,
-      paymentDeadlineToSearch
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
     );
   }
 
@@ -354,13 +355,10 @@ function OutstandingInvoicesConstructionList() {
           "",
           "",
           "",
-          `Total: ${((favorecido.sumAmount / 100) * -1).toLocaleString(
-            "pt-BR",
-            {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }
-          )}`,
+          `${((favorecido.sumAmount / 100) * -1).toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`,
         ]);
         // Add a blank row after each favorecido's data
         sheetData.push([]);
@@ -372,7 +370,7 @@ function OutstandingInvoicesConstructionList() {
         "",
         "",
         "",
-        `Total: ${((sumTotal / 100) * -1).toLocaleString("pt-BR", {
+        `${((sumTotal / 100) * -1).toLocaleString("pt-BR", {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })}`,

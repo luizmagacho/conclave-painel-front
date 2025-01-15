@@ -39,10 +39,27 @@ export async function getOutstandingInvoices({
 
 export async function getOutstandingInvoicesByCenterCostId(
   centerCostId: string,
-  { page, size }: OutstandingInvoicesPaginationParam
+  {
+    page,
+    size,
+    vendorName,
+    paymentDeadlineFrom,
+    paymentDeadlineTo,
+    additionalDetails,
+  }: OutstandingInvoicesPaginationParam
 ) {
   let res = await api.get<Pagination<OutstandingInvoices>>(
-    `${baseUrl}/center-cost/${centerCostId}`
+    `${baseUrl}/center-cost/${centerCostId}`,
+    {
+      params: {
+        page,
+        size,
+        vendorName,
+        paymentDeadlineFrom,
+        paymentDeadlineTo,
+        additionalDetails,
+      },
+    }
   );
   return res.data;
 }
@@ -73,6 +90,7 @@ export async function getOutstandingInvoicesToExport({
   vendorName,
   paymentDeadlineFrom,
   paymentDeadlineTo,
+  additionalDetails,
 }: OutstandingInvoicesPaginationParam) {
   let res = await api.get<OutstandingInvoicesVendorExport[]>(
     `${baseUrl}/prepare-export`,
@@ -84,6 +102,7 @@ export async function getOutstandingInvoicesToExport({
         vendorName,
         paymentDeadlineFrom,
         paymentDeadlineTo,
+        additionalDetails,
       },
     }
   );
