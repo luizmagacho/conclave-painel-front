@@ -49,7 +49,8 @@ interface OutstandingInvoicesProps {
     centerCost?: string,
     vendorName?: string,
     paymentDeadlineFrom?: string,
-    paymentDeadlineTo?: string
+    paymentDeadlineTo?: string,
+    additionalDetails?: string
   ) => Promise<void>;
   handlePostOutstandingInvoices: (
     outstandingInvoices: OutstandingInvoicesDTO
@@ -118,14 +119,22 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
 
   async function handleGetOutstandingInvoicesByCenterCostId(
     centerCostId: string,
-    page: number = 0
+    page: number = 0,
+    centerCost?: string,
+    paymentDeadlineFrom?: string,
+    paymentDeadlineTo?: string,
+    additionalDetails?: string
   ) {
     setLoading(true);
     try {
       const { content, totalElements } =
         await getOutstandingInvoicesByCenterCostId(centerCostId, {
           page,
-          size: 20,
+          size: 10,
+          centerCost,
+          paymentDeadlineFrom,
+          paymentDeadlineTo,
+          additionalDetails,
         });
 
       setBufferedOutstandingInvoices(content || []);
@@ -143,7 +152,8 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
     centerCost?: string,
     vendorName?: string,
     paymentDeadlineFrom?: string,
-    paymentDeadlineTo?: string
+    paymentDeadlineTo?: string,
+    additionalDetails?: string
   ) {
     setLoading(true);
     try {
@@ -155,6 +165,7 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
           vendorName,
           paymentDeadlineFrom,
           paymentDeadlineTo,
+          additionalDetails,
         })
       );
     } catch (error) {
