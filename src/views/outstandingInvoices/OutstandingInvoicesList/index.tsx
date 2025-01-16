@@ -102,7 +102,7 @@ function OutstandingInvoicesList() {
       localBranchSearch,
       vendorNameSearch,
       paymentDeadlineFromSearch,
-      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
       additionalDetailsSearch
     );
     handleGetAllCategories();
@@ -216,7 +216,7 @@ function OutstandingInvoicesList() {
       localBranchSearch,
       vendorName,
       paymentDeadlineFromSearch,
-      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
       additionalDetailsSearch
     );
   }
@@ -284,7 +284,7 @@ function OutstandingInvoicesList() {
       localBranchSearch,
       vendorNameSearch,
       paymentDeadlineFromSearch,
-      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
       additionalDetails
     );
   }
