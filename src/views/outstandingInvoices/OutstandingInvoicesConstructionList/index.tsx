@@ -142,7 +142,7 @@ function OutstandingInvoicesConstructionList() {
       0,
       vendorNameSearch,
       paymentDeadlineFromSearch,
-      paymentDeadlineFromSearch
+      paymentDeadlineToSearch
     );
     handleGetAllCategories();
   }
@@ -172,7 +172,7 @@ function OutstandingInvoicesConstructionList() {
       0,
       vendorName,
       paymentDeadlineFromSearch,
-      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
       additionalDetailsSearch
     );
   }
