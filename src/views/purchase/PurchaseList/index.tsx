@@ -98,6 +98,38 @@ function PurchaseList() {
     setShowDialog((showDialog) => !showDialog);
   }
 
+  function onClickExport(purchase: Purchase) {
+    const sheetData: (string | number)[][] = [];
+    sheetData.push(["MAPA DE PEDIDO/COTAÇÃO DE MATERIAL"]);
+    sheetData.push([
+      `Data: ${purchase.requestedDateFormatted}`,
+      "",
+      "",
+      `Hora: ${purchase.requestedTimeFormatted}`,
+      `Obra N°: ${purchase.centerCost}`,
+      "Fornecedor 1",
+      "",
+      "Fornecedor 2",
+      "",
+      "Fornecedor 3",
+      "",
+    ]);
+
+    sheetData.push([
+      `Cliente: ${purchase}`,
+      "",
+      "",
+      `Hora: ${purchase.requestedTimeFormatted}`,
+      `Obra N°: ${purchase.centerCost}`,
+      "Fornecedor 1",
+      "",
+      "Fornecedor 2",
+      "",
+      "Fornecedor 3",
+      "",
+    ]);
+  }
+
   return (
     <>
       <section className="flex flex-column gap-4 p-5 w-full">

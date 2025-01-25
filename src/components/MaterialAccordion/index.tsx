@@ -15,7 +15,15 @@ import { Message } from "primereact/message";
 import { InputText } from "primereact/inputtext";
 import { ScrollPanel } from "primereact/scrollpanel";
 
-function MaterialAccordion() {
+interface MaterialAccordionProps {
+  listMaterialsPurchase: MaterialPurchaseDTO[];
+  setListMaterialsPurchase: (materials: MaterialPurchaseDTO[]) => void;
+}
+
+function MaterialAccordion({
+  listMaterialsPurchase,
+  setListMaterialsPurchase,
+}: MaterialAccordionProps) {
   const [newQuantity, setNewQuantity] = useState<number | null>(null);
 
   const [invalidQuantity, setInvalidQuantity] = useState<boolean>(false);
@@ -33,15 +41,8 @@ function MaterialAccordion() {
       supplierPurchase: [],
     });
 
-  const [materials, setMaterials] = useState<MaterialPurchaseDTO[]>([
-    newMaterialPurchase,
-  ]);
-
   const addMaterial = () => {
-    setMaterials([
-      ...materials,
-      { name: "", quantity: 0, unit: "", supplierPurchase: [] },
-    ]);
+    setListMaterialsPurchase([...listMaterialsPurchase, newMaterialPurchase]);
   };
 
   const materialSearch = (event: AutoCompleteCompleteEvent) => {
@@ -146,8 +147,8 @@ function MaterialAccordion() {
     <div>
       <ScrollPanel style={{ width: "100%", height: "200px" }}>
         <Button label="Adicionar Material" onClick={addMaterial} />
-        <Accordion multiple activeIndex={materials.length - 1}>
-          {materials.map((material, index) => (
+        <Accordion multiple activeIndex={listMaterialsPurchase.length - 1}>
+          {listMaterialsPurchase.map((materialsPurchase, index) => (
             <AccordionTab header={`Material ${index + 1}`} key={index}>
               {renderAccordionContent(index)}
             </AccordionTab>

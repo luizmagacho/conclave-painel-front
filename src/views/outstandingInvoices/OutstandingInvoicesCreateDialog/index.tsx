@@ -42,7 +42,7 @@ function OutstandingInvoicesCreateDialog({
       centerCostId: "",
       bankBranch: "",
       costType: "",
-      costCategory: "",
+      costCategory: "FORNECEDOR : MATERIAIS",
       localBank: "",
       purchaseDate: "",
       paymentDeadline: "",
@@ -54,7 +54,9 @@ function OutstandingInvoicesCreateDialog({
     });
   const [selectedConstruction, setSelectedConstruction] =
     useState<Construction>();
-  const [selectedCategory, setSelectedCategory] = useState<string>();
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    "FORNECEDOR : MATERIAIS"
+  );
   const [selectedSupplier, setSelectedSupplier] = useState<SupplierRecord>();
   const [newPurchaseDate, setNewPurchaseDate] = useState<Date | null>(null);
 

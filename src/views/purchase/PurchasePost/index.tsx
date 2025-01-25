@@ -57,7 +57,23 @@ function PurchasePost() {
     MaterialPurchaseDTO[]
   >([]);
 
-  const [selectedSupplierPurchase, setSelectedSupplierPurchase] =
+  const [selectedSupplierPurchase1, setSelectedSupplierPurchase1] =
+    useState<SupplierPurchaseDTO>({
+      supplierId: "",
+      shortenedName: "",
+      unitValue: null,
+      totalValue: null,
+    });
+
+  const [selectedSupplierPurchase2, setSelectedSupplierPurchase2] =
+    useState<SupplierPurchaseDTO>({
+      supplierId: "",
+      shortenedName: "",
+      unitValue: null,
+      totalValue: null,
+    });
+
+  const [selectedSupplierPurchase3, setSelectedSupplierPurchase3] =
     useState<SupplierPurchaseDTO>({
       supplierId: "",
       shortenedName: "",
@@ -68,8 +84,9 @@ function PurchasePost() {
   const [selectedConstruction, setSelectedConstruction] =
     useState<Construction>();
 
-  const [selectedSupplier, setSelectedSupplier] = useState<SupplierRecord>();
-
+  const [selectedSupplier1, setSelectedSupplier1] = useState<SupplierRecord>();
+  const [selectedSupplier2, setSelectedSupplier2] = useState<SupplierRecord>();
+  const [selectedSupplier3, setSelectedSupplier3] = useState<SupplierRecord>();
   const [showAddMaterial, setShowAddMaterial] = useState<boolean>(false);
   const [deleteMaterialsDialog, setDeleteMaterialsDialog] =
     useState<boolean>(false);
@@ -81,10 +98,16 @@ function PurchasePost() {
   const [invalidRequestTime, setInvalidRequestTime] = useState<boolean>(false);
   const [invalidMaterial, setInvalidMaterial] = useState<boolean>(false);
   const [invalidName, setInvalidName] = useState<boolean>(false);
-  const [invalidSupplierPurchase, setInvalidSupplierPurchase] =
+  const [invalidSupplierPurchase1, setInvalidSupplierPurchase1] =
+    useState<boolean>(false);
+  const [invalidSupplierPurchase2, setInvalidSupplierPurchase2] =
+    useState<boolean>(false);
+  const [invalidSupplierPurchase3, setInvalidSupplierPurchase3] =
     useState<boolean>(false);
   const [invalidQuantity, setInvalidQuantity] = useState<boolean>(false);
-  const [invalidUnitValue, setInvalidUnitValue] = useState<boolean>(false);
+  const [invalidUnitValue1, setInvalidUnitValue1] = useState<boolean>(false);
+  const [invalidUnitValue2, setInvalidUnitValue2] = useState<boolean>(false);
+  const [invalidUnitValue3, setInvalidUnitValue3] = useState<boolean>(false);
   const [invalidConstructionCode, setInvalidConstructionCode] =
     useState<boolean>(false);
 
@@ -210,8 +233,12 @@ function PurchasePost() {
             setShowAddMaterial(true);
             setNewSupplierPurchase([]);
             setNewQuantity(null);
-            setInvalidSupplierPurchase(false);
-            setInvalidUnitValue(false);
+            setInvalidSupplierPurchase1(false);
+            setInvalidSupplierPurchase2(false);
+            setInvalidSupplierPurchase3(false);
+            setInvalidUnitValue1(false);
+            setInvalidUnitValue2(false);
+            setInvalidUnitValue3(false);
           }}
           severity="success"
         />
@@ -236,7 +263,9 @@ function PurchasePost() {
     setShowAddMaterial(false);
     setInvalidName(false);
     setInvalidQuantity(false);
-    setInvalidSupplierPurchase(false);
+    setInvalidSupplierPurchase1(false);
+    setInvalidSupplierPurchase2(false);
+    setInvalidSupplierPurchase3(false);
     setNewMaterialPurchase({
       name: "",
       quantity: null,
@@ -244,9 +273,21 @@ function PurchasePost() {
       supplierPurchase: [],
     });
     setNewQuantity(null);
-    setSelectedSupplierPurchase({
-      supplierId: "",
-      shortenedName: "",
+    setSelectedSupplierPurchase1({
+      supplierId: selectedSupplierPurchase1.supplierId,
+      shortenedName: selectedSupplierPurchase1.shortenedName,
+      unitValue: null,
+      totalValue: null,
+    });
+    setSelectedSupplierPurchase2({
+      supplierId: selectedSupplierPurchase2.supplierId,
+      shortenedName: selectedSupplierPurchase2.shortenedName,
+      unitValue: null,
+      totalValue: null,
+    });
+    setSelectedSupplierPurchase3({
+      supplierId: selectedSupplierPurchase3.supplierId,
+      shortenedName: selectedSupplierPurchase3.shortenedName,
       unitValue: null,
       totalValue: null,
     });
@@ -254,15 +295,28 @@ function PurchasePost() {
   };
 
   function validateFieldsMaterial() {
+    validateSupplierFields();
     setInvalidName(
       !newMaterialPurchase.name || newMaterialPurchase.name === ""
     );
     setInvalidQuantity(!newQuantity);
-    setInvalidSupplierPurchase(
+    setInvalidSupplierPurchase1(
+      !newSupplierPurchase || newSupplierPurchase.length <= 0
+    );
+    setInvalidSupplierPurchase2(
+      !newSupplierPurchase || newSupplierPurchase.length <= 0
+    );
+    setInvalidSupplierPurchase3(
       !newSupplierPurchase || newSupplierPurchase.length <= 0
     );
 
-    if (!invalidName && !invalidQuantity && !invalidSupplierPurchase) {
+    if (
+      !invalidName &&
+      !invalidQuantity &&
+      !invalidSupplierPurchase1 &&
+      !invalidSupplierPurchase2 &&
+      !invalidSupplierPurchase3
+    ) {
       setListMaterialsPurchase([
         ...listMaterialsPurchase,
         {
@@ -273,7 +327,6 @@ function PurchasePost() {
         },
       ]);
       hideAddDialog();
-      setInvalidSupplierPurchase(false);
     }
   }
 
@@ -332,31 +385,67 @@ function PurchasePost() {
   };
 
   function validateSupplierFields() {
-    setInvalidSupplierPurchase(
-      !selectedSupplierPurchase.shortenedName ||
-        selectedSupplierPurchase.shortenedName === ""
+    setInvalidSupplierPurchase1(
+      !selectedSupplierPurchase1.shortenedName ||
+        selectedSupplierPurchase1.shortenedName === ""
     );
-    setInvalidUnitValue(
-      !selectedSupplierPurchase.unitValue ||
-        selectedSupplierPurchase.unitValue === null
+    setInvalidSupplierPurchase2(
+      !selectedSupplierPurchase2.shortenedName ||
+        selectedSupplierPurchase2.shortenedName === ""
+    );
+    setInvalidSupplierPurchase3(
+      !selectedSupplierPurchase3.shortenedName ||
+        selectedSupplierPurchase3.shortenedName === ""
+    );
+    setInvalidUnitValue1(
+      !selectedSupplierPurchase1.unitValue ||
+        selectedSupplierPurchase1.unitValue === null
+    );
+    setInvalidUnitValue2(
+      !selectedSupplierPurchase2.unitValue ||
+        selectedSupplierPurchase2.unitValue === null
+    );
+    setInvalidUnitValue3(
+      !selectedSupplierPurchase3.unitValue ||
+        selectedSupplierPurchase3.unitValue === null
     );
     if (
-      selectedSupplierPurchase.shortenedName &&
-      selectedSupplierPurchase.unitValue !== null
+      selectedSupplierPurchase1.shortenedName &&
+      selectedSupplierPurchase1.unitValue !== null &&
+      selectedSupplierPurchase2.shortenedName &&
+      selectedSupplierPurchase2.unitValue !== null &&
+      selectedSupplierPurchase3.shortenedName &&
+      selectedSupplierPurchase3.unitValue !== null
     ) {
       // Add the validated supplier to the listSupplierPurchase
       let listSupplier = newSupplierPurchase;
-      listSupplier.push(selectedSupplierPurchase);
+      listSupplier.push(selectedSupplierPurchase1);
+      listSupplier.push(selectedSupplierPurchase2);
+      listSupplier.push(selectedSupplierPurchase3);
       setNewSupplierPurchase(listSupplier);
 
       // Clear the selected supplier state for the next entry
-      setSelectedSupplierPurchase({
-        supplierId: "",
-        shortenedName: "",
+      setSelectedSupplierPurchase1({
+        supplierId: selectedSupplierPurchase1.supplierId,
+        shortenedName: selectedSupplierPurchase1.shortenedName,
         unitValue: null,
         totalValue: null,
       });
-      setInvalidSupplierPurchase(false);
+      setSelectedSupplierPurchase2({
+        supplierId: selectedSupplierPurchase2.supplierId,
+        shortenedName: selectedSupplierPurchase2.shortenedName,
+        unitValue: null,
+        totalValue: null,
+      });
+      setSelectedSupplierPurchase3({
+        supplierId: selectedSupplierPurchase3.supplierId,
+        shortenedName: selectedSupplierPurchase3.shortenedName,
+        unitValue: null,
+        totalValue: null,
+      });
+      setInvalidSupplierPurchase1(false);
+      setInvalidSupplierPurchase2(false);
+      setInvalidSupplierPurchase3(false);
     }
   }
 
@@ -366,15 +455,31 @@ function PurchasePost() {
   }, []);
 
   useEffect(() => {
-    setSelectedSupplierPurchase((prevSelectedSupplierPurchase) => ({
-      ...prevSelectedSupplierPurchase,
+    setSelectedSupplierPurchase1((prevSelectedSupplierPurchase1) => ({
+      ...prevSelectedSupplierPurchase1,
       supplierId:
-        selectedSupplier?.id || prevSelectedSupplierPurchase.supplierId,
+        selectedSupplier1?.id || prevSelectedSupplierPurchase1.supplierId,
       shortenedName:
-        selectedSupplier?.shortenedName ||
-        prevSelectedSupplierPurchase.shortenedName,
+        selectedSupplier1?.shortenedName ||
+        prevSelectedSupplierPurchase1.shortenedName,
     }));
-  }, [selectedSupplier]);
+    setSelectedSupplierPurchase2((prevSelectedSupplierPurchase2) => ({
+      ...prevSelectedSupplierPurchase2,
+      supplierId:
+        selectedSupplier2?.id || prevSelectedSupplierPurchase2.supplierId,
+      shortenedName:
+        selectedSupplier2?.shortenedName ||
+        prevSelectedSupplierPurchase2.shortenedName,
+    }));
+    setSelectedSupplierPurchase3((prevSelectedSupplierPurchase3) => ({
+      ...prevSelectedSupplierPurchase3,
+      supplierId:
+        selectedSupplier3?.id || prevSelectedSupplierPurchase3.supplierId,
+      shortenedName:
+        selectedSupplier3?.shortenedName ||
+        prevSelectedSupplierPurchase3.shortenedName,
+    }));
+  }, [selectedSupplier1, selectedSupplier2, selectedSupplier3]);
 
   const formatCurrencyReal = (value: number | null) => {
     if (!value) {
@@ -521,7 +626,10 @@ function PurchasePost() {
                 style={{ minWidth: "12rem" }}
               ></Column>
             </DataTable>
-            {/* <MaterialAccordion /> */}
+            {/* <MaterialAccordion
+              listMaterialsPurchase={listMaterialsPurchase}
+              setListMaterialsPurchase={setListMaterialsPurchase}
+            /> */}
           </Card>
           {invalidMaterial && (
             <Message
@@ -553,8 +661,8 @@ function PurchasePost() {
         header="Adicionar Material"
         modal
         onHide={hideAddDialog}
-        className="p-fluid w-60rem"
-        style={{ width: "60vw" }}
+        className="p-fluid w-70rem"
+        style={{ width: "70vw" }}
       >
         <div className="card flex flex-column md:flex-row gap-3 w-full">
           <div className="field flex flex-column gap-2 w-full">
@@ -637,7 +745,7 @@ function PurchasePost() {
           <div className="card flex flex-column md:flex-row gap-2 w-full">
             <div className="field flex flex-column gap-2 w-full">
               <LabelTitle
-                text="Fornecedor"
+                text="Fornecedor I"
                 htmlFor="supplier"
                 className="font-semibold"
                 required={true}
@@ -647,11 +755,11 @@ function PurchasePost() {
                 dropdown
                 style={{ height: "30px", fontSize: "0.75rem" }}
                 field="shortenedName"
-                value={selectedSupplierPurchase.shortenedName}
+                value={selectedSupplierPurchase1.shortenedName}
                 completeMethod={suppliersSearch}
                 onChange={(e: AutoCompleteChangeEvent) => {
-                  setSelectedSupplier(e.value);
-                  setInvalidSupplierPurchase(false);
+                  setSelectedSupplier1(e.value);
+                  setInvalidSupplierPurchase1(false);
                 }}
               />
               <LabelTitle
@@ -665,11 +773,11 @@ function PurchasePost() {
                 locale="pt-BR"
                 currency="BRL"
                 style={{ height: "30px", fontSize: "0.8rem" }}
-                value={formatCurrency(selectedSupplierPurchase?.unitValue)}
+                value={formatCurrency(selectedSupplierPurchase1?.unitValue)}
                 onChange={(e) => {
                   if (e.value) {
-                    setSelectedSupplierPurchase({
-                      ...selectedSupplierPurchase,
+                    setSelectedSupplierPurchase1({
+                      ...selectedSupplierPurchase1,
                       unitValue: e.value * 100,
                       totalValue:
                         newQuantity != null
@@ -677,7 +785,7 @@ function PurchasePost() {
                           : null,
                     });
                   }
-                  setInvalidUnitValue(false);
+                  setInvalidUnitValue1(false);
                 }}
               />
               <LabelTitle
@@ -691,23 +799,157 @@ function PurchasePost() {
                 locale="pt-BR"
                 currency="BRL"
                 style={{ height: "30px", fontSize: "0.8rem" }}
-                value={formatCurrency(selectedSupplierPurchase.totalValue)}
+                value={formatCurrency(selectedSupplierPurchase1.totalValue)}
                 disabled
               />
-              {(invalidSupplierPurchase || invalidUnitValue) && (
+              {(invalidSupplierPurchase1 || invalidUnitValue1) && (
                 <Message
                   severity="error"
                   text="Pelo menos um fornecedor é obrigatório"
                   className="smaller-text"
                 />
               )}
-              <Button
+              {/* <Button
                 label="Adicionar Fornecedor >"
                 outlined
                 onClick={() => validateSupplierFields()}
-              />
+              /> */}
             </div>
             <div className="field flex flex-column gap-2 w-full">
+              <LabelTitle
+                text="Fornecedor II"
+                htmlFor="supplier"
+                className="font-semibold"
+                required={true}
+              />
+              <AutoComplete
+                suggestions={allSupplierItems}
+                dropdown
+                style={{ height: "30px", fontSize: "0.75rem" }}
+                field="shortenedName"
+                value={selectedSupplierPurchase2.shortenedName}
+                completeMethod={suppliersSearch}
+                onChange={(e: AutoCompleteChangeEvent) => {
+                  setSelectedSupplier2(e.value);
+                  setInvalidSupplierPurchase2(false);
+                }}
+              />
+              <LabelTitle
+                text="Valor Unitário"
+                htmlFor="value"
+                className="font-semibold"
+              />
+              <InputNumber
+                inputId="currency-br"
+                mode="currency"
+                locale="pt-BR"
+                currency="BRL"
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={formatCurrency(selectedSupplierPurchase2?.unitValue)}
+                onChange={(e) => {
+                  if (e.value) {
+                    setSelectedSupplierPurchase2({
+                      ...selectedSupplierPurchase2,
+                      unitValue: e.value * 100,
+                      totalValue:
+                        newQuantity != null
+                          ? e.value * newQuantity * 100
+                          : null,
+                    });
+                  }
+                  setInvalidUnitValue2(false);
+                }}
+              />
+              <LabelTitle
+                text="Valor Total"
+                htmlFor="value"
+                className="font-semibold"
+              />
+              <InputNumber
+                inputId="currency-br"
+                mode="currency"
+                locale="pt-BR"
+                currency="BRL"
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={formatCurrency(selectedSupplierPurchase2.totalValue)}
+                disabled
+              />
+              {(invalidSupplierPurchase2 || invalidUnitValue2) && (
+                <Message
+                  severity="error"
+                  text="Fornecedor II é obrigatório"
+                  className="smaller-text"
+                />
+              )}
+            </div>
+            <div className="field flex flex-column gap-2 w-full">
+              <LabelTitle
+                text="Fornecedor III"
+                htmlFor="supplier"
+                className="font-semibold"
+                required={true}
+              />
+              <AutoComplete
+                suggestions={allSupplierItems}
+                dropdown
+                style={{ height: "30px", fontSize: "0.75rem" }}
+                field="shortenedName"
+                value={selectedSupplierPurchase3.shortenedName}
+                completeMethod={suppliersSearch}
+                onChange={(e: AutoCompleteChangeEvent) => {
+                  setSelectedSupplier3(e.value);
+                  setInvalidSupplierPurchase3(false);
+                }}
+              />
+              <LabelTitle
+                text="Valor Unitário"
+                htmlFor="value"
+                className="font-semibold"
+              />
+              <InputNumber
+                inputId="currency-br"
+                mode="currency"
+                locale="pt-BR"
+                currency="BRL"
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={formatCurrency(selectedSupplierPurchase3?.unitValue)}
+                onChange={(e) => {
+                  if (e.value) {
+                    setSelectedSupplierPurchase3({
+                      ...selectedSupplierPurchase3,
+                      unitValue: e.value * 100,
+                      totalValue:
+                        newQuantity != null
+                          ? e.value * newQuantity * 100
+                          : null,
+                    });
+                  }
+                  setInvalidUnitValue3(false);
+                }}
+              />
+              <LabelTitle
+                text="Valor Total"
+                htmlFor="value"
+                className="font-semibold"
+              />
+              <InputNumber
+                inputId="currency-br"
+                mode="currency"
+                locale="pt-BR"
+                currency="BRL"
+                style={{ height: "30px", fontSize: "0.8rem" }}
+                value={formatCurrency(selectedSupplierPurchase3.totalValue)}
+                disabled
+              />
+              {(invalidSupplierPurchase3 || invalidUnitValue3) && (
+                <Message
+                  severity="error"
+                  text="Fornecedor III é obrigatório"
+                  className="smaller-text"
+                />
+              )}
+            </div>
+            {/* <div className="field flex flex-column gap-2 w-full">
               <DataTable
                 emptyMessage="Nenhum fornecedor adicionado"
                 value={newSupplierPurchase}
@@ -726,9 +968,8 @@ function PurchasePost() {
                   body={priceTotalValueBodyTemplate}
                 ></Column>
               </DataTable>
-            </div>
+            </div> */}
           </div>
-          <div></div>
         </Card>
         <div className="flex gap-2 m-1">
           <Button
