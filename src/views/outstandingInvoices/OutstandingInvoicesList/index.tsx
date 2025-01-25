@@ -330,32 +330,35 @@ function OutstandingInvoicesList() {
 
   useEffect(() => {
     if (outstandingInvoicesVendorExport.length > 0) {
-      const sheetData: (string | number)[][] = [];
+      const sheetData = [];
       let sumTotal = 0;
-      sheetData.push([
-        "Despesas dos Favorecidos",
-        "",
-        "",
-        "",
-        "",
-        `Data: ${formatarDataBR(new Date())}`,
-      ]);
-      sheetData.push([
-        centerCostSearch
-          ? "Obra " +
-            centerCostSearch +
-            " - " +
-            outstandingInvoices[0].localBank
-          : "Todas as obras",
-      ]);
-      sheetData.push([outstandingInvoicesVendorExport[0].periodOfDate]);
-      sheetData.push([]);
-      // Add a row for the favorecido's name
 
-      // Add headers for invoices
+      // Definir cabeçalho
+      const headerRows = [
+        [
+          "Despesas dos Favorecidos",
+          "",
+          "",
+          "",
+          "",
+          `Data: ${formatarDataBR(new Date())}`,
+        ],
+        [
+          centerCostSearch
+            ? `Obra ${centerCostSearch} - ${outstandingInvoices[0].localBank}`
+            : "Todas as obras",
+        ],
+        [outstandingInvoicesVendorExport[0].periodOfDate],
+        [],
+      ];
+
+      headerRows.forEach((row) => sheetData.push(row)); // Adiciona o cabeçalho ao conteúdo principal
+
+      // Cabeçalhos das colunas
       sheetData.push(["Data", "Favorecido", "C", "Conta", "Memo", "Montante"]);
+
+      // Adiciona os dados
       outstandingInvoicesVendorExport.forEach((favorecido) => {
-        // Add rows for each invoice
         favorecido.outstandingInvoices.forEach((invoice) => {
           sheetData.push([
             invoice.paymentDeadlineFormatted || "",
@@ -372,6 +375,7 @@ function OutstandingInvoicesList() {
           ]);
           sumTotal += invoice.totalAmount || 0;
         });
+
         sheetData.push([
           "",
           "",
@@ -383,9 +387,9 @@ function OutstandingInvoicesList() {
             maximumFractionDigits: 2,
           })}`,
         ]);
-        // Add a blank row after each favorecido's data
         sheetData.push([]);
       });
+
       sheetData.push([]);
       sheetData.push([
         "",
@@ -399,9 +403,10 @@ function OutstandingInvoicesList() {
         })}`,
       ]);
 
-      // Create a worksheet
+      // Cria a worksheet e ajusta as colunas
       const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
 
+      // Configura larguras das colunas
       worksheet["!cols"] = [
         { wch: 15 },
         { wch: 15 },
@@ -411,11 +416,39 @@ function OutstandingInvoicesList() {
         { wch: 15 },
       ];
 
-      // Create a workbook and append the worksheet
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet);
+      // Configurações de impressão
+      worksheet["!pageSetup"] = {
+        orientation: "landscape", // Modo paisagem
+        fitToWidth: 1, // Ajustar largura à página
+        fitToHeight: 0, // Permitir múltiplas páginas na altura
+      };
 
-      // Generate and download the Excel file
+      // Repete as três primeiras linhas como cabeçalho ao imprimir
+      worksheet["!rows"] = [{ level: 1 }, { level: 1 }, { level: 1 }];
+
+      // Aplica o autofiltro às colunas do cabeçalho
+      worksheet["!autofilter"] = { ref: "A4:F4" };
+
+      // Adiciona o estilo de fonte no cabeçalho
+      XLSX.utils.sheet_add_aoa(
+        worksheet,
+        [
+          [
+            "Despesas dos Favorecidos",
+            "",
+            "",
+            "",
+            "",
+            `Data: ${formatarDataBR(new Date())}`,
+          ],
+        ],
+        { origin: "A1" }
+      );
+
+      // Cria o workbook e salva o arquivo
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Relatório");
+
       XLSX.writeFile(workbook, "Relatório.xlsx");
     }
   }, [outstandingInvoicesVendorExport]);

@@ -43,7 +43,7 @@ function OutstadingInvoicesConstructionCreateDialog({
       centerCostId: "",
       bankBranch: "",
       costType: "",
-      costCategory: "",
+      costCategory: "FORNECEDOR : MATERIAIS",
       localBank: "",
       purchaseDate: "",
       paymentDeadline: "",
@@ -56,7 +56,9 @@ function OutstadingInvoicesConstructionCreateDialog({
 
   const [selectedConstructionCreate, setSelectedConstructionCreate] =
     useState<Construction | null>(selectedConstruction);
-  const [selectedCategory, setSelectedCategory] = useState<string>();
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    "FORNECEDOR : MATERIAIS"
+  );
   const [selectedSupplier, setSelectedSupplier] = useState<SupplierRecord>();
   const [newPurchaseDate, setNewPurchaseDate] = useState<Date | null>(null);
 
