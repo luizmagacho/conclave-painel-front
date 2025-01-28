@@ -140,7 +140,16 @@ function OutstandingInvoicesList() {
 
   async function onDeleteOutstandingInvoices(outstandingInvoicesId: string) {
     await handleDeleteOutstandingInvoices(outstandingInvoicesId);
-    handleGetOutstandingInvoices();
+
+    handleGetOutstandingInvoices(
+      first,
+      centerCostSearch,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
   }
 
   function closeUpdateDialog() {
