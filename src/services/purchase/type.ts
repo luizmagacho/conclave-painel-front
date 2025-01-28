@@ -44,7 +44,7 @@ export type MaterialPurchaseDTO = {
 };
 
 export type SupplierPurchase = {
-  id: string;
+  supplierId?: string;
   shortenedName: string;
 
   unitValue: number | null;
