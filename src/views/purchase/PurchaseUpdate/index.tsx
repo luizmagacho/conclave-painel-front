@@ -12,12 +12,7 @@ import {
   SupplierPurchase,
 } from "@/services/purchase/type";
 import { SupplierRecord } from "@/services/supplier/type";
-import {
-  convertStringToDate,
-  formatDateToHHMM,
-  formatDateToYYYYMMDD,
-  parseHHMMToDate,
-} from "@/util/date";
+import { convertStringToDate, formatDateToYYYYMMDD } from "@/util/date";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import {
@@ -69,7 +64,7 @@ function PurchaseUpdate() {
 
   const [selectedSupplierPurchase1, setSelectedSupplierPurchase1] =
     useState<SupplierPurchase>({
-      id: "",
+      supplierId: "",
       shortenedName: "",
       unitValue: null,
       totalValue: null,
@@ -77,7 +72,7 @@ function PurchaseUpdate() {
 
   const [selectedSupplierPurchase2, setSelectedSupplierPurchase2] =
     useState<SupplierPurchase>({
-      id: "",
+      supplierId: "",
       shortenedName: "",
       unitValue: null,
       totalValue: null,
@@ -85,7 +80,7 @@ function PurchaseUpdate() {
 
   const [selectedSupplierPurchase3, setSelectedSupplierPurchase3] =
     useState<SupplierPurchase>({
-      id: "",
+      supplierId: "",
       shortenedName: "",
       unitValue: null,
       totalValue: null,
@@ -292,19 +287,19 @@ function PurchaseUpdate() {
     });
     setUpdatedQuantity(null);
     setSelectedSupplierPurchase1({
-      id: selectedSupplierPurchase1.id,
+      supplierId: selectedSupplierPurchase1.supplierId,
       shortenedName: selectedSupplierPurchase1.shortenedName,
       unitValue: null,
       totalValue: null,
     });
     setSelectedSupplierPurchase2({
-      id: selectedSupplierPurchase2.id,
+      supplierId: selectedSupplierPurchase2.supplierId,
       shortenedName: selectedSupplierPurchase2.shortenedName,
       unitValue: null,
       totalValue: null,
     });
     setSelectedSupplierPurchase3({
-      id: selectedSupplierPurchase3.id,
+      supplierId: selectedSupplierPurchase3.supplierId,
       shortenedName: selectedSupplierPurchase3.shortenedName,
       unitValue: null,
       totalValue: null,
@@ -313,6 +308,7 @@ function PurchaseUpdate() {
   };
 
   function validateFieldsMaterial() {
+    validateSupplierFields();
     setInvalidName(
       !updatedMaterialPurchase.name || updatedMaterialPurchase.name === ""
     );
@@ -447,19 +443,19 @@ function PurchaseUpdate() {
 
       // Clear the selected supplier state for the next entry
       setSelectedSupplierPurchase1({
-        id: selectedSupplierPurchase1.id,
+        supplierId: selectedSupplierPurchase1.supplierId,
         shortenedName: selectedSupplierPurchase1.shortenedName,
         unitValue: null,
         totalValue: null,
       });
       setSelectedSupplierPurchase2({
-        id: selectedSupplierPurchase2.id,
+        supplierId: selectedSupplierPurchase2.supplierId,
         shortenedName: selectedSupplierPurchase2.shortenedName,
         unitValue: null,
         totalValue: null,
       });
       setSelectedSupplierPurchase3({
-        id: selectedSupplierPurchase3.id,
+        supplierId: selectedSupplierPurchase3.supplierId,
         shortenedName: selectedSupplierPurchase3.shortenedName,
         unitValue: null,
         totalValue: null,
@@ -469,6 +465,33 @@ function PurchaseUpdate() {
       setInvalidSupplierPurchase3(false);
     }
   }
+
+  useEffect(() => {
+    setSelectedSupplierPurchase1((prevSelectedSupplierPurchase1) => ({
+      ...prevSelectedSupplierPurchase1,
+      supplierId:
+        selectedSupplier1?.id || prevSelectedSupplierPurchase1.supplierId,
+      shortenedName:
+        selectedSupplier1?.shortenedName ||
+        prevSelectedSupplierPurchase1.shortenedName,
+    }));
+    setSelectedSupplierPurchase2((prevSelectedSupplierPurchase2) => ({
+      ...prevSelectedSupplierPurchase2,
+      supplierId:
+        selectedSupplier2?.id || prevSelectedSupplierPurchase2.supplierId,
+      shortenedName:
+        selectedSupplier2?.shortenedName ||
+        prevSelectedSupplierPurchase2.shortenedName,
+    }));
+    setSelectedSupplierPurchase3((prevSelectedSupplierPurchase3) => ({
+      ...prevSelectedSupplierPurchase3,
+      supplierId:
+        selectedSupplier3?.id || prevSelectedSupplierPurchase3.supplierId,
+      shortenedName:
+        selectedSupplier3?.shortenedName ||
+        prevSelectedSupplierPurchase3.shortenedName,
+    }));
+  }, [selectedSupplier1, selectedSupplier2, selectedSupplier3]);
 
   useEffect(() => {
     handleGetAllShortenedName();
@@ -789,6 +812,7 @@ function PurchaseUpdate() {
                 completeMethod={suppliersSearch}
                 onChange={(e: AutoCompleteChangeEvent) => {
                   setSelectedSupplier1(e.value);
+                  console.log(e.value);
                   setInvalidSupplierPurchase1(false);
                 }}
               />
