@@ -12,6 +12,8 @@ import { useContext, useEffect, useState } from "react";
 import ToolCreateDialog from "../ToolCreateDialog";
 import ToolUpdateDialog from "../ToolUpdateDialog";
 import ToolDeleteDialog from "../ToolDeleteDialog";
+import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
+import InputSearch from "@/components/InputSearch";
 
 interface Options {
   icon?: string;
@@ -33,6 +35,8 @@ function ToolListCenterCost() {
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
+  const [nameSearch, setNameSearch] = useState<string>("");
+  const [responsibleSearch, setResponsibleSearch] = useState<string>("");
   const [returned, setReturned] = useState<boolean>(false);
   const {
     tools,
@@ -123,6 +127,48 @@ function ToolListCenterCost() {
     handleGetConstructionById(typeof id === "string" ? id : "");
   }
 
+  function onChangeNameSearch(name: string) {
+    setNameSearch(name);
+  }
+
+  function onChangeResponsibleSearch(responsible: string) {
+    setResponsibleSearch(responsible);
+  }
+
+  function onNameSearch(name: string) {
+    const { id } = router.query;
+    handleGetToolsByCenterCostId(
+      typeof id === "string" ? id : "",
+      0,
+      name,
+      responsibleSearch,
+      returned
+    );
+  }
+
+  function onResponsibleSearch(responsible: string) {
+    const { id } = router.query;
+    handleGetToolsByCenterCostId(
+      typeof id === "string" ? id : "",
+      0,
+      nameSearch,
+      responsible,
+      returned
+    );
+  }
+
+  function onReturnedChange(event: CheckboxChangeEvent) {
+    setReturned(event.checked ? true : false);
+    const { id } = router.query;
+    handleGetToolsByCenterCostId(
+      typeof id === "string" ? id : "",
+      0,
+      nameSearch,
+      responsibleSearch,
+      event.checked
+    );
+  }
+
   return (
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
@@ -156,6 +202,42 @@ function ToolListCenterCost() {
               text={`Serviço: ${selectedConstruction?.service}`}
               htmlFor="neighborhood"
               className="font-semibold"
+            />
+          </div>
+        </div>
+        <div className="card flex flex-column md:flex-row gap-2 w-11/12">
+          <div className="field flex flex-column gap-2 w-full">
+            <LabelTitle
+              text="Nome"
+              htmlFor="name"
+              className="font-semibold smaller-text"
+            />
+            <InputSearch
+              onSearch={onNameSearch}
+              onChange={onChangeNameSearch}
+            />
+          </div>
+          <div className="field flex flex-column gap-2 w-full">
+            <LabelTitle
+              text="Responsável"
+              htmlFor="responsible"
+              className="font-semibold smaller-text"
+            />
+            <InputSearch
+              onSearch={onResponsibleSearch}
+              onChange={onChangeResponsibleSearch}
+            />
+          </div>
+          <div className="flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="Não devolvido"
+              htmlFor="returned"
+              className="font-semibold smaller-text"
+            />
+            <Checkbox
+              inputId="returned"
+              onChange={onReturnedChange}
+              checked={returned === true}
             />
           </div>
         </div>
