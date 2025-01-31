@@ -175,7 +175,7 @@ function ToolList() {
     );
   }
 
-  function onChangeNameearch(name: string) {
+  function onChangeNameSearch(name: string) {
     setNameSearch(name);
   }
 
@@ -269,7 +269,10 @@ function ToolList() {
               htmlFor="name"
               className="font-semibold smaller-text"
             />
-            <InputSearch onSearch={onNameSearch} onChange={onChangeNameearch} />
+            <InputSearch
+              onSearch={onNameSearch}
+              onChange={onChangeNameSearch}
+            />
           </div>
           <div className="field flex flex-column gap-2 w-full">
             <LabelTitle
