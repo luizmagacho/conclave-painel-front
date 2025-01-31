@@ -12,6 +12,7 @@ export async function getTools({
   responsible,
   centerCost,
   bankBranchLocalBank,
+  returned,
 }: CostPaginationParam) {
   let res = await api.get<Pagination<Tool>>(baseUrl, {
     params: {
@@ -21,13 +22,14 @@ export async function getTools({
       responsible,
       centerCost,
       bankBranchLocalBank,
+      returned,
     },
   });
   return res.data;
 }
 export async function getToolsByCenterCostId(
   centerCostId: string,
-  { page, size, name, responsible }: CostPaginationParam
+  { page, size, name, responsible, returned }: CostPaginationParam
 ) {
   let res = await api.get<Pagination<Tool>>(
     `${baseUrl}/center-cost/${centerCostId}`,
@@ -37,6 +39,7 @@ export async function getToolsByCenterCostId(
         size,
         name,
         responsible,
+        returned,
       },
     }
   );

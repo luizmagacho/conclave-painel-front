@@ -26,11 +26,15 @@ interface ToolContextProps {
     name?: string,
     responsible?: string,
     centerCost?: string,
-    bankBranchLocalBank?: string
+    bankBranchLocalBank?: string,
+    returned?: boolean
   ) => Promise<void>;
   handleGetToolsByCenterCostId: (
     centerToolId: string,
-    page?: number
+    page?: number,
+    name?: string,
+    responsible?: string,
+    returned?: boolean
   ) => Promise<void>;
   handlePostTool: (tool: ToolDTO) => Promise<void>;
   handleUpdateTool: (tool: Tool) => Promise<void>;
@@ -59,7 +63,8 @@ export const ToolProvider = ({ children }: ProviderProps) => {
     name: string = "",
     responsible: string = "",
     centerCost: string = "",
-    bankBranchLocalBank: string = ""
+    bankBranchLocalBank: string = "",
+    returned: boolean = false
   ) {
     setLoading(true);
     try {
@@ -70,6 +75,7 @@ export const ToolProvider = ({ children }: ProviderProps) => {
         responsible,
         centerCost,
         bankBranchLocalBank,
+        returned,
       });
       setBufferedTools(content || []);
       setTools(content || []);
@@ -85,13 +91,14 @@ export const ToolProvider = ({ children }: ProviderProps) => {
     centerCostId: string,
     page: number = 0,
     name: string = "",
-    responsible: string = ""
+    responsible: string = "",
+    returned: boolean = false
   ) {
     setLoading(true);
     try {
       const { content, totalElements } = await getToolsByCenterCostId(
         centerCostId,
-        { page, size: 15, name, responsible }
+        { page, size: 15, name, responsible, returned }
       );
 
       setBufferedTools(content || []);

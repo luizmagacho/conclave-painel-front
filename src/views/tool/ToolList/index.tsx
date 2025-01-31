@@ -14,6 +14,7 @@ import ToolUpdateDialog from "../ToolUpdateDialog";
 import ToolCreateGenericDialog from "../ToolCreateGenericDialog";
 import ToolDeleteDialog from "../ToolDeleteDialog";
 import { classNames } from "primereact/utils";
+import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
 
 interface Options {
   icon?: string;
@@ -40,6 +41,7 @@ function ToolList() {
   const [codeSearch, setCodeSearch] = useState<string>("");
   const [bankBranchLocalBankSearch, setBankBranchLocalBankSearch] =
     useState<string>("");
+  const [returned, setReturned] = useState<boolean>(false);
 
   const {
     tools,
@@ -118,7 +120,8 @@ function ToolList() {
       nameSearch,
       responsibleSearch,
       codeSearch,
-      bankBranchLocalBankSearch
+      bankBranchLocalBankSearch,
+      returned
     );
     handleGetAllNames();
     handleGetAllResponsible();
@@ -131,7 +134,8 @@ function ToolList() {
       nameSearch,
       responsibleSearch,
       codeSearch,
-      bankBranchLocalBankSearch
+      bankBranchLocalBankSearch,
+      returned
     );
   }
 
@@ -142,7 +146,8 @@ function ToolList() {
       nameSearch,
       responsibleSearch,
       codeSearch,
-      bankBranchLocalBankSearch
+      bankBranchLocalBankSearch,
+      returned
     );
     handleGetAllNames();
     handleGetAllResponsible();
@@ -154,7 +159,8 @@ function ToolList() {
       name,
       responsibleSearch,
       codeSearch,
-      bankBranchLocalBankSearch
+      bankBranchLocalBankSearch,
+      returned
     );
   }
 
@@ -164,7 +170,8 @@ function ToolList() {
       nameSearch,
       responsible,
       codeSearch,
-      bankBranchLocalBankSearch
+      bankBranchLocalBankSearch,
+      returned
     );
   }
 
@@ -182,7 +189,8 @@ function ToolList() {
       nameSearch,
       responsibleSearch,
       code,
-      bankBranchLocalBankSearch
+      bankBranchLocalBankSearch,
+      returned
     );
   }
 
@@ -192,7 +200,8 @@ function ToolList() {
       nameSearch,
       responsibleSearch,
       codeSearch,
-      bankBranchLocalBank
+      bankBranchLocalBank,
+      returned
     );
   }
 
@@ -202,6 +211,18 @@ function ToolList() {
 
   function onChangeBankBranchLocalBankSearch(bankBranchLocalBank: string) {
     setBankBranchLocalBankSearch(bankBranchLocalBank);
+  }
+
+  function onReturnedChange(event: CheckboxChangeEvent) {
+    setReturned(event.checked ? true : false);
+    handleGetTools(
+      0,
+      nameSearch,
+      responsibleSearch,
+      codeSearch,
+      bankBranchLocalBankSearch,
+      event.checked
+    );
   }
 
   const clearedBodyTemplate = (tool: Tool) => {
@@ -283,6 +304,18 @@ function ToolList() {
               onChange={onChangeBankBranchLocalBankSearch}
             />
           </div>
+          <div className="field flex flex-column gap-2 w-full">
+            <LabelTitle
+              text="Não devolvido"
+              htmlFor="returned"
+              className="font-semibold smaller-text"
+            />
+            <Checkbox
+              inputId="returned"
+              onChange={onReturnedChange}
+              checked={returned === true}
+            />
+          </div>
         </div>
         <DataTable
           emptyMessage="Nenhuma ferramenta encontrada."
@@ -291,7 +324,7 @@ function ToolList() {
           stripedRows
           showGridlines
           rows={15}
-          tableStyle={{ minWidth: "50rem" }}
+          tableStyle={{ minWidth: "30rem" }}
           totalRecords={totalElements}
           size="small"
         >

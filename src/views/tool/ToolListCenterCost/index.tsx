@@ -33,7 +33,7 @@ function ToolListCenterCost() {
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
-
+  const [returned, setReturned] = useState<boolean>(false);
   const {
     tools,
     loading,
@@ -166,7 +166,7 @@ function ToolListCenterCost() {
           stripedRows
           showGridlines
           rows={15}
-          tableStyle={{ minWidth: "50rem" }}
+          tableStyle={{ minWidth: "30rem" }}
           totalRecords={totalElements}
           size="small"
         >
@@ -174,8 +174,8 @@ function ToolListCenterCost() {
           <Column field="responsible" header="Responsável" />
           <Column field="dateLoanFromFormatted" header="Data de Empréstimo" />
           <Column field="dateLoanToFormatted" header="Data de Devolução" />
-          <Column header="Opções" body={columnBodyOptions.options} />
           <Column field="additionalDetails" header="Memo" />
+          <Column header="Opções" body={columnBodyOptions.options} />
         </DataTable>
         <Paginator
           first={first}
