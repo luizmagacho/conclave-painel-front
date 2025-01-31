@@ -42,4 +42,5 @@ export type CostPaginationParam = {
   responsible: string;
   centerCost?: string;
   bankBranchLocalBank?: string;
+  returned?: boolean;
 };
