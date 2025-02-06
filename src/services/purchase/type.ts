@@ -59,6 +59,20 @@ export type SupplierPurchaseDTO = {
   totalValue: number | null;
 };
 
+export type SupplierToExport = {
+  supplierId: string;
+  shortenedName: string;
+  materials: SupplierMaterialToExport[];
+};
+
+export type SupplierMaterialToExport = {
+  name: string;
+  quantity: number;
+  unit: string;
+  unitValue: number;
+  totalValue: number;
+};
+
 export type PurchasePaginationParam = {
   size: number;
   page: number;
