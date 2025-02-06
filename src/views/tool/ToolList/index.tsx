@@ -230,9 +230,8 @@ function ToolList() {
       responsibleSearch,
       codeSearch,
       bankBranchLocalBankSearch,
-      event.checked
+      event.checked ? true : false
     );
-    setFirst(0);
   }
 
   const clearedBodyTemplate = (tool: Tool) => {
@@ -331,44 +330,38 @@ function ToolList() {
           </div>
         </div>
         <ScrollPanel style={{ width: "100%", height: "80%" }}>
-          <TabView className="w-full smaller-text">
-            <TabPanel header="EMpréstimo">
-              <DataTable
-                emptyMessage="Nenhuma ferramenta encontrada."
-                value={tools}
-                loading={loading}
-                stripedRows
-                showGridlines
-                rows={15}
-                tableStyle={{ minWidth: "30rem" }}
-                totalRecords={totalElements}
-                size="small"
-              >
-                <Column field="name" header="Nome" />
-                <Column field="responsible" header="Responsável" />
-                <Column
-                  field="dateLoanFromFormatted"
-                  header="Data de Empréstimo"
-                />
-                <Column
-                  field="dateLoanToFormatted"
-                  header="Data de Devolução"
-                />
-                <Column field="centerCost" header="Obra" />
-                <Column field="bankBranchLocalBank" header="Agência" />
-                <Column body={clearedBodyTemplate} header="Obra Finalizada?" />
-                <Column field="additionalDetails" header="Memo" />
+          {/* <TabView className="w-full smaller-text">
+            <TabPanel header="Empréstimo"> */}
+          <DataTable
+            emptyMessage="Nenhuma ferramenta encontrada."
+            value={tools}
+            loading={loading}
+            stripedRows
+            showGridlines
+            rows={15}
+            tableStyle={{ minWidth: "30rem" }}
+            totalRecords={totalElements}
+            size="small"
+          >
+            <Column field="name" header="Nome" />
+            <Column field="responsible" header="Responsável" />
+            <Column field="dateLoanFromFormatted" header="Data de Empréstimo" />
+            <Column field="dateLoanToFormatted" header="Data de Devolução" />
+            <Column field="centerCost" header="Obra" />
+            <Column field="bankBranchLocalBank" header="Agência" />
+            <Column body={clearedBodyTemplate} header="Obra Finalizada?" />
+            <Column field="additionalDetails" header="Memo" />
 
-                <Column header="Opções" body={columnBodyOptions.options} />
-              </DataTable>
-              <Paginator
-                first={first}
-                rows={10}
-                totalRecords={totalElements}
-                onPageChange={onPageChange}
-              />
-            </TabPanel>
-            {/* <TabPanel header="Ferramentas">
+            <Column header="Opções" body={columnBodyOptions.options} />
+          </DataTable>
+          <Paginator
+            first={first}
+            rows={10}
+            totalRecords={totalElements}
+            onPageChange={onPageChange}
+          />
+          {/* </TabPanel> */}
+          {/* <TabPanel header="Ferramentas">
           <DataTable
             emptyMessage="Nenhuma ferramenta encontrada."
             value={listNames}
@@ -381,7 +374,7 @@ function ToolList() {
             size="small"
           ></DataTable>
           </TabPanel> */}
-          </TabView>
+          {/* </TabView> */}
         </ScrollPanel>
       </section>
       {showCreateDialog && (
