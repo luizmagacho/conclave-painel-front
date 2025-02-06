@@ -2,10 +2,15 @@ import {
   deletePurchase,
   getPurchaseById,
   getPurchases,
+  getSuppliersToExport,
   postPurchase,
   updatePurchase,
 } from "@/services/purchase";
-import { Purchase, PurchaseDTO } from "@/services/purchase/type";
+import {
+  Purchase,
+  PurchaseDTO,
+  SupplierMaterialToExport,
+} from "@/services/purchase/type";
 import { useRouter } from "next/router";
 import { ReactNode, createContext, useEffect, useState } from "react";
 
@@ -15,12 +20,14 @@ interface ProviderProps {
 
 interface PurchaseContextProps {
   purchases: Purchase[];
+  supplierPurchaseListToExport: SupplierMaterialToExport[];
   selectedPurchase: Purchase | null;
   loading: boolean;
   totalElements: number;
   handleGetPurchases: (page?: number) => Promise<void>;
   handlePostPurchase: (purchase: PurchaseDTO) => Promise<void>;
   handleGetPurchaseById: (purchaseId: string) => Promise<void>;
+  handleGetSupplierPurchaseToExport: (purchaseId: string) => Promise<void>;
   handleUpdatePurchase: (purchase: Purchase) => void;
   handleDeletePurchase: (purchaseId: string) => Promise<void>;
 }
@@ -32,6 +39,8 @@ export const PurchaseProvider = ({ children }: ProviderProps) => {
   const [selectedPurchase, setSelectedPurchase] = useState<Purchase | null>(
     null
   );
+  const [supplierPurchaseListToExport, setSupplierPurchaseListToExport] =
+    useState<SupplierMaterialToExport[]>([]);
   const [bufferedPurchases, setBufferedPurchases] = useState<Purchase[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -78,6 +87,17 @@ export const PurchaseProvider = ({ children }: ProviderProps) => {
     }
   }
 
+  async function handleGetSupplierPurchaseToExport(purchaseId: string) {
+    setLoading(true);
+    try {
+      setSupplierPurchaseListToExport(await getSuppliersToExport(purchaseId));
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function handleUpdatePurchase(purchase: Purchase) {
     setLoading(true);
 
@@ -109,12 +129,14 @@ export const PurchaseProvider = ({ children }: ProviderProps) => {
     <PurchaseContext.Provider
       value={{
         purchases,
+        supplierPurchaseListToExport,
         selectedPurchase,
         loading,
         totalElements,
         handleGetPurchases,
         handlePostPurchase,
         handleGetPurchaseById,
+        handleGetSupplierPurchaseToExport,
         handleUpdatePurchase,
         handleDeletePurchase,
       }}

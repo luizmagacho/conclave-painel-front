@@ -1,6 +1,11 @@
 import { Pagination } from "@/types/pagination";
 import { getAPIClient } from "../axios";
-import { Purchase, PurchaseDTO, PurchasePaginationParam } from "./type";
+import {
+  Purchase,
+  PurchaseDTO,
+  PurchasePaginationParam,
+  SupplierMaterialToExport,
+} from "./type";
 
 const baseUrl = "/purchase";
 const api = getAPIClient();
@@ -23,6 +28,13 @@ export async function postPurchase(purchase: PurchaseDTO) {
 
 export async function getPurchaseById(purchaseId: string) {
   let res = await api.get<Purchase>(`${baseUrl}/${purchaseId}`);
+  return res.data;
+}
+
+export async function getSuppliersToExport(purchaseId: string) {
+  let res = await api.get<SupplierMaterialToExport[]>(
+    `${baseUrl}/${purchaseId}/suppliers`
+  );
   return res.data;
 }
 

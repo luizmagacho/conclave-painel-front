@@ -54,6 +54,11 @@ function PurchaseList() {
       label: "Excluir",
       onClick: openDeleteDialog,
     },
+    {
+      ariaLabel: "Exportar",
+      label: "Exportar",
+      onClick: onClickExport,
+    },
   ];
 
   const columnBodyOptions = {

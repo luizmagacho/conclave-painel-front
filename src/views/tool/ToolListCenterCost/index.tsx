@@ -83,8 +83,13 @@ function ToolListCenterCost() {
   function onPageChange(event: PaginatorPageChangeEvent) {
     const { page, first } = event;
     const { id } = router.query;
-    handleGetConstructionById(typeof id === "string" ? id : "");
-    handleGetConstructionById(typeof id === "string" ? id : "");
+    handleGetToolsByCenterCostId(
+      typeof id === "string" ? id : "",
+      page,
+      nameSearch,
+      responsibleSearch,
+      returned
+    );
   }
 
   function closeCreateDialog() {
@@ -108,14 +113,26 @@ function ToolListCenterCost() {
   async function onCreateTool(tool: ToolDTO) {
     await handlePostTool(tool);
     const { id } = router.query;
-    handleGetToolsByCenterCostId(typeof id === "string" ? id : "");
+    handleGetToolsByCenterCostId(
+      typeof id === "string" ? id : "",
+      0,
+      nameSearch,
+      responsibleSearch,
+      returned
+    );
     handleGetConstructionById(typeof id === "string" ? id : "");
   }
 
   async function onDeleteTool(toolId: string) {
     await handleDeleteTool(toolId);
     const { id } = router.query;
-    handleGetToolsByCenterCostId(typeof id === "string" ? id : "");
+    handleGetToolsByCenterCostId(
+      typeof id === "string" ? id : "",
+      0,
+      nameSearch,
+      responsibleSearch,
+      returned
+    );
     handleGetConstructionById(typeof id === "string" ? id : "");
   }
 
@@ -123,7 +140,13 @@ function ToolListCenterCost() {
     await handleUpdateTool(tool);
 
     const { id } = router.query;
-    handleGetToolsByCenterCostId(typeof id === "string" ? id : "");
+    handleGetToolsByCenterCostId(
+      typeof id === "string" ? id : "",
+      0,
+      nameSearch,
+      responsibleSearch,
+      returned
+    );
     handleGetConstructionById(typeof id === "string" ? id : "");
   }
 

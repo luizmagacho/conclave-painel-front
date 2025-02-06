@@ -15,6 +15,8 @@ import ToolCreateGenericDialog from "../ToolCreateGenericDialog";
 import ToolDeleteDialog from "../ToolDeleteDialog";
 import { classNames } from "primereact/utils";
 import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
+import { ScrollPanel } from "primereact/scrollpanel";
+import { TabPanel, TabView } from "primereact/tabview";
 
 interface Options {
   icon?: string;
@@ -89,7 +91,14 @@ function ToolList() {
   function onPageChange(event: PaginatorPageChangeEvent) {
     const { page, first } = event;
     const { id } = router.query;
-    handleGetTools(page);
+    handleGetTools(
+      page,
+      nameSearch,
+      responsibleSearch,
+      codeSearch,
+      bankBranchLocalBankSearch,
+      returned
+    );
     setFirst(first);
   }
 
@@ -223,6 +232,7 @@ function ToolList() {
       bankBranchLocalBankSearch,
       event.checked
     );
+    setFirst(0);
   }
 
   const clearedBodyTemplate = (tool: Tool) => {
@@ -320,34 +330,59 @@ function ToolList() {
             />
           </div>
         </div>
-        <DataTable
-          emptyMessage="Nenhuma ferramenta encontrada."
-          value={tools}
-          loading={loading}
-          stripedRows
-          showGridlines
-          rows={15}
-          tableStyle={{ minWidth: "30rem" }}
-          totalRecords={totalElements}
-          size="small"
-        >
-          <Column field="name" header="Nome" />
-          <Column field="responsible" header="Responsável" />
-          <Column field="dateLoanFromFormatted" header="Data de Empréstimo" />
-          <Column field="dateLoanToFormatted" header="Data de Devolução" />
-          <Column field="centerCost" header="Obra" />
-          <Column field="bankBranchLocalBank" header="Agência" />
-          <Column body={clearedBodyTemplate} header="Obra Finalizada?" />
-          <Column field="additionalDetails" header="Memo" />
+        <ScrollPanel style={{ width: "100%", height: "80%" }}>
+          <TabView className="w-full smaller-text">
+            <TabPanel header="EMpréstimo">
+              <DataTable
+                emptyMessage="Nenhuma ferramenta encontrada."
+                value={tools}
+                loading={loading}
+                stripedRows
+                showGridlines
+                rows={15}
+                tableStyle={{ minWidth: "30rem" }}
+                totalRecords={totalElements}
+                size="small"
+              >
+                <Column field="name" header="Nome" />
+                <Column field="responsible" header="Responsável" />
+                <Column
+                  field="dateLoanFromFormatted"
+                  header="Data de Empréstimo"
+                />
+                <Column
+                  field="dateLoanToFormatted"
+                  header="Data de Devolução"
+                />
+                <Column field="centerCost" header="Obra" />
+                <Column field="bankBranchLocalBank" header="Agência" />
+                <Column body={clearedBodyTemplate} header="Obra Finalizada?" />
+                <Column field="additionalDetails" header="Memo" />
 
-          <Column header="Opções" body={columnBodyOptions.options} />
-        </DataTable>
-        <Paginator
-          first={first}
-          rows={10}
-          totalRecords={totalElements}
-          onPageChange={onPageChange}
-        />
+                <Column header="Opções" body={columnBodyOptions.options} />
+              </DataTable>
+              <Paginator
+                first={first}
+                rows={10}
+                totalRecords={totalElements}
+                onPageChange={onPageChange}
+              />
+            </TabPanel>
+            {/* <TabPanel header="Ferramentas">
+          <DataTable
+            emptyMessage="Nenhuma ferramenta encontrada."
+            value={listNames}
+            loading={loading}
+            stripedRows
+            showGridlines
+            rows={15}
+            tableStyle={{ minWidth: "30rem" }}
+            totalRecords={totalElements}
+            size="small"
+          ></DataTable>
+          </TabPanel> */}
+          </TabView>
+        </ScrollPanel>
       </section>
       {showCreateDialog && (
         <ToolCreateGenericDialog
