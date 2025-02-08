@@ -3,6 +3,11 @@ import { ConstructionContext } from "@/context/ConstructionContext";
 import { ToolDTO } from "@/services/tool/type";
 import { formatDateToYYYYMMDD } from "@/util/date";
 import { useRouter } from "next/router";
+import {
+  AutoComplete,
+  AutoCompleteChangeEvent,
+  AutoCompleteCompleteEvent,
+} from "primereact/autocomplete";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
@@ -14,9 +19,17 @@ interface ToolCreateDialog {
   visible: boolean;
   onHide: () => void;
   onCreate: (tool: ToolDTO) => void;
+  responsible: string[];
+  names: string[];
 }
 
-function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
+function ToolCreateDialog({
+  visible,
+  onCreate,
+  onHide,
+  responsible,
+  names,
+}: ToolCreateDialog) {
   const router = useRouter();
   const userId = localStorage.getItem("portal.id");
   const { selectedConstruction } = useContext(ConstructionContext);
@@ -43,7 +56,9 @@ function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
     useState<boolean>(false);
   const [invalidDates, setInvalidDates] = useState<boolean>(false);
   const [newDateLoanTo, setNewDateLoanTo] = useState<Date | null>(null);
-
+  const [namesItems, setNamesItems] = useState<string[]>(names);
+  const [responsibleItems, setResponsibleItems] =
+    useState<string[]>(responsible);
   useEffect(() => {
     setNewTool((prevTool) => ({
       ...prevTool,
@@ -52,6 +67,34 @@ function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
       dateLoanTo: formatDateToYYYYMMDD(newDateLoanTo) || prevTool.dateLoanTo,
     }));
   }, [newDateLoanFrom, newDateLoanTo]);
+
+  const namesSearch = (event: AutoCompleteCompleteEvent) => {
+    setTimeout(() => {
+      let _filteredNames;
+      if (!event.query.trim().length) {
+        _filteredNames = [...names];
+      } else {
+        _filteredNames = names.filter((name) => {
+          return name.startsWith(event.query);
+        });
+      }
+      setNamesItems(_filteredNames);
+    }, 150);
+  };
+
+  const responsibleSearch = (event: AutoCompleteCompleteEvent) => {
+    setTimeout(() => {
+      let _filteredResponsible;
+      if (!event.query.trim().length) {
+        _filteredResponsible = [...responsible];
+      } else {
+        _filteredResponsible = responsible.filter((resp) => {
+          return resp.startsWith(event.query);
+        });
+      }
+      setResponsibleItems(_filteredResponsible);
+    }, 150);
+  };
 
   function validateFields() {
     setNewTool({ ...newTool, userId: userId || "" });
@@ -123,21 +166,28 @@ function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
             htmlFor="name"
             className="font-semibold"
           />
-          <InputText
-            type="text"
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            onChange={(e) => {
-              setNewTool({ ...newTool, name: e.target.value.toUpperCase() });
-            }}
-            value={newTool?.name}
-          />
-          {invalidName && (
-            <Message
-              severity="error"
-              text="Ferramenta é obrigatória"
-              className="smaller-text"
+          <div className="card p-fluid">
+            <AutoComplete
+              type="text"
+              dropdown
+              value={newTool.name}
+              suggestions={namesItems}
+              completeMethod={namesSearch}
+              onChange={(e: AutoCompleteChangeEvent) => {
+                setNewTool({ ...newTool, name: e.value.toLocaleUpperCase() });
+                setInvalidName(false);
+              }}
+              className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
+              style={{ height: "30px", fontSize: "0.8rem" }}
             />
-          )}
+            {invalidName && (
+              <Message
+                severity="error"
+                text="Ferramenta é obrigatória"
+                className="smaller-text"
+              />
+            )}
+          </div>
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -145,24 +195,31 @@ function ToolCreateDialog({ visible, onCreate, onHide }: ToolCreateDialog) {
             htmlFor="responsible"
             className="font-semibold"
           />
-          <InputText
-            type="text"
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            onChange={(e) => {
-              setNewTool({
-                ...newTool,
-                responsible: e.target.value.toUpperCase(),
-              });
-            }}
-            value={newTool?.responsible}
-          />
-          {invalidResponsible && (
-            <Message
-              severity="error"
-              text="Responsável é obrigatório"
-              className="smaller-text"
+          <div className="card p-fluid">
+            <AutoComplete
+              type="text"
+              dropdown
+              value={newTool.responsible}
+              suggestions={responsibleItems}
+              completeMethod={responsibleSearch}
+              onChange={(e: AutoCompleteChangeEvent) => {
+                setNewTool({
+                  ...newTool,
+                  responsible: e.value.toLocaleUpperCase(),
+                });
+                setInvalidResponsible(false);
+              }}
+              className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
+              style={{ height: "30px", fontSize: "0.8rem" }}
             />
-          )}
+            {invalidResponsible && (
+              <Message
+                severity="error"
+                text="Responsável é obrigatório"
+                className="smaller-text"
+              />
+            )}
+          </div>
         </div>
       </div>
       <div className="card flex flex-column md:flex-row gap-3 w-full">

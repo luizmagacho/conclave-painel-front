@@ -392,6 +392,8 @@ function ToolList() {
           onUpdate={onUpdatedTool}
           onHide={closeUpdatedDialog}
           data={currTool}
+          names={listNames}
+          responsible={listResponsible}
         />
       )}
       {currDeleteTool && (

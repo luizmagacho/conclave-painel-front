@@ -42,10 +42,14 @@ function ToolListCenterCost() {
     tools,
     loading,
     totalElements,
+    listNames,
+    listResponsible,
     handleGetToolsByCenterCostId,
     handlePostTool,
     handleUpdateTool,
     handleDeleteTool,
+    handleGetAllNames,
+    handleGetAllResponsible,
   } = useContext(ToolContext);
 
   const { selectedConstruction, handleGetConstructionById } =
@@ -108,6 +112,8 @@ function ToolListCenterCost() {
     const { id } = router.query;
     handleGetConstructionById(typeof id === "string" ? id : "");
     handleGetToolsByCenterCostId(typeof id === "string" ? id : "");
+    handleGetAllNames();
+    handleGetAllResponsible();
   }, []);
 
   async function onCreateTool(tool: ToolDTO) {
@@ -121,6 +127,8 @@ function ToolListCenterCost() {
       returned
     );
     handleGetConstructionById(typeof id === "string" ? id : "");
+    handleGetAllNames();
+    handleGetAllResponsible();
   }
 
   async function onDeleteTool(toolId: string) {
@@ -148,6 +156,8 @@ function ToolListCenterCost() {
       returned
     );
     handleGetConstructionById(typeof id === "string" ? id : "");
+    handleGetAllNames();
+    handleGetAllResponsible();
   }
 
   function onChangeNameSearch(name: string) {
@@ -314,6 +324,8 @@ function ToolListCenterCost() {
             onCreate={onCreateTool}
             onHide={closeCreateDialog}
             visible={showCreateDialog}
+            names={listNames}
+            responsible={listResponsible}
           />
         )}
         {currTool && (
@@ -322,6 +334,8 @@ function ToolListCenterCost() {
             onHide={closeUpdatedDialog}
             visible={showDialog}
             data={currTool}
+            names={listNames}
+            responsible={listResponsible}
           />
         )}
         {currDeleteTool && (
