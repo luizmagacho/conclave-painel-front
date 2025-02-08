@@ -21,6 +21,8 @@ interface ToolUpdateDialog {
   onHide: () => void;
   onUpdate: (tool: Tool) => void;
   data: Tool;
+  responsible: string[];
+  names: string[];
 }
 
 function ToolUpdateDialog({
@@ -28,6 +30,8 @@ function ToolUpdateDialog({
   onHide,
   onUpdate,
   data,
+  responsible,
+  names,
 }: ToolUpdateDialog) {
   const router = useRouter();
   const userId = localStorage.getItem("portal.id");
@@ -65,6 +69,9 @@ function ToolUpdateDialog({
   const [invalidCenterCost, setInvalidCenterCost] = useState<boolean>(false);
   const [invalidDates, setInvalidDates] = useState<boolean>(false);
   const { allConstructions } = useContext(ConstructionContext);
+  const [namesItems, setNamesItems] = useState<string[]>(names);
+  const [responsibleItems, setResponsibleItems] =
+    useState<string[]>(responsible);
 
   const [constructionsItems, setConstructionsItems] =
     useState<Construction[]>(allConstructions);
@@ -90,6 +97,34 @@ function ToolUpdateDialog({
     };
     fetchConstruction();
   }, []);
+
+  const namesSearch = (event: AutoCompleteCompleteEvent) => {
+    setTimeout(() => {
+      let _filteredNames;
+      if (!event.query.trim().length) {
+        _filteredNames = [...names];
+      } else {
+        _filteredNames = names.filter((name) => {
+          return name.startsWith(event.query);
+        });
+      }
+      setNamesItems(_filteredNames);
+    }, 150);
+  };
+
+  const responsibleSearch = (event: AutoCompleteCompleteEvent) => {
+    setTimeout(() => {
+      let _filteredResponsible;
+      if (!event.query.trim().length) {
+        _filteredResponsible = [...responsible];
+      } else {
+        _filteredResponsible = responsible.filter((resp) => {
+          return resp.startsWith(event.query);
+        });
+      }
+      setResponsibleItems(_filteredResponsible);
+    }, 150);
+  };
 
   function validateFields() {
     setInvalidCenterCost(updatedTool.centerCost === "");
@@ -200,21 +235,31 @@ function ToolUpdateDialog({
             htmlFor="name"
             className="font-semibold"
           />
-          <InputText
-            type="text"
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            onChange={(e) => {
-              setUpdatedTool({ ...updatedTool, name: e.target.value });
-            }}
-            value={updatedTool?.name}
-          />
-          {invalidName && (
-            <Message
-              severity="error"
-              text="Ferramenta é obrigatória"
-              className="smaller-text"
+          <div className="card p-fluid">
+            <AutoComplete
+              type="text"
+              dropdown
+              value={updatedTool.name}
+              suggestions={namesItems}
+              completeMethod={namesSearch}
+              onChange={(e: AutoCompleteChangeEvent) => {
+                setUpdatedTool({
+                  ...updatedTool,
+                  name: e.value.toLocaleUpperCase(),
+                });
+                setInvalidName(false);
+              }}
+              className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
+              style={{ height: "30px", fontSize: "0.8rem" }}
             />
-          )}
+            {invalidName && (
+              <Message
+                severity="error"
+                text="Ferramenta é obrigatória"
+                className="smaller-text"
+              />
+            )}
+          </div>
         </div>
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -222,21 +267,31 @@ function ToolUpdateDialog({
             htmlFor="responsible"
             className="font-semibold"
           />
-          <InputText
-            type="text"
-            style={{ height: "30px", fontSize: "0.8rem" }}
-            onChange={(e) => {
-              setUpdatedTool({ ...updatedTool, responsible: e.target.value });
-            }}
-            value={updatedTool?.responsible}
-          />
-          {invalidResponsible && (
-            <Message
-              severity="error"
-              text="Responsável é obrigatório"
-              className="smaller-text"
+          <div className="card p-fluid">
+            <AutoComplete
+              type="text"
+              dropdown
+              value={updatedTool.responsible}
+              suggestions={responsibleItems}
+              completeMethod={responsibleSearch}
+              onChange={(e: AutoCompleteChangeEvent) => {
+                setUpdatedTool({
+                  ...updatedTool,
+                  responsible: e.value.toLocaleUpperCase(),
+                });
+                setInvalidResponsible(false);
+              }}
+              className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
+              style={{ height: "30px", fontSize: "0.8rem" }}
             />
-          )}
+            {invalidResponsible && (
+              <Message
+                severity="error"
+                text="Responsável é obrigatório"
+                className="smaller-text"
+              />
+            )}
+          </div>
         </div>
       </div>
       <div className="card flex flex-column md:flex-row gap-3 w-full">
