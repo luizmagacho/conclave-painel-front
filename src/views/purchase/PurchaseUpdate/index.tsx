@@ -41,6 +41,7 @@ function PurchaseUpdate() {
     material: [],
     centerCost: "",
     centerCostId: "",
+    client: "",
     requestedDate: selectedPurchase?.requestedDate || "",
     requestedDateFormatted: "",
     requestedTime: selectedPurchase?.requestedTime || "",
@@ -139,6 +140,7 @@ function PurchaseUpdate() {
       ...updatedPurchase,
       centerCost: selectedConstruction?.code || "",
       centerCostId: selectedConstruction?.id || "",
+      client: selectedConstruction?.client || "",
     });
     setInvalidConstructionCode(
       !updatedPurchase.centerCost || updatedPurchase.centerCost === ""
@@ -220,6 +222,7 @@ function PurchaseUpdate() {
       ...prevPurchase,
       centerCost: selectedConstruction?.code || prevPurchase.centerCost,
       centerCostId: selectedConstruction?.id || prevPurchase.centerCostId,
+      client: selectedConstruction?.client || prevPurchase.client,
     }));
   }, [selectedConstruction]);
 
@@ -509,6 +512,7 @@ function PurchaseUpdate() {
         centerCost: selectedPurchase?.centerCost || prevPurchase.centerCost,
         centerCostId:
           selectedPurchase?.centerCostId || prevPurchase.centerCostId,
+        client: selectedPurchase?.client || prevPurchase.client,
         requestedDate:
           selectedPurchase?.requestedDate || prevPurchase.requestedDate,
         requestedDateFormatted:

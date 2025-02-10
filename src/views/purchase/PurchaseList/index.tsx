@@ -33,12 +33,14 @@ function PurchaseList() {
 
   const {
     purchases,
+    supplierPurchaseListToExport,
     loading,
     totalElements,
     handleGetPurchases,
     handleGetPurchaseById,
     handleUpdatePurchase,
     handleDeletePurchase,
+    handleGetSupplierPurchaseToExport,
   } = useContext(PurchaseContext);
 
   const [first, setFirst] = useState<number>(0);
@@ -103,7 +105,8 @@ function PurchaseList() {
     setShowDialog((showDialog) => !showDialog);
   }
 
-  function onClickExport(purchase: Purchase) {
+  async function onClickExport(purchase: Purchase) {
+    await handleGetSupplierPurchaseToExport(purchase.id);
     const sheetData: (string | number)[][] = [];
     sheetData.push(["MAPA DE PEDIDO/COTAÇÃO DE MATERIAL"]);
     sheetData.push([
@@ -121,16 +124,16 @@ function PurchaseList() {
     ]);
 
     sheetData.push([
-      `Cliente: ${purchase}`,
+      `Cliente: ${purchase.centerCost}`,
       "",
       "",
       "",
       "",
-      "Fornecedor 1",
+      supplierPurchaseListToExport[0].name,
       "",
-      "Fornecedor 2",
+      supplierPurchaseListToExport[1].name,
       "",
-      "Fornecedor 3",
+      supplierPurchaseListToExport[2].name,
       "",
     ]);
   }
