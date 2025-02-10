@@ -130,6 +130,7 @@ function PurchasePost() {
       ...newPurchase,
       centerCost: selectedConstruction?.code || "",
       centerCostId: selectedConstruction?.id || "",
+      client: selectedConstruction?.client || "",
     });
     setInvalidConstructionCode(
       !newPurchase.centerCost || newPurchase.centerCost === ""
