@@ -43,6 +43,7 @@ function PurchasePost() {
     material: [],
     centerCost: "",
     centerCostId: "",
+    client: "",
     requestedDate: "",
     requestedTime: "",
     type: "",

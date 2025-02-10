@@ -2,6 +2,7 @@ export type Purchase = {
   id: string;
   centerCost: string;
   centerCostId: string;
+  client: string;
   requestedDate: string;
   requestedDateFormatted: string;
   requestedTime: string;
@@ -19,6 +20,7 @@ export type Purchase = {
 export type PurchaseDTO = {
   centerCost: string;
   centerCostId: string;
+  client: string;
   requestedDate: string;
   requestedTime: string;
   type: string;
