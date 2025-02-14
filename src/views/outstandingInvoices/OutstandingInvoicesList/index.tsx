@@ -467,7 +467,7 @@ function OutstandingInvoicesList() {
       <section className="flex flex-column gap-4 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
           <h1 className="m-0">Contas a Pagar</h1>
-          {(role === "Administrador" || role === "Notas") && (
+          {(role === "Administrador" || role === "Contas") && (
             <Button
               onClick={() => {
                 setShowCreateDialog(true);
@@ -662,17 +662,21 @@ function OutstandingInvoicesList() {
       <div className="flex gap-2">
         {elements.map((el, index) => {
           return (
-            <Button
-              key={index}
-              icon={el.icon}
-              label={el.label}
-              aria-label={el.ariaLabel}
-              tooltip={el.tooltip}
-              tooltipOptions={{ position: "top", className: "text-xs" }}
-              size="small"
-              severity="danger"
-              onClick={() => el.onClick(outstandingInvoices)}
-            />
+            <>
+              {(role === "Administrador" || role === "Contas") && (
+                <Button
+                  key={index}
+                  icon={el.icon}
+                  label={el.label}
+                  aria-label={el.ariaLabel}
+                  tooltip={el.tooltip}
+                  tooltipOptions={{ position: "top", className: "text-xs" }}
+                  size="small"
+                  severity="danger"
+                  onClick={() => el.onClick(outstandingInvoices)}
+                />
+              )}
+            </>
           );
         })}
       </div>
