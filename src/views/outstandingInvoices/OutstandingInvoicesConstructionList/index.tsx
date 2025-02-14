@@ -406,12 +406,14 @@ function OutstandingInvoicesConstructionList() {
             className="flex justify-end gap-6 w-full"
             style={{ justifyContent: "end" }}
           >
-            <Button
-              className="rounded-md px-3 text-sm"
-              label="Exportar para Excel"
-              severity="danger"
-              onClick={onClickExport}
-            ></Button>
+            {(role === "Administrador" || role === "Contas") && (
+              <Button
+                className="rounded-md px-3 text-sm"
+                label="Exportar para Excel"
+                severity="danger"
+                onClick={onClickExport}
+              ></Button>
+            )}
           </div>
         </div>
 
@@ -619,17 +621,21 @@ function OutstandingInvoicesConstructionList() {
       <div className="flex gap-2">
         {elements.map((el, index) => {
           return (
-            <Button
-              key={index}
-              icon={el.icon}
-              label={el.label}
-              aria-label={el.ariaLabel}
-              tooltip={el.tooltip}
-              tooltipOptions={{ position: "top", className: "text-xs" }}
-              size="small"
-              severity="danger"
-              onClick={() => el.onClick(outstandingInvoices)}
-            />
+            <>
+              {(role === "Administrador" || role === "Contas") && (
+                <Button
+                  key={index}
+                  icon={el.icon}
+                  label={el.label}
+                  aria-label={el.ariaLabel}
+                  tooltip={el.tooltip}
+                  tooltipOptions={{ position: "top", className: "text-xs" }}
+                  size="small"
+                  severity="danger"
+                  onClick={() => el.onClick(outstandingInvoices)}
+                />
+              )}
+            </>
           );
         })}
       </div>
