@@ -61,12 +61,14 @@ function OutstandingInvoicesConstructionList() {
     outstandingInvoicesVendorExport,
     loading,
     totalElements,
+    sumTotalValue,
     handleGetOutstandingInvoicesByCenterCostId,
     handleGetOutstandingInvoicesToExport,
     handlePostOutstandingInvoices,
     handleUpdateOutstandingInvoices,
     handleGetAllCategories,
     handleDeleteOutstandingInvoices,
+    handleSumTotalValueByFilter,
   } = useContext(OutstandingInvoicesContext);
 
   const { handleGetAllShortenedName } = useContext(SupplierContext);
@@ -114,6 +116,7 @@ function OutstandingInvoicesConstructionList() {
       paymentDeadlineToSearch,
       additionalDetailsSearch
     );
+
     setFirst(first);
   }
 
@@ -142,7 +145,16 @@ function OutstandingInvoicesConstructionList() {
       0,
       vendorNameSearch,
       paymentDeadlineFromSearch,
-      paymentDeadlineToSearch
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
+    handleSumTotalValueByFilter(
+      selectedConstruction?.code,
+      selectedConstruction?.local,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
     );
     handleGetAllCategories();
   }
@@ -175,6 +187,14 @@ function OutstandingInvoicesConstructionList() {
       paymentDeadlineToSearch,
       additionalDetailsSearch
     );
+    handleSumTotalValueByFilter(
+      selectedConstruction?.code,
+      selectedConstruction?.local,
+      vendorName,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
   }
 
   function onChangeVendorName(vendorName: string) {
@@ -187,6 +207,14 @@ function OutstandingInvoicesConstructionList() {
     handleGetOutstandingInvoicesByCenterCostId(
       typeof id === "string" ? id : "",
       0,
+      vendorNameSearch,
+      paymentDeadlineFrom,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
+    handleSumTotalValueByFilter(
+      selectedConstruction?.code,
+      selectedConstruction?.local,
       vendorNameSearch,
       paymentDeadlineFrom,
       paymentDeadlineToSearch,
@@ -205,6 +233,14 @@ function OutstandingInvoicesConstructionList() {
       paymentDeadlineToSearch,
       additionalDetailsSearch
     );
+    handleSumTotalValueByFilter(
+      selectedConstruction?.code,
+      selectedConstruction?.local,
+      vendorNameSearch,
+      paymentDeadlineFrom,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
   }
 
   function onPaymentDeadlineToSearch(paymentDeadlineTo: string) {
@@ -213,6 +249,14 @@ function OutstandingInvoicesConstructionList() {
     handleGetOutstandingInvoicesByCenterCostId(
       typeof id === "string" ? id : "",
       0,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineTo,
+      additionalDetailsSearch
+    );
+    handleSumTotalValueByFilter(
+      selectedConstruction?.code,
+      selectedConstruction?.local,
       vendorNameSearch,
       paymentDeadlineFromSearch,
       paymentDeadlineTo,
@@ -231,6 +275,15 @@ function OutstandingInvoicesConstructionList() {
       paymentDeadlineTo,
       additionalDetailsSearch
     );
+
+    handleSumTotalValueByFilter(
+      selectedConstruction?.code,
+      selectedConstruction?.local,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineTo,
+      additionalDetailsSearch
+    );
   }
 
   function onAdditionalDetailsSearch(additionalDetails: string) {
@@ -241,6 +294,14 @@ function OutstandingInvoicesConstructionList() {
       vendorNameSearch,
       paymentDeadlineFromSearch,
       paymentDeadlineFromSearch,
+      additionalDetails
+    );
+    handleSumTotalValueByFilter(
+      selectedConstruction?.code,
+      selectedConstruction?.local,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
       additionalDetails
     );
   }
@@ -256,6 +317,17 @@ function OutstandingInvoicesConstructionList() {
       typeof id === "string" ? id : ""
     );
   }, []);
+
+  useEffect(() => {
+    handleSumTotalValueByFilter(
+      selectedConstruction?.code,
+      selectedConstruction?.local,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
+  }, [selectedConstruction]);
 
   const clearedBodyTemplate = (outstandingInvoices: OutstandingInvoices) => {
     return (
@@ -397,6 +469,18 @@ function OutstandingInvoicesConstructionList() {
     }
   }, [outstandingInvoicesVendorExport]);
 
+  const footerTemplate = () => {
+    return (
+      <div className="card flex flex-column md:flex-row gap-2 w-11/12">
+        <LabelTitle
+          text={`Total Soma: ${formatCurrency(sumTotalValue)}`}
+          htmlFor="sumTotalValue"
+          className="font-semibold smaller-text"
+        />
+      </div>
+    );
+  };
+
   return (
     <>
       <section className="flex flex-column gap-2 p-3 w-full">
@@ -524,6 +608,7 @@ function OutstandingInvoicesConstructionList() {
           tableStyle={{ minWidth: "50rem" }}
           totalRecords={totalElements}
           size="small"
+          footer={footerTemplate}
         >
           <Column
             field="paymentDeadlineFormatted"
@@ -542,6 +627,11 @@ function OutstandingInvoicesConstructionList() {
             body={clearedBodyTemplate}
           />
           <Column field="centerCost" header="Obra" className="smaller-text" />
+          <Column
+            field="costCategory"
+            header="Categoria"
+            className="smaller-text"
+          />
           <Column
             field="additionalDetails"
             header="Memo"

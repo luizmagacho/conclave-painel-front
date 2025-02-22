@@ -5,6 +5,7 @@ import {
   OutstandingInvoicesDTO,
   OutstandingInvoicesDateExport,
   OutstandingInvoicesPaginationParam,
+  OutstandingInvoicesSumTotalValueParam,
   OutstandingInvoicesVendorExport,
 } from "./type";
 
@@ -119,5 +120,27 @@ export async function getAdditionalDetailsFromVendor(vendorName: string) {
 
 export async function getAllCategories() {
   let res = await api.get<string[]>(`${baseUrl}/category`);
+  return res.data;
+}
+
+export async function sumTotalValueByFilters({
+  centerCost,
+  localBank,
+  vendorName,
+  paymentDeadlineFrom,
+  paymentDeadlineTo,
+  additionalDetails,
+}: OutstandingInvoicesSumTotalValueParam) {
+  let res = await api.get<number>(`${baseUrl}/sum-total-value`, {
+    params: {
+      centerCost,
+      localBank,
+      vendorName,
+      paymentDeadlineFrom,
+      paymentDeadlineTo,
+      additionalDetails,
+    },
+  });
+
   return res.data;
 }

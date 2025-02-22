@@ -78,3 +78,12 @@ export type OutstandingInvoicesExport = {
   additionalDetails?: string;
   paymentStatus?: boolean;
 };
+
+export type OutstandingInvoicesSumTotalValueParam = {
+  centerCost?: string;
+  localBank?: string;
+  vendorName?: string;
+  paymentDeadlineFrom?: string;
+  paymentDeadlineTo?: string;
+  additionalDetails?: string;
+};
