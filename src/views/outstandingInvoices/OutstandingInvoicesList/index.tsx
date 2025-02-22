@@ -49,12 +49,14 @@ function OutstandingInvoicesList() {
     outstandingInvoicesVendorExport,
     loading,
     totalElements,
+    sumTotalValue,
     handleGetOutstandingInvoices,
     handleGetOutstandingInvoicesToExport,
     handlePostOutstandingInvoices,
     handleUpdateOutstandingInvoices,
     handleDeleteOutstandingInvoices,
     handleGetAllCategories,
+    handleSumTotalValueByFilter,
   } = useContext(OutstandingInvoicesContext);
 
   const { handleGetAllShortenedName } = useContext(SupplierContext);
@@ -105,6 +107,14 @@ function OutstandingInvoicesList() {
       paymentDeadlineToSearch,
       additionalDetailsSearch
     );
+    handleSumTotalValueByFilter(
+      centerCostSearch,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
     handleGetAllCategories();
   }
 
@@ -135,6 +145,14 @@ function OutstandingInvoicesList() {
       paymentDeadlineToSearch,
       additionalDetailsSearch
     );
+    handleSumTotalValueByFilter(
+      centerCostSearch,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
     handleGetAllCategories();
   }
 
@@ -143,6 +161,14 @@ function OutstandingInvoicesList() {
 
     handleGetOutstandingInvoices(
       first,
+      centerCostSearch,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
+    handleSumTotalValueByFilter(
       centerCostSearch,
       localBranchSearch,
       vendorNameSearch,
@@ -173,6 +199,14 @@ function OutstandingInvoicesList() {
       paymentDeadlineToSearch,
       additionalDetailsSearch
     );
+    handleSumTotalValueByFilter(
+      centerCostSearch,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
     setFirst(first);
   }
 
@@ -196,6 +230,14 @@ function OutstandingInvoicesList() {
       paymentDeadlineToSearch,
       additionalDetailsSearch
     );
+    handleSumTotalValueByFilter(
+      centerCost,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
   }
 
   function onChangeCenterCost(centerCost: string) {
@@ -212,6 +254,14 @@ function OutstandingInvoicesList() {
       paymentDeadlineToSearch,
       additionalDetailsSearch
     );
+    handleSumTotalValueByFilter(
+      centerCostSearch,
+      localBranch,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
   }
 
   function onChangeLocalBranch(localBranch: string) {
@@ -221,6 +271,14 @@ function OutstandingInvoicesList() {
   function onVendorNameSearch(vendorName: string) {
     handleGetOutstandingInvoices(
       0,
+      centerCostSearch,
+      localBranchSearch,
+      vendorName,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
+    handleSumTotalValueByFilter(
       centerCostSearch,
       localBranchSearch,
       vendorName,
@@ -245,12 +303,29 @@ function OutstandingInvoicesList() {
       paymentDeadlineToSearch,
       additionalDetailsSearch
     );
+
+    handleSumTotalValueByFilter(
+      centerCostSearch,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFrom,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
   }
 
   function onChangePaymentDeadlineFrom(paymentDeadlineFrom: string) {
     setPaymentDeadlineFromSearch(paymentDeadlineFrom);
     handleGetOutstandingInvoices(
       0,
+      centerCostSearch,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFrom,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
+    handleSumTotalValueByFilter(
       centerCostSearch,
       localBranchSearch,
       vendorNameSearch,
@@ -271,6 +346,14 @@ function OutstandingInvoicesList() {
       paymentDeadlineTo,
       additionalDetailsSearch
     );
+    handleSumTotalValueByFilter(
+      centerCostSearch,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineTo,
+      additionalDetailsSearch
+    );
   }
 
   function onChangePaymentDeadlineTo(paymentDeadlineTo: string) {
@@ -284,11 +367,27 @@ function OutstandingInvoicesList() {
       paymentDeadlineTo,
       additionalDetailsSearch
     );
+    handleSumTotalValueByFilter(
+      centerCostSearch,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineTo,
+      additionalDetailsSearch
+    );
   }
 
   function onAdditionalDetailsSearch(additionalDetails: string) {
     handleGetOutstandingInvoices(
       0,
+      centerCostSearch,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetails
+    );
+    handleSumTotalValueByFilter(
       centerCostSearch,
       localBranchSearch,
       vendorNameSearch,
@@ -462,6 +561,18 @@ function OutstandingInvoicesList() {
     }
   }, [outstandingInvoicesVendorExport]);
 
+  const footerTemplate = () => {
+    return (
+      <div className="card flex flex-column md:flex-row gap-2 w-11/12">
+        <LabelTitle
+          text={`Total Soma: ${formatCurrency(sumTotalValue)}`}
+          htmlFor="sumTotalValue"
+          className="font-semibold smaller-text"
+        />
+      </div>
+    );
+  };
+
   return (
     <>
       <section className="flex flex-column gap-4 p-5 w-full">
@@ -588,6 +699,7 @@ function OutstandingInvoicesList() {
           totalRecords={totalElements}
           size="small"
           className="smaller-text"
+          footer={footerTemplate}
         >
           <Column
             field="paymentDeadlineFormatted"
@@ -598,6 +710,7 @@ function OutstandingInvoicesList() {
             field="vendorName"
             header="Favorecido"
             className="smaller-text"
+            sortable={true}
           />
           <Column
             field="cleared"
@@ -606,6 +719,11 @@ function OutstandingInvoicesList() {
             body={clearedBodyTemplate}
           />
           <Column field="centerCost" header="Obra" className="smaller-text" />
+          <Column
+            field="costCategory"
+            header="Categoria"
+            className="smaller-text"
+          />
           <Column
             field="additionalDetails"
             header="Memo"

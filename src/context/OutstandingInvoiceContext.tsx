@@ -6,12 +6,12 @@ import {
   getOutstandingInvoicesByCenterCostId,
   getOutstandingInvoicesToExport,
   postOutstandingInvoices,
+  sumTotalValueByFilters,
   updateOutstandingInvoices,
 } from "@/services/outstanding-invoices";
 import {
   OutstandingInvoices,
   OutstandingInvoicesDTO,
-  OutstandingInvoicesDateExport,
   OutstandingInvoicesVendorExport,
 } from "@/services/outstanding-invoices/type";
 import { ReactNode, createContext, useEffect, useState } from "react";
@@ -27,6 +27,7 @@ interface OutstandingInvoicesProps {
   totalElements: number;
   latestAdditionalDetails: string;
   allCategories: string[];
+  sumTotalValue: number;
   handleGetOutstandingInvoices: (
     page?: number,
     centerCost?: string,
@@ -63,6 +64,14 @@ interface OutstandingInvoicesProps {
   ) => Promise<void>;
   handleGetLatestAdditionalDetails: (vendorName: string) => Promise<void>;
   handleGetAllCategories: () => Promise<void>;
+  handleSumTotalValueByFilter: (
+    centerCost?: string,
+    localBranch?: string,
+    vendorName?: string,
+    paymentDeadlineFrom?: string,
+    paymentDeadlineTo?: string,
+    additionalDetails?: string
+  ) => Promise<void>;
 }
 
 export const OutstandingInvoicesContext = createContext(
@@ -85,6 +94,8 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const [totalElements, setTotalElements] = useState<number>(0);
+
+  const [sumTotalValue, setSumTotalValue] = useState<number>(0);
 
   async function handleGetOutstandingInvoices(
     page: number = 0,
@@ -240,9 +251,37 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
     }
   }
 
+  async function handleSumTotalValueByFilter(
+    centerCost?: string,
+    localBank?: string,
+    vendorName?: string,
+    paymentDeadlineFrom?: string,
+    paymentDeadlineTo?: string,
+    additionalDetails?: string
+  ) {
+    setLoading(true);
+    try {
+      setSumTotalValue(
+        await sumTotalValueByFilters({
+          centerCost,
+          localBank,
+          vendorName,
+          paymentDeadlineFrom,
+          paymentDeadlineTo,
+          additionalDetails,
+        })
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     handleGetAllCategories();
     handleGetLatestAdditionalDetails("");
+    handleSumTotalValueByFilter();
   }, []);
 
   return (
@@ -254,6 +293,7 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
         allCategories,
         loading,
         totalElements,
+        sumTotalValue,
         handleGetOutstandingInvoices,
         handleGetOutstandingInvoicesByCenterCostId,
         handleGetOutstandingInvoicesToExport,
@@ -262,6 +302,7 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
         handleDeleteOutstandingInvoices,
         handleGetLatestAdditionalDetails,
         handleGetAllCategories,
+        handleSumTotalValueByFilter,
       }}
     >
       {children}
