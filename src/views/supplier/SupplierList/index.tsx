@@ -12,6 +12,7 @@ import SupplierDeleteDialog from "../SupplierDeleteDialog";
 import { ToastContext } from "@/context/ToastContext";
 import Cookies from "js-cookie";
 import LabelTitle from "@/components/LabelTitle";
+import { InputMask } from "primereact/inputmask";
 
 interface Options {
   icon?: string;
@@ -57,6 +58,7 @@ function SupplierList() {
   const [optionType, setOptionType] = useState<OptionType>({
     type: "Nome",
   });
+  const [cnpjSearch, setCnpjSearch] = useState<string>("");
   const [currDeleteSupplier, setCurrDeleteSupplier] = useState<Supplier | null>(
     null
   );
@@ -123,11 +125,23 @@ function SupplierList() {
   }
 
   function onSearch(name: string) {
-    handleGetSuppliers(0, name, shortenedNameSearch, optionType.type);
+    handleGetSuppliers(
+      0,
+      name,
+      shortenedNameSearch,
+      optionType.type,
+      cnpjSearch
+    );
   }
 
   function onSearchShortenedName(shortenedName: string) {
-    handleGetSuppliers(0, nameSearch, shortenedName, optionType.type);
+    handleGetSuppliers(
+      0,
+      nameSearch,
+      shortenedName,
+      optionType.type,
+      cnpjSearch
+    );
   }
 
   function onChangeSearch(name: string) {
@@ -136,6 +150,31 @@ function SupplierList() {
 
   function onChangeShortenedNameSearch(name: string) {
     setShortenedNameSearch(name);
+  }
+
+  function onCnpjSearch(cnpj: string) {
+    handleGetSuppliers(
+      0,
+      nameSearch,
+      shortenedNameSearch,
+      optionType.type,
+      cnpj
+    );
+  }
+
+  function onChangeCnpjSearch(cnpj: string) {
+    const formattedCnpj = formatPartialCnpj(cnpj);
+    setCnpjSearch(formattedCnpj);
+  }
+
+  function formatPartialCnpj(cnpj: string): string {
+    // Remove caracteres não preenchidos (_)
+    let formatted = cnpj.replace(/[_]/g, "");
+
+    // Remove separadores finais caso não haja número após eles
+    formatted = formatted.replace(/[./-]+$/, "");
+
+    return formatted.trim();
   }
 
   useEffect(() => {
@@ -198,6 +237,28 @@ function SupplierList() {
               onSearch={onSearchShortenedName}
               onChange={onChangeShortenedNameSearch}
               inputType={optionType.type}
+            />
+          </div>
+          <div className="field flex flex-column gap-1 w-full">
+            <LabelTitle
+              text="Cnpj"
+              htmlFor="cnpj"
+              className="font-semibold smaller-text"
+            />
+            <InputMask
+              mask="99.999.999/9999-99"
+              placeholder="99.999.999/9999-99"
+              onChange={(e) => {
+                const formattedCnpj = formatPartialCnpj(e.target.value || "");
+                onChangeCnpjSearch(formattedCnpj);
+                handleGetSuppliers(
+                  0,
+                  nameSearch,
+                  shortenedNameSearch,
+                  optionType.type,
+                  formattedCnpj
+                );
+              }}
             />
           </div>
         </div>
