@@ -59,6 +59,8 @@ export type SupplierPaginationParam = {
   completeName?: string;
   shortenedName?: string;
   type?: string;
+  cnpj?: string;
+  cpf?: string;
 };
 
 export type SupplierRecord = {

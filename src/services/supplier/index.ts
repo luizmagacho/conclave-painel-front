@@ -16,6 +16,8 @@ export async function getSuppliers({
   completeName,
   shortenedName,
   type,
+  cnpj,
+  cpf,
 }: SupplierPaginationParam) {
   let res = await api.get<Pagination<Supplier>>(baseUrl, {
     params: {
@@ -24,6 +26,8 @@ export async function getSuppliers({
       completeName,
       shortenedName,
       type,
+      cnpj,
+      cpf,
     },
   });
 

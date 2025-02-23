@@ -37,7 +37,9 @@ interface SupplierContextProps {
     page?: number,
     completeName?: string,
     shortenedName?: string,
-    type?: string
+    type?: string,
+    cnpj?: string,
+    cpf?: string
   ) => Promise<void>;
   handleGetAllSuppliers: () => Promise<void>;
   handleGetAllShortenedName: () => Promise<void>;
@@ -80,7 +82,9 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
     page: number = 0,
     completeName: string = "",
     shortenedName: string = "",
-    type = "Nome"
+    type = "Nome",
+    cnpj: string = "",
+    cpf: string = ""
   ) {
     setLoading(true);
     try {
@@ -90,6 +94,8 @@ export const SupplierProvider = ({ children }: ProviderProps) => {
         completeName,
         shortenedName,
         type,
+        cnpj,
+        cpf,
       });
       setBufferedSuppliers(content || []);
       setSuppliers(content || []);
