@@ -463,7 +463,15 @@ function OutstandingInvoicesList() {
       headerRows.forEach((row) => sheetData.push(row)); // Adiciona o cabeçalho ao conteúdo principal
 
       // Cabeçalhos das colunas
-      sheetData.push(["Data", "Favorecido", "C", "Conta", "Memo", "Montante"]);
+      sheetData.push([
+        "Data",
+        "Favorecido",
+        "C",
+        "Conta",
+        "Memo",
+        "Montante",
+        "Categoria",
+      ]);
 
       // Adiciona os dados
       outstandingInvoicesVendorExport.forEach((favorecido) => {
@@ -480,6 +488,7 @@ function OutstandingInvoicesList() {
                   maximumFractionDigits: 2,
                 })
               : "0,00",
+            invoice.costCategory,
           ]);
           sumTotal += invoice.totalAmount || 0;
         });
@@ -561,33 +570,44 @@ function OutstandingInvoicesList() {
     }
   }, [outstandingInvoicesVendorExport]);
 
-  const footerTemplate = () => {
+  const headerTemplate = () => {
     return (
-      <div className="card flex flex-column md:flex-row gap-2 w-11/12">
-        <LabelTitle
-          text={`Total Soma: ${formatCurrency(sumTotalValue)}`}
-          htmlFor="sumTotalValue"
-          className="font-semibold smaller-text"
-        />
+      <div className="flex w-full">
+        <div className="ml-auto">
+          <LabelTitle
+            text={`Total Soma: ${formatCurrency(sumTotalValue)}`}
+            htmlFor="sumTotalValue"
+            className="font-semibold"
+          />
+        </div>
       </div>
     );
   };
 
   return (
     <>
-      <section className="flex flex-column gap-4 p-5 w-full">
-        <div className="flex align-items-center justify-start w-full gap-2">
-          <h1 className="m-0">Contas a Pagar</h1>
-          {(role === "Administrador" || role === "Contas") && (
+      <section className="flex flex-column gap-2 p-5 w-full">
+        <div className="flex justify-between items-center w-full">
+          {/* Botão "Adicionar" no canto esquerdo */}
+          <h1 className="m-2">Contas a Pagar</h1>
+
+          {/* Botão "Exportar para Excel" no canto direito */}
+          <div className="ml-auto gap-5">
+            {(role === "Administrador" || role === "Contas") && (
+              <Button
+                onClick={() => setShowCreateDialog(true)}
+                className="rounded-md px-3 text-sm m-2"
+                label="Adicionar"
+                severity="danger"
+              />
+            )}
             <Button
-              onClick={() => {
-                setShowCreateDialog(true);
-              }}
-              className="rounded-md px-3 text-sm"
-              label="Adicionar"
+              className="rounded-md px-3 text-sm m-2"
+              label="Exportar para Excel"
               severity="danger"
+              onClick={onClickExport}
             />
-          )}
+          </div>
         </div>
         <div className="card flex flex-column md:flex-row gap-2 w-11/12">
           <div className="field flex flex-column gap-1 w-full">
@@ -677,17 +697,7 @@ function OutstandingInvoicesList() {
             />
           </div>
         </div>
-        <div
-          className="flex justify-end gap-6 w-full"
-          style={{ justifyContent: "end" }}
-        >
-          <Button
-            className="rounded-md px-3 text-sm"
-            label="Exportar para Excel"
-            severity="danger"
-            onClick={onClickExport}
-          ></Button>
-        </div>
+
         <DataTable
           emptyMessage="Nenhum custo encontrado."
           value={outstandingInvoices}
@@ -699,7 +709,7 @@ function OutstandingInvoicesList() {
           totalRecords={totalElements}
           size="small"
           className="smaller-text"
-          footer={footerTemplate}
+          header={headerTemplate}
         >
           <Column
             field="paymentDeadlineFormatted"
