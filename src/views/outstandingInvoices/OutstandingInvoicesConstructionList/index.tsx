@@ -469,14 +469,16 @@ function OutstandingInvoicesConstructionList() {
     }
   }, [outstandingInvoicesVendorExport]);
 
-  const footerTemplate = () => {
+  const headerTemplate = () => {
     return (
-      <div className="card flex flex-column md:flex-row gap-2 w-11/12">
-        <LabelTitle
-          text={`Total Soma: ${formatCurrency(sumTotalValue)}`}
-          htmlFor="sumTotalValue"
-          className="font-semibold smaller-text"
-        />
+      <div className="flex w-full">
+        <div className="ml-auto">
+          <LabelTitle
+            text={`Total Soma: ${formatCurrency(sumTotalValue)}`}
+            htmlFor="sumTotalValue"
+            className="font-semibold"
+          />
+        </div>
       </div>
     );
   };
@@ -608,7 +610,7 @@ function OutstandingInvoicesConstructionList() {
           tableStyle={{ minWidth: "50rem" }}
           totalRecords={totalElements}
           size="small"
-          footer={footerTemplate}
+          header={headerTemplate}
         >
           <Column
             field="paymentDeadlineFormatted"
