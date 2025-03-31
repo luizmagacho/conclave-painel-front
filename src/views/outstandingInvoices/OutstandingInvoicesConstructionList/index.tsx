@@ -401,7 +401,15 @@ function OutstandingInvoicesConstructionList() {
       // Add a row for the favorecido's name
 
       // Add headers for invoices
-      sheetData.push(["Data", "Favorecido", "C", "Conta", "Memo", "Montante"]);
+      sheetData.push([
+        "Data",
+        "Favorecido",
+        "C",
+        "Conta",
+        "Memo",
+        "Montante",
+        "Categoria",
+      ]);
       outstandingInvoicesVendorExport.forEach((favorecido) => {
         // Add rows for each invoice
         favorecido.outstandingInvoices.forEach((invoice) => {
@@ -417,6 +425,7 @@ function OutstandingInvoicesConstructionList() {
                   maximumFractionDigits: 2,
                 })
               : "0,00",
+            invoice.costCategory ? invoice.costCategory : "-",
           ]);
           sumTotal += invoice.totalAmount || 0;
         });
