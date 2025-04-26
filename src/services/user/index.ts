@@ -44,7 +44,7 @@ export async function updateUser(user: User) {
 }
 
 export async function deleteUser(userId: string) {
-  await api.delete(baseUrl);
+  await api.delete(`${baseUrl}/${userId}`);
 }
 
 export async function changePasswordUser(

@@ -105,7 +105,7 @@ export const UserProvider = ({ children }: ProviderProps) => {
 
   async function handleDeleteUser(userId: string) {
     setLoading(true);
-
+    console.log(userId);
     try {
       const resp = await deleteUser(userId);
     } catch (error) {
