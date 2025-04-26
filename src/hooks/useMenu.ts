@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { MenuItem } from "primereact/menuitem";
 import { PanelMenu } from "primereact/panelmenu";
@@ -7,6 +8,8 @@ const useMenu = () => {
   const [shouldRefresh, setShouldRefresh] = useState(false);
   const ref = useRef<PanelMenu>(null);
   const router = useRouter();
+
+  const userType = Cookies.get("portal.role") || "";
 
   const itemsAdmin: MenuItem[] = [
     {
@@ -38,7 +41,7 @@ const useMenu = () => {
     },
   ];
 
-  const items: MenuItem[] = [
+  const allItems: MenuItem[] = [
     {
       label: "Material",
       icon: "pi pi-fw pi-box",
@@ -94,6 +97,16 @@ const useMenu = () => {
     },
   ];
 
+  const filterMenuItems = (items: MenuItem[], userType: string): MenuItem[] => {
+    console.log(userType);
+    if (userType === "Assistente") {
+      return items.filter((item) => item.label !== "Contas a Pagar");
+    }
+    return items;
+  };
+
+  const filteredItems = filterMenuItems(allItems, userType);
+
   useEffect(() => {
     if (shouldRefresh) {
       router.reload();
@@ -101,7 +114,7 @@ const useMenu = () => {
     }
   }, [shouldRefresh]);
 
-  return { itemsAdmin, items, ref };
+  return { itemsAdmin, items: filteredItems, ref };
 };
 
 export default useMenu;
