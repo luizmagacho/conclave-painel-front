@@ -15,7 +15,7 @@ export function getAPIClient(ctx?: any) {
       return response;
     },
     (error) => {
-      if (error.response.status === 401) {
+      if (error.response?.status === 401 || error.response?.status === 403) {
         destroyCookie(null, "portal.token");
         window.location.href = "/";
       }

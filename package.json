@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -37,6 +38,7 @@
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@types/styled-components": "^5.1.26",
     "eslint": "8.47.0",
     "eslint-config-next": "13.4.17"
