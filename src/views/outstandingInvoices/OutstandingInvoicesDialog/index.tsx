@@ -3,15 +3,9 @@ import { ConstructionContext } from "@/context/ConstructionContext";
 import { OutstandingInvoicesContext } from "@/context/OutstandingInvoiceContext";
 import { SupplierContext } from "@/context/SupplierContext";
 import { Construction } from "@/services/construction/type";
-import { Cost } from "@/services/costs/type";
 import { OutstandingInvoices } from "@/services/outstanding-invoices/type";
-import {
-  Supplier,
-  SupplierName,
-  SupplierRecord,
-} from "@/services/supplier/type";
+import { SupplierRecord } from "@/services/supplier/type";
 import { convertStringToDate, formatDateToYYYYMMDD } from "@/util/date";
-import { useRouter } from "next/router";
 import {
   AutoComplete,
   AutoCompleteChangeEvent,
@@ -24,9 +18,10 @@ import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { RadioButton } from "primereact/radiobutton";
+import { Tag } from "primereact/tag";
 import { useContext, useEffect, useState } from "react";
 
-interface OutstandingInvoicesDialog {
+interface OutstandingInvoicesDialogProps {
   visible: boolean;
   onHide: () => void;
   onUpdate: (outstandingInvoices: OutstandingInvoices) => void;
@@ -38,45 +33,43 @@ function OutstandingInvoicesDialog({
   onHide,
   onUpdate,
   data,
-}: OutstandingInvoicesDialog) {
+}: OutstandingInvoicesDialogProps) {
   const userId = localStorage.getItem("portal.id");
-  const router = useRouter();
-  const [updatedOutstandingInvoices, setUpdatedOutstandingInvoices] =
-    useState<OutstandingInvoices>({
-      id: data.id,
-      name: data.name,
-      centerCost: data.centerCost,
-      centerCostId: data.centerCostId,
-      purchaseDate: data.purchaseDate,
-      purchaseDateFormatted: data.purchaseDateFormatted,
-      paymentDeadline: data.paymentDeadline,
-      paymentDeadlineFormatted: data.paymentDeadlineFormatted,
-      bankBranch: data.bankBranch,
-      localBank: data.localBank,
-      costType: data.costType,
-      costCategory: data.costCategory,
-      paymentStatus: data.paymentStatus,
-      totalAmount: data.totalAmount,
-      vendorName: data.vendorName,
-      userId: data.userId,
-      enabled: data.enabled,
-      additionalDetails: data.additionalDetails,
-      updatedAt: data.updatedAt,
-      createdAt: data.createdAt,
-    });
+
+  const [updatedInvoice, setUpdatedInvoice] = useState<OutstandingInvoices>({
+    id: data.id,
+    name: data.name,
+    centerCost: data.centerCost,
+    centerCostId: data.centerCostId,
+    purchaseDate: data.purchaseDate,
+    purchaseDateFormatted: data.purchaseDateFormatted,
+    paymentDeadline: data.paymentDeadline,
+    paymentDeadlineFormatted: data.paymentDeadlineFormatted,
+    bankBranch: data.bankBranch,
+    localBank: data.localBank,
+    costType: data.costType,
+    costCategory: data.costCategory,
+    paymentStatus: data.paymentStatus,
+    totalAmount: data.totalAmount,
+    vendorName: data.vendorName,
+    userId: data.userId,
+    enabled: data.enabled,
+    additionalDetails: data.additionalDetails,
+    updatedAt: data.updatedAt,
+    createdAt: data.createdAt,
+    groupId: data.groupId,
+    installmentNumber: data.installmentNumber,
+    totalInstallments: data.totalInstallments,
+  });
+
   const { allConstructions, handleGetConstructionById, selectedConstruction } =
     useContext(ConstructionContext);
-
-  const { allCategories, handleGetAllCategories } = useContext(
-    OutstandingInvoicesContext
-  );
+  const { allCategories } = useContext(OutstandingInvoicesContext);
+  const { allSuppliersShortenedName } = useContext(SupplierContext);
 
   const [selectedSupplier, setSelectedSupplier] = useState<SupplierRecord>({
     shortenedName: data.vendorName,
   });
-
-  const { allSuppliersShortenedName } = useContext(SupplierContext);
-
   const [checkedConstruction, setCheckedConstruction] =
     useState<Construction | null>(selectedConstruction);
   const [selectedCategory, setSelectedCategory] = useState<string>(
@@ -85,165 +78,173 @@ function OutstandingInvoicesDialog({
   const [updatedPurchaseDate, setUpdatedPurchaseDate] = useState<Date | null>(
     convertStringToDate(data.purchaseDate)
   );
-  const [invalidTotalAmount, setInvalidTotalAmount] = useState<boolean>(false);
   const [updatedPaymentDeadline, setUpdatedPaymentDeadline] =
     useState<Date | null>(convertStringToDate(data.paymentDeadline));
+
+  // Validation
+  const [invalidTotalAmount, setInvalidTotalAmount] = useState<boolean>(false);
   const [invalidPaymentDeadline, setInvalidPaymentDeadline] =
     useState<boolean>(false);
   const [invalidVendorName, setInvalidVendorName] = useState<boolean>(false);
-  const [invalidCostCategory, setInvalidCostCategory] =
-    useState<boolean>(false);
   const [invalidCenterCost, setInvalidCenterCost] = useState<boolean>(false);
-  const [
-    invalidOutstandingInvoicesCategory,
-    setInvalidOutstandingInvoicesCategory,
-  ] = useState<boolean>(false);
 
+  const [constructionItems, setConstructionItems] =
+    useState<Construction[]>(allConstructions);
+  const [supplierItems, setSupplierItems] = useState<SupplierRecord[]>(
+    allSuppliersShortenedName
+  );
+  const [categoryItems, setCategoryItems] = useState<string[]>(allCategories);
+
+  // ── Sync dates ────────────────────────────────────────────────────────────
   useEffect(() => {
-    setUpdatedOutstandingInvoices((prevOutstandingInvoices) => ({
-      ...prevOutstandingInvoices,
+    setUpdatedInvoice((prev) => ({
+      ...prev,
       purchaseDate:
-        formatDateToYYYYMMDD(updatedPurchaseDate) ||
-        prevOutstandingInvoices.purchaseDate,
+        formatDateToYYYYMMDD(updatedPurchaseDate) || prev.purchaseDate,
       paymentDeadline:
-        formatDateToYYYYMMDD(updatedPaymentDeadline) ||
-        prevOutstandingInvoices.paymentDeadline,
+        formatDateToYYYYMMDD(updatedPaymentDeadline) || prev.paymentDeadline,
     }));
   }, [updatedPurchaseDate, updatedPaymentDeadline]);
 
-  function validateFields() {
-    setUpdatedOutstandingInvoices({
-      ...updatedOutstandingInvoices,
-      userId: userId || "",
-    });
-    setInvalidVendorName(
-      !updatedOutstandingInvoices.vendorName ||
-        updatedOutstandingInvoices.vendorName === ""
-    );
-    console.log(updatedOutstandingInvoices.totalAmount);
-    setInvalidTotalAmount(
-      !updatedOutstandingInvoices.totalAmount ||
-        updatedOutstandingInvoices.totalAmount < 0
-    );
-
-    setInvalidCenterCost(
-      !updatedOutstandingInvoices.centerCost ||
-        updatedOutstandingInvoices.centerCost === ""
-    );
-
-    if (
-      (updatedOutstandingInvoices.totalAmount ||
-        updatedOutstandingInvoices.totalAmount >= 0) &&
-      (updatedOutstandingInvoices.vendorName ||
-        updatedOutstandingInvoices.vendorName !== "") &&
-      (updatedOutstandingInvoices.centerCost ||
-        updatedOutstandingInvoices.centerCost !== "")
-    ) {
-      onUpdate(updatedOutstandingInvoices);
-      onHide();
+  // ── Sync construction + category ──────────────────────────────────────────
+  useEffect(() => {
+    if (checkedConstruction) {
+      const isString = typeof checkedConstruction === "string";
+      setUpdatedInvoice((prev) => ({
+        ...prev,
+        centerCostId: isString ? prev.centerCostId : (checkedConstruction.id || prev.centerCostId),
+        centerCost: isString ? checkedConstruction : (checkedConstruction.code || prev.centerCost),
+        bankBranch: isString ? prev.bankBranch : (checkedConstruction.bankBranch || prev.bankBranch || ""),
+        localBank: isString ? prev.localBank : (checkedConstruction.local || prev.localBank || ""),
+        costCategory: selectedCategory || prev.costCategory,
+      }));
+    } else {
+      setUpdatedInvoice((prev) => ({
+        ...prev,
+        centerCostId: "",
+        centerCost: "",
+        bankBranch: "",
+        localBank: "",
+        costCategory: selectedCategory || prev.costCategory,
+      }));
     }
-  }
+  }, [checkedConstruction, selectedCategory]);
 
-  const [constructionsItems, setConstructionsItems] =
-    useState<Construction[]>(allConstructions);
+  useEffect(() => {
+    if (allConstructions && allConstructions.length > 0) {
+      const found = allConstructions.find((c) => c.id === data.centerCostId);
+      if (found) {
+        setCheckedConstruction(found);
+      }
+    }
+  }, [allConstructions, data.centerCostId]);
 
-  const [allSupplierItems, setAllSupplierItems] = useState<SupplierRecord[]>(
-    allSuppliersShortenedName
-  );
+  // ── Sync supplier ─────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (selectedSupplier) {
+      const name = typeof selectedSupplier === "string"
+        ? selectedSupplier
+        : selectedSupplier.shortenedName;
+      setUpdatedInvoice((prev) => ({
+        ...prev,
+        vendorName: name,
+      }));
+    } else {
+      setUpdatedInvoice((prev) => ({
+        ...prev,
+        vendorName: "",
+      }));
+    }
+  }, [selectedSupplier]);
 
-  const [allCategoryItems, setAllCategoryItems] =
-    useState<string[]>(allCategories);
-
+  // ── AutoComplete search handlers ──────────────────────────────────────────
   const constructionSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
-      let _filteredConstructions;
-      if (!event.query.trim().length) {
-        _filteredConstructions = [...allConstructions];
-      } else {
-        _filteredConstructions = constructionsItems.filter((construction) => {
-          return construction.code.startsWith(event.query);
-        });
-      }
-      setConstructionsItems(_filteredConstructions);
+      const filtered = !event.query.trim().length
+        ? [...allConstructions]
+        : allConstructions.filter((c) => c.code.startsWith(event.query));
+      setConstructionItems(filtered);
     }, 150);
   };
 
   const supplierSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
-      let _filteredSuppliers;
-      if (!event.query.trim().length) {
-        _filteredSuppliers = [...allSuppliersShortenedName];
-      } else {
-        _filteredSuppliers = allSuppliersShortenedName.filter((supplier) => {
-          return supplier.shortenedName
-            .toLocaleUpperCase()
-            .startsWith(event.query);
-        });
-      }
-      setAllSupplierItems(_filteredSuppliers);
+      const filtered = !event.query.trim().length
+        ? [...allSuppliersShortenedName]
+        : allSuppliersShortenedName.filter((s) =>
+            s.shortenedName
+              .toLocaleUpperCase()
+              .startsWith(event.query.toLocaleUpperCase())
+          );
+      setSupplierItems(filtered);
     }, 150);
   };
 
-  const categoriesSearch = (event: AutoCompleteCompleteEvent) => {
+  const categorySearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
-      let _filteredCategories;
-      if (!event.query.trim().length) {
-        _filteredCategories = [...allCategories];
-      } else {
-        _filteredCategories = allCategories.filter((category) => {
-          return category
-            .toLocaleUpperCase()
-            .startsWith(event.query.toLocaleUpperCase());
-        });
-      }
-      setAllCategoryItems(_filteredCategories);
+      const filtered = !event.query.trim().length
+        ? [...allCategories]
+        : allCategories.filter((c) =>
+            c.toLocaleUpperCase().startsWith(event.query.toLocaleUpperCase())
+          );
+      setCategoryItems(filtered);
     }, 150);
   };
 
-  useEffect(() => {
-    setUpdatedOutstandingInvoices((prevOutstandingInvoices) => ({
-      ...prevOutstandingInvoices,
-      centerCostId:
-        checkedConstruction?.id || prevOutstandingInvoices.centerCostId,
-      centerCost:
-        checkedConstruction?.code || prevOutstandingInvoices.centerCost,
-      bankBranch: checkedConstruction?.bankBranch || "",
-      localBank: checkedConstruction?.local || "",
-      costCategory: selectedCategory || prevOutstandingInvoices.costCategory,
-    }));
-  }, [checkedConstruction, selectedCategory]);
+  // ── Validation & submit ───────────────────────────────────────────────────
+  function validateAndSubmit() {
+    const isVendorInvalid =
+      !updatedInvoice.vendorName || updatedInvoice.vendorName === "";
+    const isAmountInvalid =
+      !updatedInvoice.totalAmount || updatedInvoice.totalAmount < 0;
+    const isCenterCostInvalid =
+      !updatedInvoice.centerCost || updatedInvoice.centerCost === "";
 
-  useEffect(() => {
-    setCheckedConstruction(selectedConstruction);
-  }, [selectedConstruction]);
+    setInvalidVendorName(isVendorInvalid);
+    setInvalidTotalAmount(isAmountInvalid);
+    setInvalidCenterCost(isCenterCostInvalid);
 
-  useEffect(() => {
-    setUpdatedOutstandingInvoices((prevOutstandingInvoices) => ({
-      ...prevOutstandingInvoices,
-      vendorName: selectedSupplier.shortenedName,
-    }));
-  }, [selectedSupplier]);
+    if (isVendorInvalid || isAmountInvalid || isCenterCostInvalid) return;
 
-  useEffect(() => {
-    handleGetConstructionById(data.centerCostId);
-  }, []);
+    onUpdate({ ...updatedInvoice, userId: userId || "" });
+    onHide();
+  }
 
-  const formatCurrency = (value: number | null) => {
-    if (value) {
-      return value / 100;
-    }
+  const formatCurrency = (value: number | null) => (value ? value / 100 : 0);
 
-    return 0;
-  };
+  // ── Installment badge ─────────────────────────────────────────────────────
+  const isInstallment =
+    data.installmentNumber != null && data.totalInstallments != null;
 
+  const dialogHeader = (
+    <div className="flex align-items-center gap-2">
+      <i
+        className="pi pi-pencil"
+        style={{ fontSize: "1.1rem", color: "#e53e3e" }}
+      />
+      <span style={{ fontWeight: 700, fontSize: "1.05rem" }}>
+        Editar Conta a Pagar
+      </span>
+      {isInstallment && (
+        <Tag
+          value={`Parcela ${data.installmentNumber}/${data.totalInstallments}`}
+          severity="danger"
+          style={{ fontSize: "0.78rem", marginLeft: "8px" }}
+        />
+      )}
+    </div>
+  );
+
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <Dialog
-      header="Editar Custo"
+      header={dialogHeader}
       visible={visible}
       onHide={onHide}
-      className="w-60rem"
-      style={{ width: "40vw" }}
+      style={{ width: "55vw", maxWidth: "900px" }}
+      contentStyle={{ padding: "1.25rem 1.5rem" }}
     >
+      {/* ── Row 1: Construction + Local Bank ── */}
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -256,10 +257,9 @@ function OutstandingInvoicesDialog({
               type="text"
               field="code"
               dropdown
-              className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
               style={{ height: "30px", fontSize: "0.8rem" }}
               value={checkedConstruction}
-              suggestions={constructionsItems}
+              suggestions={constructionItems}
               completeMethod={constructionSearch}
               onChange={(e: AutoCompleteChangeEvent) => {
                 setCheckedConstruction(e.value);
@@ -284,17 +284,18 @@ function OutstandingInvoicesDialog({
           <InputText
             type="text"
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedOutstandingInvoices?.localBank}
+            value={updatedInvoice?.localBank}
             disabled
           />
         </div>
       </div>
 
+      {/* ── Row 2: Vendor + Payment Deadline ── */}
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
             text="Favorecido"
-            htmlFor="shortenedName"
+            htmlFor="vendorName"
             className="font-semibold"
           />
           <div className="card p-fluid">
@@ -302,10 +303,9 @@ function OutstandingInvoicesDialog({
               type="text"
               field="shortenedName"
               dropdown
-              className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
               style={{ height: "30px", fontSize: "0.8rem" }}
               value={selectedSupplier}
-              suggestions={allSupplierItems}
+              suggestions={supplierItems}
               completeMethod={supplierSearch}
               onChange={(e: AutoCompleteChangeEvent) => {
                 setSelectedSupplier(e.value);
@@ -321,7 +321,6 @@ function OutstandingInvoicesDialog({
             )}
           </div>
         </div>
-
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
             text="Data do Vencimento"
@@ -329,14 +328,11 @@ function OutstandingInvoicesDialog({
             className="font-semibold"
           />
           <Calendar
-            id="buttondisplay"
-            onChange={(e) => {
-              setUpdatedPaymentDeadline(e.value || null);
-            }}
+            id="paymentDeadline"
+            onChange={(e) => setUpdatedPaymentDeadline(e.value || null)}
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={updatedPaymentDeadline}
             locale="pt"
-            className="ui-state-default"
             dateFormat="dd/mm/yy"
             showIcon
           />
@@ -349,6 +345,8 @@ function OutstandingInvoicesDialog({
           )}
         </div>
       </div>
+
+      {/* ── Row 3: Amount + Category ── */}
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -357,20 +355,20 @@ function OutstandingInvoicesDialog({
             className="font-semibold"
           />
           <InputNumber
-            inputId="currency-br"
+            inputId="totalAmount"
             mode="currency"
             locale="pt-BR"
             currency="BRL"
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={formatCurrency(updatedOutstandingInvoices.totalAmount)}
+            value={formatCurrency(updatedInvoice.totalAmount)}
             onChange={(e) => {
               if (e.value !== null) {
-                setUpdatedOutstandingInvoices({
-                  ...updatedOutstandingInvoices,
+                setUpdatedInvoice({
+                  ...updatedInvoice,
                   totalAmount: Math.round(e.value * 100),
                 });
+                setInvalidTotalAmount(false);
               }
-              setInvalidPaymentDeadline(false);
             }}
           />
           {invalidTotalAmount && (
@@ -384,33 +382,26 @@ function OutstandingInvoicesDialog({
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
             text="Categoria"
-            htmlFor="OutstandingInvoicesCategory"
+            htmlFor="category"
             className="font-semibold"
           />
           <div className="card p-fluid">
             <AutoComplete
               type="text"
               dropdown
-              className="flex-grow font-semibold" /* Faz o elemento preencher o espaço restante */
               style={{ height: "30px", fontSize: "0.8rem" }}
               value={selectedCategory}
-              suggestions={allCategoryItems}
-              completeMethod={categoriesSearch}
-              onChange={(e: AutoCompleteChangeEvent) => {
-                setSelectedCategory(e.value);
-                setInvalidOutstandingInvoicesCategory(false);
-              }}
+              suggestions={categoryItems}
+              completeMethod={categorySearch}
+              onChange={(e: AutoCompleteChangeEvent) =>
+                setSelectedCategory(e.value)
+              }
             />
-            {invalidOutstandingInvoicesCategory && (
-              <Message
-                severity="error"
-                text="Categoria é obrigatório"
-                className="smaller-text"
-              />
-            )}
           </div>
         </div>
       </div>
+
+      {/* ── Row 4: Payment Status + Memo ── */}
       <div className="card flex flex-column md:flex-row gap-3 w-full">
         <div className="field flex flex-column gap-2 w-full">
           <LabelTitle
@@ -418,60 +409,52 @@ function OutstandingInvoicesDialog({
             htmlFor="paymentStatus"
             className="font-semibold"
           />
-          <div className="flex align-items-center gap-2 w-full a">
-            <div className="flex">
+          <div className="flex align-items-center gap-3">
+            <div className="flex align-items-center gap-1">
               <RadioButton
                 value={true}
-                name="Sim"
+                name="paymentStatus"
                 onChange={(e) =>
-                  setUpdatedOutstandingInvoices({
-                    ...updatedOutstandingInvoices,
-                    paymentStatus: e.value,
-                  })
+                  setUpdatedInvoice({ ...updatedInvoice, paymentStatus: e.value })
                 }
-                checked={updatedOutstandingInvoices.paymentStatus === true}
+                checked={updatedInvoice.paymentStatus === true}
               />
-              <label htmlFor="option1" className="ml-2">
-                Sim
-              </label>
+              <label className="ml-1">Sim</label>
             </div>
-            <div className="flex">
+            <div className="flex align-items-center gap-1">
               <RadioButton
                 value={false}
-                name="Não"
-                onChange={(e) => {
-                  setUpdatedOutstandingInvoices({
-                    ...updatedOutstandingInvoices,
-                    paymentStatus: e.value,
-                  });
-                }}
-                checked={updatedOutstandingInvoices.paymentStatus === false}
+                name="paymentStatus"
+                onChange={(e) =>
+                  setUpdatedInvoice({ ...updatedInvoice, paymentStatus: e.value })
+                }
+                checked={updatedInvoice.paymentStatus === false}
               />
-              <label htmlFor="option2" className="ml-2">
-                Não
-              </label>
+              <label className="ml-1">Não</label>
             </div>
           </div>
         </div>
         <div className="field flex flex-column gap-2 w-full">
-          <LabelTitle text="Memo" htmlFor="memo" className="font-semibold" />
+          <LabelTitle text="Memo" htmlFor="additionalDetails" className="font-semibold" />
           <InputText
             type="text"
-            onChange={(e) => {
-              setUpdatedOutstandingInvoices({
-                ...updatedOutstandingInvoices,
+            onChange={(e) =>
+              setUpdatedInvoice({
+                ...updatedInvoice,
                 additionalDetails: e.target.value,
-              });
-            }}
+              })
+            }
             style={{ height: "30px", fontSize: "0.8rem" }}
-            value={updatedOutstandingInvoices?.additionalDetails}
+            value={updatedInvoice?.additionalDetails}
           />
         </div>
       </div>
-      <div className="flex gap-2">
+
+      {/* ── Action Buttons ── */}
+      <div className="flex gap-2 mt-2">
         <Button className="w-full" label="Cancelar" outlined onClick={onHide} />
         <Button
-          onClick={() => validateFields()}
+          onClick={validateAndSubmit}
           className="w-full"
           label="Salvar"
           severity="danger"

@@ -1,11 +1,12 @@
 import type { AppProps } from "next/app";
+import { useEffect, useState } from "react";
 
 import { AuthProvider } from "@/context/AuthContext";
 
 import "primeflex/primeflex.css";
 import "primeicons/primeicons.css";
 import "primereact/resources/primereact.min.css";
-import "primereact/resources/themes/saga-blue/theme.css";
+import "primereact/resources/themes/lara-light-blue/theme.css";
 
 import { PrimeReactProvider } from "primereact/api";
 
@@ -15,6 +16,12 @@ import ErrorBoundary from "./ErrorBoundary";
 const Logo = "/Logo_conclave.png";
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div>
       <Head>
@@ -25,7 +32,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <PrimeReactProvider>
           <GlobalStyle />
           <ErrorBoundary>
-            <Component {...pageProps} />
+            {mounted ? <Component {...pageProps} /> : <div />}
           </ErrorBoundary>
         </PrimeReactProvider>
       </AuthProvider>

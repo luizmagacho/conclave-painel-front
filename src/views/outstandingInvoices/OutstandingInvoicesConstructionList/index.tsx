@@ -20,6 +20,8 @@ import OutstandingConstructionUpdateDialog from "../OutstadingConstructionUpdate
 
 import * as XLSX from "xlsx";
 import { Calendar } from "primereact/calendar";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 import InputSearch from "@/components/InputSearch";
 import { formatDateToYYYYMMDD, formatarDataBR } from "@/util/date";
 
@@ -542,8 +544,8 @@ function OutstandingInvoicesConstructionList() {
             />
           </div>
         </div>
-        <div className="card flex flex-column md:flex-row gap-2 w-11/12">
-          <div className="field flex flex-column gap-1 w-full">
+        <div className="premium-filter-bar grid formgrid p-fluid w-full align-items-end m-0">
+          <div className="field col-12 md:col-6 lg:col-3 mb-0">
             <LabelTitle
               text="Favorecido"
               htmlFor="vendorName"
@@ -554,49 +556,55 @@ function OutstandingInvoicesConstructionList() {
               onChange={onChangeVendorName}
             />
           </div>
-          <div className="field flex flex-column gap-1 w-full">
+          <div className="field col-12 md:col-6 lg:col-3 mb-0">
             <LabelTitle
               text="De:"
               htmlFor="paymentDeadlineFrom"
               className="font-semibold smaller-text"
             />
-            <Calendar
-              id="buttondisplay"
-              value={paymentDeadlineFrom}
-              onChange={(e) => {
-                setPaymentDeadlineFrom(e.value || null);
-                onPaymentDeadlineFromSearch(
-                  formatDateToYYYYMMDD(e.value || null) || ""
-                );
-              }}
-              locale="pt"
-              className="ui-state-default"
-              dateFormat="dd/mm/yy"
-              showIcon
-            />
+            <IconField iconPosition="left">
+              <InputIcon className="pi pi-calendar"> </InputIcon>
+              <Calendar
+                id="buttondisplay"
+                value={paymentDeadlineFrom}
+                onChange={(e) => {
+                  setPaymentDeadlineFrom(e.value || null);
+                  onPaymentDeadlineFromSearch(
+                    formatDateToYYYYMMDD(e.value || null) || ""
+                  );
+                }}
+                locale="pt"
+                className="ui-state-default"
+                dateFormat="dd/mm/yy"
+                placeholder="dd/mm/aaaa"
+              />
+            </IconField>
           </div>
-          <div className="field flex flex-column gap-1 w-full">
+          <div className="field col-12 md:col-6 lg:col-3 mb-0">
             <LabelTitle
               text="Até:"
               htmlFor="paymentDeadlineTo"
               className="font-semibold smaller-text"
             />
-            <Calendar
-              id="buttondisplay"
-              value={paymentDeadlineTo}
-              onChange={(e) => {
-                setPaymentDeadlineTo(e.value || null);
-                onPaymentDeadlineToSearch(
-                  formatDateToYYYYMMDD(e.value || null) || ""
-                );
-              }}
-              locale="pt"
-              className="ui-state-default"
-              dateFormat="dd/mm/yy"
-              showIcon
-            />
+            <IconField iconPosition="left">
+              <InputIcon className="pi pi-calendar"> </InputIcon>
+              <Calendar
+                id="buttondisplay"
+                value={paymentDeadlineTo}
+                onChange={(e) => {
+                  setPaymentDeadlineTo(e.value || null);
+                  onPaymentDeadlineToSearch(
+                    formatDateToYYYYMMDD(e.value || null) || ""
+                  );
+                }}
+                locale="pt"
+                className="ui-state-default"
+                dateFormat="dd/mm/yy"
+                placeholder="dd/mm/aaaa"
+              />
+            </IconField>
           </div>
-          <div className="field flex flex-column gap-1 w-full">
+          <div className="field col-12 md:col-6 lg:col-3 mb-0">
             <LabelTitle
               text="Memo"
               htmlFor="additionalDetails"

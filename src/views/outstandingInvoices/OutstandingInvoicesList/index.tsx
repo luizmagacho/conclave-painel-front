@@ -7,6 +7,7 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { classNames } from "primereact/utils";
+import { Tag } from "primereact/tag";
 import { useContext, useEffect, useState } from "react";
 import {
   OutstandingInvoices,
@@ -18,6 +19,8 @@ import { OutstandingInvoicesContext } from "@/context/OutstandingInvoiceContext"
 import OutstandingInvoicesDeleteDialog from "../OutstandingInvoicesDeleteDialog";
 import { SupplierContext } from "@/context/SupplierContext";
 import { Calendar } from "primereact/calendar";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 import { formatDateToYYYYMMDD, formatarDataBR } from "@/util/date";
 
 import * as XLSX from "xlsx";
@@ -76,23 +79,7 @@ function OutstandingInvoicesList() {
 
   const [first, setFirst] = useState<number>(0);
 
-  const options: Options[] = [
-    {
-      ariaLabel: "Editar",
-      label: "Editar",
-      onClick: openDialog,
-    },
-    {
-      ariaLabel: "Excluir",
-      label: "Excluir",
-      onClick: openDeleteDialog,
-    },
-  ];
 
-  const columnBodyOptions = {
-    options: (outstandingInvoices: OutstandingInvoices) =>
-      optionsBodyTemplate(options, outstandingInvoices),
-  };
 
   async function onCreateOutstandingInvoices(
     outstandingInvoices: OutstandingInvoicesDTO
@@ -210,13 +197,26 @@ function OutstandingInvoicesList() {
     setFirst(first);
   }
 
-  const clearedBodyTemplate = (outstandingInvoices: OutstandingInvoices) => {
+  const clearedBodyTemplate = (
+    outstandingInvoices: OutstandingInvoices
+  ) => {
     return (
       <i
         className={classNames("pi", {
           "true-icon pi-check-circle": outstandingInvoices.paymentStatus,
         })}
       ></i>
+    );
+  };
+
+  const installmentBadgeTemplate = (invoice: OutstandingInvoices) => {
+    if (!invoice.installmentNumber || !invoice.totalInstallments) return null;
+    return (
+      <Tag
+        value={`${invoice.installmentNumber}/${invoice.totalInstallments}`}
+        severity="danger"
+        style={{ fontSize: "0.72rem", padding: "2px 7px", whiteSpace: "nowrap" }}
+      />
     );
   };
 
@@ -572,13 +572,26 @@ function OutstandingInvoicesList() {
 
   const headerTemplate = () => {
     return (
-      <div className="flex w-full">
-        <div className="ml-auto">
-          <LabelTitle
-            text={`Total Soma: ${formatCurrency(sumTotalValue)}`}
-            htmlFor="sumTotalValue"
-            className="font-semibold"
-          />
+      <div className="flex w-full align-items-center">
+        <span style={{ fontSize: "0.78rem", color: "#718096" }}>
+          {totalElements} {totalElements === 1 ? "registro" : "registros"}
+        </span>
+        <div
+          className="ml-auto"
+          style={{
+            background: "linear-gradient(135deg, #fff5f5 0%, #fff 100%)",
+            border: "1px solid #fed7d7",
+            borderRadius: "8px",
+            padding: "4px 12px",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+          }}
+        >
+          <i className="pi pi-wallet" style={{ color: "#e53e3e", fontSize: "0.85rem" }} />
+          <span style={{ fontWeight: 700, fontSize: "0.85rem", color: "#c53030" }}>
+            Total: {formatCurrency(sumTotalValue)}
+          </span>
         </div>
       </div>
     );
@@ -609,8 +622,8 @@ function OutstandingInvoicesList() {
             />
           </div>
         </div>
-        <div className="card flex flex-column md:flex-row gap-2 w-11/12">
-          <div className="field flex flex-column gap-1 w-full">
+        <div className="premium-filter-bar grid formgrid p-fluid w-full align-items-end m-0">
+          <div className="field col-12 md:col-4 lg:col-2 mb-0">
             <LabelTitle
               text="Obra"
               htmlFor="centerCost"
@@ -621,7 +634,7 @@ function OutstandingInvoicesList() {
               onChange={onChangeCenterCost}
             />
           </div>
-          <div className="field flex flex-column gap-1 w-full">
+          <div className="field col-12 md:col-4 lg:col-2 mb-0">
             <LabelTitle
               text="Local Agência"
               htmlFor="localBranch"
@@ -632,7 +645,7 @@ function OutstandingInvoicesList() {
               onChange={onChangeLocalBranch}
             />
           </div>
-          <div className="field flex flex-column gap-1 w-full">
+          <div className="field col-12 md:col-4 lg:col-2 mb-0">
             <LabelTitle
               text="Favorecido"
               htmlFor="vendorName"
@@ -643,49 +656,55 @@ function OutstandingInvoicesList() {
               onChange={onChangeVendorName}
             />
           </div>
-          <div className="field flex flex-column gap-1 w-full">
+          <div className="field col-12 md:col-4 lg:col-2 mb-0">
             <LabelTitle
               text="De:"
               htmlFor="paymentDeadlineFrom"
               className="font-semibold smaller-text"
             />
-            <Calendar
-              id="buttondisplay"
-              value={paymentDeadlineFrom}
-              onChange={(e) => {
-                setPaymentDeadlineFrom(e.value || null);
-                onPaymentDeadlineFromSearch(
-                  formatDateToYYYYMMDD(e.value || null) || ""
-                );
-              }}
-              locale="pt"
-              className="ui-state-default"
-              dateFormat="dd/mm/yy"
-              showIcon
-            />
+            <IconField iconPosition="left">
+              <InputIcon className="pi pi-calendar"> </InputIcon>
+              <Calendar
+                id="buttondisplay"
+                value={paymentDeadlineFrom}
+                onChange={(e) => {
+                  setPaymentDeadlineFrom(e.value || null);
+                  onPaymentDeadlineFromSearch(
+                    formatDateToYYYYMMDD(e.value || null) || ""
+                  );
+                }}
+                locale="pt"
+                className="ui-state-default"
+                dateFormat="dd/mm/yy"
+                placeholder="dd/mm/aaaa"
+              />
+            </IconField>
           </div>
-          <div className="field flex flex-column gap-1 w-full">
+          <div className="field col-12 md:col-4 lg:col-2 mb-0">
             <LabelTitle
               text="Até:"
               htmlFor="paymentDeadlineTo"
               className="font-semibold smaller-text"
             />
-            <Calendar
-              id="buttondisplay"
-              value={paymentDeadlineTo}
-              onChange={(e) => {
-                setPaymentDeadlineTo(e.value || null);
-                onPaymentDeadlineToSearch(
-                  formatDateToYYYYMMDD(e.value || null) || ""
-                );
-              }}
-              locale="pt"
-              className="ui-state-default"
-              dateFormat="dd/mm/yy"
-              showIcon
-            />
+            <IconField iconPosition="left">
+              <InputIcon className="pi pi-calendar"> </InputIcon>
+              <Calendar
+                id="buttondisplay"
+                value={paymentDeadlineTo}
+                onChange={(e) => {
+                  setPaymentDeadlineTo(e.value || null);
+                  onPaymentDeadlineToSearch(
+                    formatDateToYYYYMMDD(e.value || null) || ""
+                  );
+                }}
+                locale="pt"
+                className="ui-state-default"
+                dateFormat="dd/mm/yy"
+                placeholder="dd/mm/aaaa"
+              />
+            </IconField>
           </div>
-          <div className="field flex flex-column gap-1 w-full">
+          <div className="field col-12 md:col-4 lg:col-2 mb-0">
             <LabelTitle
               text="Memo"
               htmlFor="additionalDetails"
@@ -739,15 +758,19 @@ function OutstandingInvoicesList() {
             header="Memo"
             className="smaller-text"
           />
-
           <Column
             field="totalAmount"
             body={priceTotalValueBodyTemplate}
             header="Valor"
             className="smaller-text"
           />
-
-          <Column header="Opções" body={columnBodyOptions.options} />
+          <Column
+            header="Parcela"
+            body={installmentBadgeTemplate}
+            className="smaller-text"
+            style={{ width: "80px", textAlign: "center" }}
+          />
+          <Column header="Opções" body={optionsBodyTemplate} />
         </DataTable>
         <Paginator
           first={first}
@@ -782,34 +805,42 @@ function OutstandingInvoicesList() {
     </>
   );
 
-  function optionsBodyTemplate(
-    elements: Options[],
-    outstandingInvoices: OutstandingInvoices
-  ) {
+  function optionsBodyTemplate(outstandingInvoices: OutstandingInvoices) {
     return (
-      <div className="flex gap-2">
-        {elements.map((el, index) => {
-          return (
-            <>
-              {(role === "Administrador" || role === "Contas") && (
-                <Button
-                  key={index}
-                  icon={el.icon}
-                  label={el.label}
-                  aria-label={el.ariaLabel}
-                  tooltip={el.tooltip}
-                  tooltipOptions={{ position: "top", className: "text-xs" }}
-                  size="small"
-                  severity="danger"
-                  onClick={() => el.onClick(outstandingInvoices)}
-                />
-              )}
-            </>
-          );
-        })}
+      <div className="flex gap-2 justify-content-center align-items-center">
+        {(role === "Administrador" || role === "Contas") && (
+          <>
+            <Button
+              icon="pi pi-pencil"
+              tooltip="Editar"
+              tooltipOptions={{ position: "top", className: "text-xs" }}
+              size="small"
+              text
+              style={{ color: "var(--cor-primaria)", padding: "4px 8px", minWidth: "auto" }}
+              onClick={() => openDialog(outstandingInvoices)}
+            />
+            <Button
+              icon="pi pi-trash"
+              tooltip="Excluir"
+              tooltipOptions={{ position: "top", className: "text-xs" }}
+              size="small"
+              text
+              severity="danger"
+              style={{ padding: "4px 8px", minWidth: "auto" }}
+              onClick={() => openDeleteDialog(outstandingInvoices)}
+            />
+          </>
+        )}
       </div>
     );
   }
 }
 
 export default OutstandingInvoicesList;
+
+
+
+
+
+
+

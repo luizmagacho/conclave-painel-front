@@ -19,6 +19,12 @@ export type OutstandingInvoices = {
   paymentStatus: boolean;
   createdAt: Date | null;
   updatedAt: Date | null;
+  /** Links all installments of the same invoice together. */
+  groupId?: string | null;
+  /** 1-based position of this installment (e.g. 3). Null for single-payment invoices. */
+  installmentNumber?: number | null;
+  /** Total installments in the group (e.g. 10). Null for single-payment invoices. */
+  totalInstallments?: number | null;
 };
 
 export type OutstandingInvoicesDTO = {
@@ -37,6 +43,17 @@ export type OutstandingInvoicesDTO = {
   enabled: boolean;
   additionalDetails: string;
   paymentStatus: boolean;
+  /** Links all installments of the same invoice together. */
+  groupId?: string | null;
+  /** 1-based position of this installment (e.g. 3). */
+  installmentNumber?: number | null;
+  /** Total installments in the group (e.g. 10). */
+  totalInstallments?: number | null;
+  /**
+   * UI-only: number of installments to generate.
+   * Sent to the backend which generates N monthly rows.
+   */
+  numberOfInstallments?: number;
 };
 
 export type OutstandingInvoicesPaginationParam = {
@@ -77,6 +94,8 @@ export type OutstandingInvoicesExport = {
   totalAmount?: number | null;
   additionalDetails?: string;
   paymentStatus?: boolean;
+  installmentNumber?: number | null;
+  totalInstallments?: number | null;
 };
 
 export type OutstandingInvoicesSumTotalValueParam = {

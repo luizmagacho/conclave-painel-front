@@ -24,6 +24,32 @@ const StyledSidebar = styled.aside<LeftPanelProps>`
   box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
 `;
 
+const StyledToggleButton = styled(Button)<{ $visible: boolean }>`
+  color: #64748b !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 36px !important;
+  height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: none !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  cursor: pointer !important;
+  margin: ${props => props.$visible ? "0" : "0 auto"} !important;
+
+  &:hover {
+    background: rgba(192, 41, 41, 0.08) !important;
+    color: var(--cor-primaria) !important;
+    transform: scale(1.15) !important;
+  }
+
+  &:active {
+    transform: scale(0.95) !important;
+  }
+`;
+
 function LeftPanel({ children }: LeftPanelProps) {
   const [visible, setVisible] = useState(true);
   const [visibleConfirmation, setVisibleConfirmation] = useState(false);
@@ -36,18 +62,13 @@ function LeftPanel({ children }: LeftPanelProps) {
       }}
     >
       <div className="gap-5">
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-between w-full mb-4 px-2" style={{ gap: "10px" }}>
           {visible && <Logo />}
-          <Button
-            className={visible ? "pi pi-arrow-left" : "pi pi-arrow-right"}
+          <StyledToggleButton
+            $visible={visible}
+            className={visible ? "pi pi-angle-left" : "pi pi-angle-right"}
             onClick={() => setVisible(!visible)}
-            style={{
-              color: "black",
-              background: "transparent",
-              border: "transparent",
-              outline: "none",
-            }}
-          ></Button>
+          />
         </div>
         {visible && <>{children}</>}
       </div>
