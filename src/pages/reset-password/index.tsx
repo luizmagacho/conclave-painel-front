@@ -31,7 +31,7 @@ export default function ResetPassword() {
 
     if (isNewPasswordEmpty || isConfirmMismatch) return;
     if (!token || typeof token !== "string") {
-      setErrorMessage("Invalid reset link. Please request a new one.");
+      setErrorMessage("Link de recuperação inválido. Por favor, solicite um novo.");
       setState("error");
       return;
     }
@@ -43,7 +43,7 @@ export default function ResetPassword() {
     } catch {
       setState("error");
       setErrorMessage(
-        "This reset link is invalid or has expired. Please request a new one."
+        "Este link de recuperação é inválido ou expirou. Por favor, solicite um novo."
       );
     }
   }
@@ -112,7 +112,7 @@ export default function ResetPassword() {
             <h1
               style={{ color: "#fff", fontSize: "1.3rem", fontWeight: 700, margin: 0 }}
             >
-              Password Updated!
+              Senha Atualizada!
             </h1>
             <p
               style={{
@@ -122,12 +122,11 @@ export default function ResetPassword() {
                 lineHeight: 1.6,
               }}
             >
-              Your password has been reset successfully. You can now log in with
-              your new password.
+              Sua senha foi redefinida com sucesso. Você já pode fazer login com sua nova senha.
             </p>
             <Button
               id="go-to-login"
-              label="Go to Login"
+              label="Ir para o Login"
               className="w-full mt-3"
               style={{
                 background: "linear-gradient(135deg, #e53e3e, #c53030)",
@@ -171,7 +170,7 @@ export default function ResetPassword() {
             <h1
               style={{ color: "#fff", fontSize: "1.3rem", fontWeight: 700, margin: 0 }}
             >
-              Link Expired
+              Link Expirado
             </h1>
             <p
               style={{
@@ -185,7 +184,7 @@ export default function ResetPassword() {
             </p>
             <Button
               id="request-new-link"
-              label="Request New Link"
+              label="Solicitar Novo Link"
               className="w-full mt-3"
               style={{
                 background: "linear-gradient(135deg, #e53e3e, #c53030)",
@@ -226,7 +225,7 @@ export default function ResetPassword() {
           <h1
             style={{ color: "#fff", fontSize: "1.4rem", fontWeight: 700, margin: 0 }}
           >
-            Set New Password
+            Definir Nova Senha
           </h1>
           <p
             style={{
@@ -235,14 +234,14 @@ export default function ResetPassword() {
               marginTop: "0.5rem",
             }}
           >
-            Choose a strong password for your account.
+            Escolha uma senha forte para a sua conta.
           </p>
         </div>
 
         {/* New Password */}
         <div className="field flex flex-column gap-2" style={{ marginBottom: "1rem" }}>
           <label htmlFor="newPassword" style={labelStyle}>
-            New Password
+            Nova Senha
           </label>
           <div style={{ position: "relative" }}>
             <InputText
@@ -253,7 +252,7 @@ export default function ResetPassword() {
                 setNewPassword(e.target.value);
                 setInvalidNewPassword(false);
               }}
-              placeholder="At least 6 characters"
+              placeholder="Pelo menos 6 caracteres"
               style={inputStyle}
             />
             <i
@@ -273,7 +272,7 @@ export default function ResetPassword() {
           {invalidNewPassword && (
             <Message
               severity="error"
-              text="Password must be at least 6 characters."
+              text="A senha deve ter pelo menos 6 caracteres."
               style={{ fontSize: "0.8rem" }}
             />
           )}
@@ -282,7 +281,7 @@ export default function ResetPassword() {
         {/* Confirm Password */}
         <div className="field flex flex-column gap-2" style={{ marginBottom: "1.25rem" }}>
           <label htmlFor="confirmPassword" style={labelStyle}>
-            Confirm Password
+            Confirmar Senha
           </label>
           <div style={{ position: "relative" }}>
             <InputText
@@ -294,7 +293,7 @@ export default function ResetPassword() {
                 setInvalidConfirmPassword(false);
               }}
               onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-              placeholder="Repeat your new password"
+              placeholder="Repita sua nova senha"
               style={inputStyle}
             />
             <i
@@ -314,7 +313,7 @@ export default function ResetPassword() {
           {invalidConfirmPassword && (
             <Message
               severity="error"
-              text="Passwords do not match."
+              text="As senhas não coincidem."
               style={{ fontSize: "0.8rem" }}
             />
           )}
@@ -322,7 +321,7 @@ export default function ResetPassword() {
 
         <Button
           id="reset-password-submit"
-          label="Reset Password"
+          label="Redefinir Senha"
           loading={state === "loading"}
           onClick={handleSubmit}
           className="w-full"
@@ -339,7 +338,7 @@ export default function ResetPassword() {
 
         <div style={{ textAlign: "center" }}>
           <Button
-            label="Back to Login"
+            label="Voltar para o Login"
             className="p-button-link"
             style={{
               color: "rgba(255,255,255,0.5)",

@@ -77,7 +77,7 @@ export default function ForgotPassword() {
               margin: 0,
             }}
           >
-            Forgot Your Password?
+            Esqueceu sua Senha?
           </h1>
           <p
             style={{
@@ -86,7 +86,7 @@ export default function ForgotPassword() {
               marginTop: "0.5rem",
             }}
           >
-            Enter your email and we'll send you a reset link.
+            Informe seu e-mail e enviaremos um link de recuperação.
           </p>
         </div>
 
@@ -118,11 +118,11 @@ export default function ForgotPassword() {
                 lineHeight: 1.6,
               }}
             >
-              If that email is registered, you'll receive a reset link shortly.
-              Check your inbox (and spam folder).
+              Se este e-mail estiver cadastrado, você receberá um link de recuperação em breve.
+              Verifique sua caixa de entrada (e a pasta de spam).
             </p>
             <Button
-              label="Back to Login"
+              label="Voltar para o Login"
               outlined
               className="w-full mt-3"
               style={{ borderColor: "rgba(255,255,255,0.2)", color: "#fff" }}
@@ -141,7 +141,7 @@ export default function ForgotPassword() {
                   fontWeight: 600,
                 }}
               >
-                Email address
+                Endereço de e-mail
               </label>
               <InputText
                 id="email"
@@ -152,7 +152,7 @@ export default function ForgotPassword() {
                   setInvalidEmail(false);
                 }}
                 onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-                placeholder="you@example.com"
+                placeholder="voce@exemplo.com.br"
                 style={{
                   background: "rgba(255,255,255,0.07)",
                   border: "1px solid rgba(255,255,255,0.15)",
@@ -165,7 +165,7 @@ export default function ForgotPassword() {
               {invalidEmail && (
                 <Message
                   severity="error"
-                  text="Please enter a valid email address."
+                  text="Por favor, insira um endereço de e-mail válido."
                   style={{ fontSize: "0.8rem" }}
                 />
               )}
@@ -173,7 +173,7 @@ export default function ForgotPassword() {
 
             <Button
               id="send-reset-link"
-              label="Send Reset Link"
+              label="Enviar Link de Recuperação"
               loading={loading}
               onClick={handleSubmit}
               className="w-full"
@@ -190,7 +190,7 @@ export default function ForgotPassword() {
 
             <div style={{ textAlign: "center" }}>
               <Button
-                label="Back to Login"
+                label="Voltar para o Login"
                 className="p-button-link"
                 style={{
                   color: "rgba(255,255,255,0.5)",
