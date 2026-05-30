@@ -4,6 +4,8 @@ import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import LabelTitle from "@/components/LabelTitle";
+import { Logo } from "@/views/common";
 
 export default function ForgotPassword() {
   const router = useRouter();
@@ -31,67 +33,25 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
-      }}
+    <div 
+      className="h-screen w-full flex align-items-center justify-content-center" 
+      style={{ backgroundColor: "#f8fafc" }}
     >
-      <div
-        style={{
-          background: "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.1)",
-          backdropFilter: "blur(20px)",
-          borderRadius: "16px",
-          padding: "2.5rem 2rem",
-          width: "100%",
-          maxWidth: "420px",
-          boxShadow: "0 25px 60px rgba(0,0,0,0.4)",
+      <div 
+        className="card flex flex-column p-5" 
+        style={{ 
+          width: "100%", 
+          maxWidth: "420px", 
+          borderRadius: "12px", 
+          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+          backgroundColor: "#ffffff"
         }}
       >
-        {/* Icon + Title */}
-        <div style={{ textAlign: "center", marginBottom: "1.75rem" }}>
-          <div
-            style={{
-              width: "56px",
-              height: "56px",
-              borderRadius: "50%",
-              background: "linear-gradient(135deg, #e53e3e, #c53030)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto 1rem",
-              boxShadow: "0 8px 24px rgba(229,62,62,0.4)",
-            }}
-          >
-            <i className="pi pi-lock" style={{ fontSize: "1.4rem", color: "#fff" }} />
-          </div>
-          <h1
-            style={{
-              color: "#fff",
-              fontSize: "1.4rem",
-              fontWeight: 700,
-              margin: 0,
-            }}
-          >
-            Esqueceu sua Senha?
-          </h1>
-          <p
-            style={{
-              color: "rgba(255,255,255,0.55)",
-              fontSize: "0.85rem",
-              marginTop: "0.5rem",
-            }}
-          >
-            Informe seu e-mail e enviaremos um link de recuperação.
-          </p>
+        <div className="flex justify-content-center mb-5">
+          <Logo redirect="/" />
         </div>
 
         {submitted ? (
-          /* ── Success state ── */
           <div style={{ textAlign: "center" }}>
             <div
               style={{
@@ -113,9 +73,10 @@ export default function ForgotPassword() {
             </div>
             <p
               style={{
-                color: "rgba(255,255,255,0.8)",
+                color: "var(--text-color-secondary)",
                 fontSize: "0.9rem",
                 lineHeight: 1.6,
+                marginBottom: "1.5rem"
               }}
             >
               Se este e-mail estiver cadastrado, você receberá um link de recuperação em breve.
@@ -124,49 +85,57 @@ export default function ForgotPassword() {
             <Button
               label="Voltar para o Login"
               outlined
-              className="w-full mt-3"
-              style={{ borderColor: "rgba(255,255,255,0.2)", color: "#fff" }}
+              className="w-full"
+              style={{ color: "var(--cor-primaria)", borderColor: "var(--cor-primaria)" }}
               onClick={() => router.push("/")}
             />
           </div>
         ) : (
-          /* ── Form state ── */
-          <>
-            <div className="field flex flex-column gap-2" style={{ marginBottom: "1rem" }}>
-              <label
-                htmlFor="email"
+          <div className="flex flex-column gap-4">
+            <div style={{ textAlign: "center", marginBottom: "0.5rem" }}>
+              <h1
                 style={{
-                  color: "rgba(255,255,255,0.7)",
-                  fontSize: "0.82rem",
-                  fontWeight: 600,
+                  color: "var(--text-color)",
+                  fontSize: "1.4rem",
+                  fontWeight: 700,
+                  margin: 0,
                 }}
               >
-                Endereço de e-mail
-              </label>
+                Esqueceu sua Senha?
+              </h1>
+              <p
+                style={{
+                  color: "var(--text-color-secondary)",
+                  fontSize: "0.85rem",
+                  marginTop: "0.5rem",
+                }}
+              >
+                Informe seu e-mail e enviaremos um link de recuperação.
+              </p>
+            </div>
+
+            <div className="field flex flex-column gap-2 mb-0">
+              <LabelTitle
+                text="Endereço de e-mail"
+                htmlFor="email"
+                className="font-semibold"
+              />
               <InputText
                 id="email"
                 type="email"
                 value={email}
+                className="w-full"
                 onChange={(e) => {
                   setEmail(e.target.value);
                   setInvalidEmail(false);
                 }}
                 onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
                 placeholder="voce@exemplo.com.br"
-                style={{
-                  background: "rgba(255,255,255,0.07)",
-                  border: "1px solid rgba(255,255,255,0.15)",
-                  color: "#fff",
-                  borderRadius: "8px",
-                  height: "42px",
-                  fontSize: "0.9rem",
-                }}
               />
               {invalidEmail && (
                 <Message
                   severity="error"
                   text="Por favor, insira um endereço de e-mail válido."
-                  style={{ fontSize: "0.8rem" }}
                 />
               )}
             </div>
@@ -176,31 +145,22 @@ export default function ForgotPassword() {
               label="Enviar Link de Recuperação"
               loading={loading}
               onClick={handleSubmit}
-              className="w-full"
+              className="w-full mt-2"
               style={{
-                background: "linear-gradient(135deg, #e53e3e, #c53030)",
-                border: "none",
-                borderRadius: "8px",
-                height: "42px",
-                fontWeight: 700,
-                fontSize: "0.9rem",
-                marginBottom: "1rem",
+                backgroundColor: "var(--cor-primaria)",
+                border: "1px solid var(--cor-primaria)",
+                padding: "0.75rem"
               }}
             />
 
-            <div style={{ textAlign: "center" }}>
+            <div className="flex justify-content-center w-full mt-1">
               <Button
                 label="Voltar para o Login"
-                className="p-button-link"
-                style={{
-                  color: "rgba(255,255,255,0.5)",
-                  fontSize: "0.82rem",
-                  padding: 0,
-                }}
+                className="p-button-link text-sm m-0 p-0"
                 onClick={() => router.push("/")}
               />
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>

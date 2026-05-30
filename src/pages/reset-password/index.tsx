@@ -4,6 +4,10 @@ import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import LabelTitle from "@/components/LabelTitle";
+import { Logo } from "@/views/common";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 
 type ResetState = "idle" | "loading" | "success" | "error";
 
@@ -18,7 +22,6 @@ export default function ResetPassword() {
   const [state, setState] = useState<ResetState>("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Inline validation
   const [invalidNewPassword, setInvalidNewPassword] = useState(false);
   const [invalidConfirmPassword, setInvalidConfirmPassword] = useState(false);
 
@@ -48,48 +51,26 @@ export default function ResetPassword() {
     }
   }
 
-  const cardStyle: React.CSSProperties = {
-    minHeight: "100vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    background:
-      "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
-  };
+  return (
+    <div 
+      className="h-screen w-full flex align-items-center justify-content-center" 
+      style={{ backgroundColor: "#f8fafc" }}
+    >
+      <div 
+        className="card flex flex-column p-5" 
+        style={{ 
+          width: "100%", 
+          maxWidth: "420px", 
+          borderRadius: "12px", 
+          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+          backgroundColor: "#ffffff"
+        }}
+      >
+        <div className="flex justify-content-center mb-5">
+          <Logo redirect="/" />
+        </div>
 
-  const panelStyle: React.CSSProperties = {
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.1)",
-    backdropFilter: "blur(20px)",
-    borderRadius: "16px",
-    padding: "2.5rem 2rem",
-    width: "100%",
-    maxWidth: "420px",
-    boxShadow: "0 25px 60px rgba(0,0,0,0.4)",
-  };
-
-  const labelStyle: React.CSSProperties = {
-    color: "rgba(255,255,255,0.7)",
-    fontSize: "0.82rem",
-    fontWeight: 600,
-  };
-
-  const inputStyle: React.CSSProperties = {
-    background: "rgba(255,255,255,0.07)",
-    border: "1px solid rgba(255,255,255,0.15)",
-    color: "#fff",
-    borderRadius: "8px",
-    height: "42px",
-    fontSize: "0.9rem",
-    width: "100%",
-    paddingRight: "2.5rem",
-  };
-
-  // ── Success state ──────────────────────────────────────────────────────────
-  if (state === "success") {
-    return (
-      <div style={cardStyle}>
-        <div style={panelStyle}>
+        {state === "success" && (
           <div style={{ textAlign: "center" }}>
             <div
               style={{
@@ -110,16 +91,17 @@ export default function ResetPassword() {
               />
             </div>
             <h1
-              style={{ color: "#fff", fontSize: "1.3rem", fontWeight: 700, margin: 0 }}
+              style={{ color: "var(--text-color)", fontSize: "1.3rem", fontWeight: 700, margin: 0 }}
             >
               Senha Atualizada!
             </h1>
             <p
               style={{
-                color: "rgba(255,255,255,0.6)",
+                color: "var(--text-color-secondary)",
                 fontSize: "0.88rem",
                 marginTop: "0.5rem",
                 lineHeight: 1.6,
+                marginBottom: "1.5rem"
               }}
             >
               Sua senha foi redefinida com sucesso. Você já pode fazer login com sua nova senha.
@@ -129,25 +111,16 @@ export default function ResetPassword() {
               label="Ir para o Login"
               className="w-full mt-3"
               style={{
-                background: "linear-gradient(135deg, #e53e3e, #c53030)",
-                border: "none",
-                borderRadius: "8px",
-                height: "42px",
-                fontWeight: 700,
+                backgroundColor: "var(--cor-primaria)",
+                border: "1px solid var(--cor-primaria)",
+                padding: "0.75rem"
               }}
               onClick={() => router.push("/")}
             />
           </div>
-        </div>
-      </div>
-    );
-  }
+        )}
 
-  // ── Error state ────────────────────────────────────────────────────────────
-  if (state === "error") {
-    return (
-      <div style={cardStyle}>
-        <div style={panelStyle}>
+        {state === "error" && (
           <div style={{ textAlign: "center" }}>
             <div
               style={{
@@ -168,16 +141,17 @@ export default function ResetPassword() {
               />
             </div>
             <h1
-              style={{ color: "#fff", fontSize: "1.3rem", fontWeight: 700, margin: 0 }}
+              style={{ color: "var(--text-color)", fontSize: "1.3rem", fontWeight: 700, margin: 0 }}
             >
               Link Expirado
             </h1>
             <p
               style={{
-                color: "rgba(255,255,255,0.6)",
+                color: "var(--text-color-secondary)",
                 fontSize: "0.88rem",
                 marginTop: "0.5rem",
                 lineHeight: 1.6,
+                marginBottom: "1.5rem"
               }}
             >
               {errorMessage}
@@ -187,167 +161,115 @@ export default function ResetPassword() {
               label="Solicitar Novo Link"
               className="w-full mt-3"
               style={{
-                background: "linear-gradient(135deg, #e53e3e, #c53030)",
-                border: "none",
-                borderRadius: "8px",
-                height: "42px",
-                fontWeight: 700,
+                backgroundColor: "var(--cor-primaria)",
+                border: "1px solid var(--cor-primaria)",
+                padding: "0.75rem"
               }}
               onClick={() => router.push("/forgot-password")}
             />
           </div>
-        </div>
-      </div>
-    );
-  }
+        )}
 
-  // ── Form state ─────────────────────────────────────────────────────────────
-  return (
-    <div style={cardStyle}>
-      <div style={panelStyle}>
-        {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: "1.75rem" }}>
-          <div
-            style={{
-              width: "56px",
-              height: "56px",
-              borderRadius: "50%",
-              background: "linear-gradient(135deg, #e53e3e, #c53030)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto 1rem",
-              boxShadow: "0 8px 24px rgba(229,62,62,0.4)",
-            }}
-          >
-            <i className="pi pi-key" style={{ fontSize: "1.4rem", color: "#fff" }} />
-          </div>
-          <h1
-            style={{ color: "#fff", fontSize: "1.4rem", fontWeight: 700, margin: 0 }}
-          >
-            Definir Nova Senha
-          </h1>
-          <p
-            style={{
-              color: "rgba(255,255,255,0.55)",
-              fontSize: "0.85rem",
-              marginTop: "0.5rem",
-            }}
-          >
-            Escolha uma senha forte para a sua conta.
-          </p>
-        </div>
+        {state !== "success" && state !== "error" && (
+          <div className="flex flex-column gap-4">
+            <div style={{ textAlign: "center", marginBottom: "0.5rem" }}>
+              <h1
+                style={{ color: "var(--text-color)", fontSize: "1.4rem", fontWeight: 700, margin: 0 }}
+              >
+                Definir Nova Senha
+              </h1>
+              <p
+                style={{
+                  color: "var(--text-color-secondary)",
+                  fontSize: "0.85rem",
+                  marginTop: "0.5rem",
+                }}
+              >
+                Escolha uma senha forte para a sua conta.
+              </p>
+            </div>
 
-        {/* New Password */}
-        <div className="field flex flex-column gap-2" style={{ marginBottom: "1rem" }}>
-          <label htmlFor="newPassword" style={labelStyle}>
-            Nova Senha
-          </label>
-          <div style={{ position: "relative" }}>
-            <InputText
-              id="newPassword"
-              type={showNewPassword ? "text" : "password"}
-              value={newPassword}
-              onChange={(e) => {
-                setNewPassword(e.target.value);
-                setInvalidNewPassword(false);
-              }}
-              placeholder="Pelo menos 6 caracteres"
-              style={inputStyle}
-            />
-            <i
-              className={showNewPassword ? "pi pi-eye" : "pi pi-eye-slash"}
-              onClick={() => setShowNewPassword((v) => !v)}
+            <div className="field flex flex-column gap-2 mb-0">
+              <LabelTitle
+                text="Nova Senha"
+                htmlFor="newPassword"
+                className="font-semibold"
+              />
+              <IconField iconPosition="right" className="w-full">
+                <InputIcon
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className={showNewPassword ? "pi pi-eye" : "pi pi-eye-slash"}
+                  style={{ cursor: "pointer" }}
+                />
+                <InputText
+                  id="newPassword"
+                  type={showNewPassword ? "text" : "password"}
+                  value={newPassword}
+                  className="w-full"
+                  onChange={(e) => {
+                    setNewPassword(e.target.value);
+                    setInvalidNewPassword(false);
+                  }}
+                  placeholder="Pelo menos 6 caracteres"
+                />
+              </IconField>
+              {invalidNewPassword && (
+                <Message severity="error" text="A senha deve ter pelo menos 6 caracteres." />
+              )}
+            </div>
+
+            <div className="field flex flex-column gap-2 mb-0">
+              <LabelTitle
+                text="Confirmar Senha"
+                htmlFor="confirmPassword"
+                className="font-semibold"
+              />
+              <IconField iconPosition="right" className="w-full">
+                <InputIcon
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className={showConfirmPassword ? "pi pi-eye" : "pi pi-eye-slash"}
+                  style={{ cursor: "pointer" }}
+                />
+                <InputText
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  className="w-full"
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    setInvalidConfirmPassword(false);
+                  }}
+                  onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                  placeholder="Repita sua nova senha"
+                />
+              </IconField>
+              {invalidConfirmPassword && (
+                <Message severity="error" text="As senhas não coincidem." />
+              )}
+            </div>
+
+            <Button
+              id="reset-password-submit"
+              label="Redefinir Senha"
+              loading={state === "loading"}
+              onClick={handleSubmit}
+              className="w-full mt-2"
               style={{
-                position: "absolute",
-                right: "10px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                color: "rgba(255,255,255,0.4)",
-                cursor: "pointer",
-                fontSize: "0.9rem",
+                backgroundColor: "var(--cor-primaria)",
+                border: "1px solid var(--cor-primaria)",
+                padding: "0.75rem"
               }}
             />
+
+            <div className="flex justify-content-center w-full mt-1">
+              <Button
+                label="Voltar para o Login"
+                className="p-button-link text-sm m-0 p-0"
+                onClick={() => router.push("/")}
+              />
+            </div>
           </div>
-          {invalidNewPassword && (
-            <Message
-              severity="error"
-              text="A senha deve ter pelo menos 6 caracteres."
-              style={{ fontSize: "0.8rem" }}
-            />
-          )}
-        </div>
-
-        {/* Confirm Password */}
-        <div className="field flex flex-column gap-2" style={{ marginBottom: "1.25rem" }}>
-          <label htmlFor="confirmPassword" style={labelStyle}>
-            Confirmar Senha
-          </label>
-          <div style={{ position: "relative" }}>
-            <InputText
-              id="confirmPassword"
-              type={showConfirmPassword ? "text" : "password"}
-              value={confirmPassword}
-              onChange={(e) => {
-                setConfirmPassword(e.target.value);
-                setInvalidConfirmPassword(false);
-              }}
-              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-              placeholder="Repita sua nova senha"
-              style={inputStyle}
-            />
-            <i
-              className={showConfirmPassword ? "pi pi-eye" : "pi pi-eye-slash"}
-              onClick={() => setShowConfirmPassword((v) => !v)}
-              style={{
-                position: "absolute",
-                right: "10px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                color: "rgba(255,255,255,0.4)",
-                cursor: "pointer",
-                fontSize: "0.9rem",
-              }}
-            />
-          </div>
-          {invalidConfirmPassword && (
-            <Message
-              severity="error"
-              text="As senhas não coincidem."
-              style={{ fontSize: "0.8rem" }}
-            />
-          )}
-        </div>
-
-        <Button
-          id="reset-password-submit"
-          label="Redefinir Senha"
-          loading={state === "loading"}
-          onClick={handleSubmit}
-          className="w-full"
-          style={{
-            background: "linear-gradient(135deg, #e53e3e, #c53030)",
-            border: "none",
-            borderRadius: "8px",
-            height: "42px",
-            fontWeight: 700,
-            fontSize: "0.9rem",
-            marginBottom: "1rem",
-          }}
-        />
-
-        <div style={{ textAlign: "center" }}>
-          <Button
-            label="Voltar para o Login"
-            className="p-button-link"
-            style={{
-              color: "rgba(255,255,255,0.5)",
-              fontSize: "0.82rem",
-              padding: 0,
-            }}
-            onClick={() => router.push("/")}
-          />
-        </div>
+        )}
       </div>
     </div>
   );
