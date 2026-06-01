@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
-import { DataTable, DataTableSortEvent } from "primereact/datatable";
+import { DataTable } from "primereact/datatable";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { classNames } from "primereact/utils";
 import { Tag } from "primereact/tag";
@@ -80,16 +80,7 @@ function OutstandingInvoicesList() {
   const [first, setFirst] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(0);
 
-  const [sortField, setSortField] = useState<string>("");
-  const [sortOrder, setSortOrder] = useState<1 | 0 | -1 | undefined | null>(null);
 
-  const getSortParam = (field: string, order: 1 | 0 | -1 | undefined | null) => {
-    if (!field || order === null) return undefined;
-    // Map frontend field to backend field
-    let backendField = field;
-    if (field === "paymentDeadlineFormatted") backendField = "paymentDeadline";
-    return `${backendField},${order === 1 ? "asc" : "desc"}`;
-  };
 
   async function onCreateOutstandingInvoices(
     outstandingInvoices: OutstandingInvoicesDTO
@@ -103,7 +94,7 @@ function OutstandingInvoicesList() {
       paymentDeadlineFromSearch,
       paymentDeadlineToSearch,
       additionalDetailsSearch,
-      getSortParam(sortField, sortOrder)
+      undefined
     );
     handleSumTotalValueByFilter(
       centerCostSearch,
@@ -142,7 +133,7 @@ function OutstandingInvoicesList() {
       paymentDeadlineFromSearch,
       paymentDeadlineToSearch,
       additionalDetailsSearch,
-      getSortParam(sortField, sortOrder)
+      undefined
     );
     handleSumTotalValueByFilter(
       centerCostSearch,
@@ -166,7 +157,7 @@ function OutstandingInvoicesList() {
       paymentDeadlineFromSearch,
       paymentDeadlineToSearch,
       additionalDetailsSearch,
-      getSortParam(sortField, sortOrder)
+      undefined
     );
     handleSumTotalValueByFilter(
       centerCostSearch,
@@ -198,7 +189,7 @@ function OutstandingInvoicesList() {
       paymentDeadlineFromSearch,
       paymentDeadlineToSearch,
       additionalDetailsSearch,
-      getSortParam(sortField, sortOrder)
+      undefined
     );
     handleSumTotalValueByFilter(
       centerCostSearch,
@@ -244,7 +235,7 @@ function OutstandingInvoicesList() {
       paymentDeadlineFromSearch,
       paymentDeadlineToSearch,
       additionalDetailsSearch,
-      getSortParam(sortField, sortOrder)
+      undefined
     );
     handleSumTotalValueByFilter(
       centerCost,
@@ -269,7 +260,7 @@ function OutstandingInvoicesList() {
       paymentDeadlineFromSearch,
       paymentDeadlineToSearch,
       additionalDetailsSearch,
-      getSortParam(sortField, sortOrder)
+      undefined
     );
     handleSumTotalValueByFilter(
       centerCostSearch,
@@ -294,7 +285,7 @@ function OutstandingInvoicesList() {
       paymentDeadlineFromSearch,
       paymentDeadlineToSearch,
       additionalDetailsSearch,
-      getSortParam(sortField, sortOrder)
+      undefined
     );
     handleSumTotalValueByFilter(
       centerCostSearch,
@@ -320,7 +311,7 @@ function OutstandingInvoicesList() {
       paymentDeadlineFrom,
       paymentDeadlineToSearch,
       additionalDetailsSearch,
-      getSortParam(sortField, sortOrder)
+      undefined
     );
 
     handleSumTotalValueByFilter(
@@ -343,7 +334,7 @@ function OutstandingInvoicesList() {
       paymentDeadlineFrom,
       paymentDeadlineToSearch,
       additionalDetailsSearch,
-      getSortParam(sortField, sortOrder)
+      undefined
     );
     handleSumTotalValueByFilter(
       centerCostSearch,
@@ -365,7 +356,7 @@ function OutstandingInvoicesList() {
       paymentDeadlineFromSearch,
       paymentDeadlineTo,
       additionalDetailsSearch,
-      getSortParam(sortField, sortOrder)
+      undefined
     );
     handleSumTotalValueByFilter(
       centerCostSearch,
@@ -387,7 +378,7 @@ function OutstandingInvoicesList() {
       paymentDeadlineFromSearch,
       paymentDeadlineTo,
       additionalDetailsSearch,
-      getSortParam(sortField, sortOrder)
+      undefined
     );
     handleSumTotalValueByFilter(
       centerCostSearch,
@@ -408,7 +399,7 @@ function OutstandingInvoicesList() {
       paymentDeadlineFromSearch,
       paymentDeadlineToSearch,
       additionalDetails,
-      getSortParam(sortField, sortOrder)
+      undefined
     );
     handleSumTotalValueByFilter(
       centerCostSearch,
@@ -439,10 +430,11 @@ function OutstandingInvoicesList() {
       paymentDeadlineFromSearch,
       paymentDeadlineToSearch,
       additionalDetailsSearch,
-      getSortParam(sortField, sortOrder)
+      undefined
     );
     handleGetAllShortenedName();
-  }, [sortField, sortOrder]);
+  }, []);
+
 
   const formatCurrency = (value: number) => {
     if (!value) {
@@ -465,7 +457,7 @@ function OutstandingInvoicesList() {
       paymentDeadlineFromSearch,
       paymentDeadlineToSearch,
       additionalDetailsSearch,
-      getSortParam(sortField, sortOrder)
+      undefined
     );
   }
 
@@ -764,24 +756,16 @@ function OutstandingInvoicesList() {
           size="small"
           className="smaller-text flex-1"
           header={headerTemplate}
-          onSort={(e: DataTableSortEvent) => {
-            setSortField(e.sortField);
-            setSortOrder(e.sortOrder);
-          }}
-          sortField={sortField}
-          sortOrder={sortOrder}
         >
           <Column
             field="paymentDeadlineFormatted"
             header="Data de Vencimento"
             className="smaller-text"
-            sortable={true}
           />
           <Column
             field="vendorName"
             header="Favorecido"
             className="smaller-text"
-            sortable={true}
           />
           <Column
             field="cleared"
@@ -842,7 +826,7 @@ function OutstandingInvoicesList() {
                 paymentDeadlineFromSearch,
                 paymentDeadlineToSearch,
                 additionalDetailsSearch,
-                getSortParam(sortField, sortOrder)
+                undefined
               );
             }}
           />
