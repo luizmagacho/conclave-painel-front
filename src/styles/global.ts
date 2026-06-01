@@ -328,6 +328,13 @@ const GlobalStyle = createGlobalStyle`
     border: 1px solid #e2e8f0 !important;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.02) !important;
     background: #ffffff !important;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .p-datatable .p-datatable-wrapper {
+    flex: 1 1 0%;
+    overflow-y: auto;
   }
 
   /* Make gridlines minimalist horizontal lines only */
