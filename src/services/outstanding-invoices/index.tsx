@@ -89,8 +89,6 @@ export async function deleteOutstandingInvoices(outstandingInvoicesId: string) {
 }
 
 export async function getOutstandingInvoicesToExport({
-  page,
-  size,
   centerCost,
   vendorName,
   paymentDeadlineFrom,
@@ -98,20 +96,32 @@ export async function getOutstandingInvoicesToExport({
   additionalDetails,
   sort,
 }: OutstandingInvoicesPaginationParam): Promise<OutstandingInvoicesVendorExport[]> {
-  let res = await api.get<Pagination<OutstandingInvoices>>(baseUrl, {
-    params: {
-      page: 0,
-      size: 10000, // Fetch all records for export
-      centerCost,
-      vendorName,
-      paymentDeadlineFrom,
-      paymentDeadlineTo,
-      additionalDetails,
-      sort,
-    },
-  });
+  const size = 500;
+  let page = 0;
+  let allInvoices: OutstandingInvoices[] = [];
+  let totalPages = 1;
 
-  const invoices = res.data.content || [];
+  while (page < totalPages) {
+    let res = await api.get<Pagination<OutstandingInvoices>>(baseUrl, {
+      params: {
+        page,
+        size,
+        centerCost,
+        vendorName,
+        paymentDeadlineFrom,
+        paymentDeadlineTo,
+        additionalDetails,
+        sort,
+      },
+    });
+
+    if (res.data.content) {
+      allInvoices = allInvoices.concat(res.data.content);
+    }
+    totalPages = res.data.totalPages || 1;
+    page++;
+  }
+
   const grouped: Record<string, OutstandingInvoicesVendorExport> = {};
 
   const periodStr =
@@ -123,7 +133,7 @@ export async function getOutstandingInvoicesToExport({
       ? `Até ${paymentDeadlineTo.split("-").reverse().join("/")}`
       : "Todo o período";
 
-  invoices.forEach((inv) => {
+  allInvoices.forEach((inv) => {
     const vendor = inv.vendorName || "Sem Favorecido";
     if (!grouped[vendor]) {
       grouped[vendor] = {
@@ -179,4 +189,19 @@ export async function sumTotalValueByFilters({
 export async function getInstallmentsByGroupId(groupId: string) {
   let res = await api.get<OutstandingInvoices[]>(`${baseUrl}/group/${groupId}`);
   return res.data;
+}
+
+export async function recalculateInstallments(
+  outstandingInvoicesId: string,
+  numberOfInstallments: number,
+  interestRate: number
+) {
+  let res = await api.put(
+    `${baseUrl}/${outstandingInvoicesId}/recalculate-installments`,
+    {
+      numberOfInstallments,
+      interestRate,
+    }
+  );
+  return res.status;
 }
