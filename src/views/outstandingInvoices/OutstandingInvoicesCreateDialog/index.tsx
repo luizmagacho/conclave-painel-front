@@ -79,6 +79,7 @@ function OutstandingInvoicesCreateDialog({
   const [numberOfInstallments, setNumberOfInstallments] = useState<number>(2);
   const [firstInstallmentDueDate, setFirstInstallmentDueDate] =
     useState<Date | null>(null);
+  const [interestRate, setInterestRate] = useState<number>(0);
 
   // Validation
   const [invalidPaymentDeadline, setInvalidPaymentDeadline] =
@@ -187,33 +188,65 @@ function OutstandingInvoicesCreateDialog({
     }
 
     const totalCents = newInvoice.totalAmount;
-    const perInstallmentCents = Math.floor(totalCents / numberOfInstallments);
-    const remainder = totalCents % numberOfInstallments;
 
-    return Array.from({ length: numberOfInstallments }, (_, i) => {
-      const installmentNumber = i + 1;
-      const amountCents =
-        installmentNumber === numberOfInstallments
-          ? perInstallmentCents + remainder
-          : perInstallmentCents;
-      const dueDate = new Date(firstInstallmentDueDate);
-      dueDate.setMonth(dueDate.getMonth() + i);
+    let rows: InstallmentPreviewRow[] = [];
 
-      return {
-        installmentNumber,
-        dueDate: dueDate.toLocaleDateString("pt-BR"),
-        amount: (amountCents / 100).toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        }),
-        amountRaw: amountCents,
-      };
-    });
+    if (interestRate > 0) {
+      // Tabela Price
+      const i = interestRate / 100;
+      const n = numberOfInstallments;
+      // pmtCents = totalCents * (i / (1 - (1 + i)^-n))
+      const pmtCents = totalCents * (i / (1 - Math.pow(1 + i, -n)));
+      const pmtCentsRounded = Math.round(pmtCents);
+
+      rows = Array.from({ length: n }, (_, idx) => {
+        const installmentNumber = idx + 1;
+        const dueDate = new Date(firstInstallmentDueDate);
+        dueDate.setMonth(dueDate.getMonth() + idx);
+
+        return {
+          installmentNumber,
+          dueDate: dueDate.toLocaleDateString("pt-BR"),
+          amount: (pmtCentsRounded / 100).toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          }),
+          amountRaw: pmtCentsRounded,
+        };
+      });
+    } else {
+      // Sem Juros
+      const perInstallmentCents = Math.floor(totalCents / numberOfInstallments);
+      const remainder = totalCents % numberOfInstallments;
+
+      rows = Array.from({ length: numberOfInstallments }, (_, idx) => {
+        const installmentNumber = idx + 1;
+        const amountCents =
+          installmentNumber === numberOfInstallments
+            ? perInstallmentCents + remainder
+            : perInstallmentCents;
+        const dueDate = new Date(firstInstallmentDueDate);
+        dueDate.setMonth(dueDate.getMonth() + idx);
+
+        return {
+          installmentNumber,
+          dueDate: dueDate.toLocaleDateString("pt-BR"),
+          amount: (amountCents / 100).toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          }),
+          amountRaw: amountCents,
+        };
+      });
+    }
+
+    return rows;
   }, [
     paymentMode,
     firstInstallmentDueDate,
     numberOfInstallments,
     newInvoice.totalAmount,
+    interestRate,
   ]);
 
   // ── AutoComplete search handlers ──────────────────────────────────────────
@@ -279,13 +312,17 @@ function OutstandingInvoicesCreateDialog({
     const invoicePayload: OutstandingInvoicesDTO = {
       ...newInvoice,
       userId: userId || "",
-      totalAmount: newInvoice.totalAmount,
     };
 
     if (paymentMode === "installments") {
       invoicePayload.paymentDeadline =
         formatDateToYYYYMMDD(firstInstallmentDueDate) || "";
       invoicePayload.numberOfInstallments = numberOfInstallments;
+      if (interestRate > 0) {
+        // Send the updated total amount (sum of installments)
+        const totalAmountCents = installmentPreviewRows.reduce((sum, row) => sum + row.amountRaw, 0);
+        invoicePayload.totalAmount = totalAmountCents;
+      }
     } else {
       invoicePayload.numberOfInstallments = 1;
     }
@@ -509,14 +546,8 @@ function OutstandingInvoicesCreateDialog({
           {paymentMode === "installments" && (
             <Tag
               value={`${numberOfInstallments}x de ${
-                newInvoice.totalAmount
-                  ? (
-                      Math.floor(newInvoice.totalAmount / numberOfInstallments) /
-                      100
-                    ).toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })
+                installmentPreviewRows.length > 0
+                  ? installmentPreviewRows[0].amount
                   : "R$ 0,00"
               }`}
               severity="danger"
@@ -571,6 +602,22 @@ function OutstandingInvoicesCreateDialog({
                     className="smaller-text"
                   />
                 )}
+              </div>
+              <div className="field flex flex-column gap-2" style={{ minWidth: "150px" }}>
+                <LabelTitle
+                  text="Juros (% a.m.)"
+                  htmlFor="interestRate"
+                  className="font-semibold"
+                />
+                <InputNumber
+                  inputId="interestRate"
+                  value={interestRate}
+                  onValueChange={(e) => setInterestRate(e.value || 0)}
+                  minFractionDigits={2}
+                  maxFractionDigits={4}
+                  suffix=" %"
+                  style={{ height: "30px", fontSize: "0.8rem" }}
+                />
               </div>
             </div>
 

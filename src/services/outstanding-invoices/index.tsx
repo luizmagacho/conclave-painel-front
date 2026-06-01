@@ -21,6 +21,7 @@ export async function getOutstandingInvoices({
   paymentDeadlineFrom,
   paymentDeadlineTo,
   additionalDetails,
+  sort,
 }: OutstandingInvoicesPaginationParam) {
   let res = await api.get<Pagination<OutstandingInvoices>>(baseUrl, {
     params: {
@@ -32,6 +33,7 @@ export async function getOutstandingInvoices({
       paymentDeadlineFrom,
       paymentDeadlineTo,
       additionalDetails,
+      sort,
     },
   });
 
@@ -47,6 +49,7 @@ export async function getOutstandingInvoicesByCenterCostId(
     paymentDeadlineFrom,
     paymentDeadlineTo,
     additionalDetails,
+    sort,
   }: OutstandingInvoicesPaginationParam
 ) {
   let res = await api.get<Pagination<OutstandingInvoices>>(
@@ -59,6 +62,7 @@ export async function getOutstandingInvoicesByCenterCostId(
         paymentDeadlineFrom,
         paymentDeadlineTo,
         additionalDetails,
+        sort,
       },
     }
   );
@@ -92,23 +96,48 @@ export async function getOutstandingInvoicesToExport({
   paymentDeadlineFrom,
   paymentDeadlineTo,
   additionalDetails,
-}: OutstandingInvoicesPaginationParam) {
-  let res = await api.get<OutstandingInvoicesVendorExport[]>(
-    `${baseUrl}/prepare-export`,
-    {
-      params: {
-        page,
-        size,
-        centerCost,
-        vendorName,
-        paymentDeadlineFrom,
-        paymentDeadlineTo,
-        additionalDetails,
-      },
-    }
-  );
+  sort,
+}: OutstandingInvoicesPaginationParam): Promise<OutstandingInvoicesVendorExport[]> {
+  let res = await api.get<Pagination<OutstandingInvoices>>(baseUrl, {
+    params: {
+      page: 0,
+      size: 10000, // Fetch all records for export
+      centerCost,
+      vendorName,
+      paymentDeadlineFrom,
+      paymentDeadlineTo,
+      additionalDetails,
+      sort,
+    },
+  });
 
-  return res.data;
+  const invoices = res.data.content || [];
+  const grouped: Record<string, OutstandingInvoicesVendorExport> = {};
+
+  const periodStr =
+    paymentDeadlineFrom && paymentDeadlineTo
+      ? `${paymentDeadlineFrom.split("-").reverse().join("/")} até ${paymentDeadlineTo.split("-").reverse().join("/")}`
+      : paymentDeadlineFrom
+      ? `A partir de ${paymentDeadlineFrom.split("-").reverse().join("/")}`
+      : paymentDeadlineTo
+      ? `Até ${paymentDeadlineTo.split("-").reverse().join("/")}`
+      : "Todo o período";
+
+  invoices.forEach((inv) => {
+    const vendor = inv.vendorName || "Sem Favorecido";
+    if (!grouped[vendor]) {
+      grouped[vendor] = {
+        name: vendor,
+        sumAmount: 0,
+        periodOfDate: periodStr,
+        outstandingInvoices: [],
+      };
+    }
+    grouped[vendor].sumAmount += inv.totalAmount || 0;
+    grouped[vendor].outstandingInvoices.push(inv);
+  });
+
+  return Object.values(grouped);
 }
 
 export async function getAdditionalDetailsFromVendor(vendorName: string) {
@@ -130,6 +159,7 @@ export async function sumTotalValueByFilters({
   paymentDeadlineFrom,
   paymentDeadlineTo,
   additionalDetails,
+  sort,
 }: OutstandingInvoicesSumTotalValueParam) {
   let res = await api.get<number>(`${baseUrl}/sum-total-value`, {
     params: {
@@ -139,8 +169,14 @@ export async function sumTotalValueByFilters({
       paymentDeadlineFrom,
       paymentDeadlineTo,
       additionalDetails,
+      sort,
     },
   });
 
+  return res.data;
+}
+
+export async function getInstallmentsByGroupId(groupId: string) {
+  let res = await api.get<OutstandingInvoices[]>(`${baseUrl}/group/${groupId}`);
   return res.data;
 }
