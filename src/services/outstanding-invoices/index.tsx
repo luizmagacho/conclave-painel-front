@@ -180,3 +180,18 @@ export async function getInstallmentsByGroupId(groupId: string) {
   let res = await api.get<OutstandingInvoices[]>(`${baseUrl}/group/${groupId}`);
   return res.data;
 }
+
+export async function recalculateInstallments(
+  outstandingInvoicesId: string,
+  numberOfInstallments: number,
+  interestRate: number
+) {
+  let res = await api.put(
+    `${baseUrl}/${outstandingInvoicesId}/recalculate-installments`,
+    {
+      numberOfInstallments,
+      interestRate,
+    }
+  );
+  return res.status;
+}

@@ -833,6 +833,18 @@ function OutstandingInvoicesList() {
             onHide={closeUpdateDialog}
             onUpdate={onUpateOutstandingInvoices}
             data={currOutstandingInvoices}
+            onHideAndList={() => {
+              closeUpdateDialog();
+              handleGetOutstandingInvoices(
+                0,
+                centerCostSearch,
+                vendorNameSearch,
+                paymentDeadlineFromSearch,
+                paymentDeadlineToSearch,
+                additionalDetailsSearch,
+                getSortParam(sortField, sortOrder)
+              );
+            }}
           />
         )}
         {currDeleteOutstandingInvoices && (

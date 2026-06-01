@@ -105,6 +105,10 @@ function OutstandingInvoicesCreateDialog({
   const [supplierItems, setSupplierItems] = useState<SupplierRecord[]>(
     allSuppliersShortenedName
   );
+
+  useEffect(() => {
+    setSupplierItems(allSuppliersShortenedName);
+  }, [allSuppliersShortenedName]);
   const [categoryItems, setCategoryItems] = useState<string[]>(allCategories);
 
   const paymentModeOptions = [
