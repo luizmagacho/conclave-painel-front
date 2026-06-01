@@ -65,6 +65,7 @@ export type OutstandingInvoicesPaginationParam = {
   paymentDeadlineFrom?: string;
   paymentDeadlineTo?: string;
   additionalDetails?: string;
+  sort?: string;
 };
 
 export interface OutstandingInvoicesVendorExport {
@@ -105,4 +106,5 @@ export type OutstandingInvoicesSumTotalValueParam = {
   paymentDeadlineFrom?: string;
   paymentDeadlineTo?: string;
   additionalDetails?: string;
+  sort?: string;
 };

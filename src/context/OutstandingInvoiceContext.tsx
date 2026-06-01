@@ -31,16 +31,17 @@ interface OutstandingInvoicesProps {
   handleGetOutstandingInvoices: (
     page?: number,
     centerCost?: string,
-    localBranch?: string,
+    localBank?: string,
     vendorName?: string,
     paymentDeadlineFrom?: string,
     paymentDeadlineTo?: string,
-    additionalDetails?: string
+    additionalDetails?: string,
+    sort?: string
   ) => Promise<void>;
   handleGetOutstandingInvoicesByCenterCostId: (
     centerCostId: string,
     page?: number,
-    vendorName?: string,
+    centerCost?: string,
     paymentDeadlineFrom?: string,
     paymentDeadlineTo?: string,
     additionalDetails?: string
@@ -51,7 +52,8 @@ interface OutstandingInvoicesProps {
     vendorName?: string,
     paymentDeadlineFrom?: string,
     paymentDeadlineTo?: string,
-    additionalDetails?: string
+    additionalDetails?: string,
+    sort?: string
   ) => Promise<void>;
   handlePostOutstandingInvoices: (
     outstandingInvoices: OutstandingInvoicesDTO
@@ -66,11 +68,12 @@ interface OutstandingInvoicesProps {
   handleGetAllCategories: () => Promise<void>;
   handleSumTotalValueByFilter: (
     centerCost?: string,
-    localBranch?: string,
+    localBank?: string,
     vendorName?: string,
     paymentDeadlineFrom?: string,
     paymentDeadlineTo?: string,
-    additionalDetails?: string
+    additionalDetails?: string,
+    sort?: string
   ) => Promise<void>;
 }
 
@@ -104,19 +107,21 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
     vendorName?: string,
     paymentDeadlineFrom?: string,
     paymentDeadlineTo?: string,
-    additionalDetails?: string
+    additionalDetails?: string,
+    sort?: string
   ) {
     setLoading(true);
     try {
       const { content, totalElements } = await getOutstandingInvoices({
-        page,
-        size: 10,
-        centerCost,
-        localBank,
-        vendorName,
-        paymentDeadlineFrom,
-        paymentDeadlineTo,
-        additionalDetails,
+        page: page !== undefined ? page : 0,
+        size: 15,
+        centerCost: centerCost || undefined,
+        localBank: localBank || undefined,
+        vendorName: vendorName || undefined,
+        paymentDeadlineFrom: paymentDeadlineFrom || undefined,
+        paymentDeadlineTo: paymentDeadlineTo || undefined,
+        additionalDetails: additionalDetails || undefined,
+        sort,
       });
       setBufferedOutstandingInvoices(content || []);
       setOutstandingInvoices(content || []);
@@ -164,19 +169,21 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
     vendorName?: string,
     paymentDeadlineFrom?: string,
     paymentDeadlineTo?: string,
-    additionalDetails?: string
+    additionalDetails?: string,
+    sort?: string
   ) {
     setLoading(true);
     try {
       setOutstandingInvoicesVendorExport(
         await getOutstandingInvoicesToExport({
-          page,
-          size: 15,
-          centerCost,
-          vendorName,
-          paymentDeadlineFrom,
-          paymentDeadlineTo,
-          additionalDetails,
+          page: page !== undefined ? page : 0,
+          size: totalElements > 0 ? totalElements : 100,
+          centerCost: centerCost || undefined,
+          vendorName: vendorName || undefined,
+          paymentDeadlineFrom: paymentDeadlineFrom || undefined,
+          paymentDeadlineTo: paymentDeadlineTo || undefined,
+          additionalDetails: additionalDetails || undefined,
+          sort,
         })
       );
     } catch (error) {
@@ -257,18 +264,20 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
     vendorName?: string,
     paymentDeadlineFrom?: string,
     paymentDeadlineTo?: string,
-    additionalDetails?: string
+    additionalDetails?: string,
+    sort?: string
   ) {
     setLoading(true);
     try {
       setSumTotalValue(
         await sumTotalValueByFilters({
-          centerCost,
-          localBank,
-          vendorName,
-          paymentDeadlineFrom,
-          paymentDeadlineTo,
-          additionalDetails,
+          centerCost: centerCost || undefined,
+          localBank: localBank || undefined,
+          vendorName: vendorName || undefined,
+          paymentDeadlineFrom: paymentDeadlineFrom || undefined,
+          paymentDeadlineTo: paymentDeadlineTo || undefined,
+          additionalDetails: additionalDetails || undefined,
+          sort,
         })
       );
     } catch (error) {

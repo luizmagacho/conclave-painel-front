@@ -6,6 +6,7 @@ import { Construction } from "@/services/construction/type";
 import { OutstandingInvoices } from "@/services/outstanding-invoices/type";
 import { SupplierRecord } from "@/services/supplier/type";
 import { convertStringToDate, formatDateToYYYYMMDD } from "@/util/date";
+import { getInstallmentsByGroupId } from "@/services/outstanding-invoices";
 import {
   AutoComplete,
   AutoCompleteChangeEvent,
@@ -14,7 +15,10 @@ import {
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
+import { Divider } from "primereact/divider";
 import { InputNumber } from "primereact/inputnumber";
+import { Column } from "primereact/column";
+import { DataTable } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { RadioButton } from "primereact/radiobutton";
@@ -81,6 +85,9 @@ function OutstandingInvoicesDialog({
   const [updatedPaymentDeadline, setUpdatedPaymentDeadline] =
     useState<Date | null>(convertStringToDate(data.paymentDeadline));
 
+  const [groupInstallments, setGroupInstallments] = useState<OutstandingInvoices[]>([]);
+  const [loadingGroup, setLoadingGroup] = useState<boolean>(false);
+
   // Validation
   const [invalidTotalAmount, setInvalidTotalAmount] = useState<boolean>(false);
   const [invalidPaymentDeadline, setInvalidPaymentDeadline] =
@@ -132,12 +139,12 @@ function OutstandingInvoicesDialog({
 
   useEffect(() => {
     if (allConstructions && allConstructions.length > 0) {
-      const found = allConstructions.find((c) => c.id === data.centerCostId);
+      const found = allConstructions.find((c) => c.id === updatedInvoice.centerCostId);
       if (found) {
         setCheckedConstruction(found);
       }
     }
-  }, [allConstructions, data.centerCostId]);
+  }, [allConstructions, updatedInvoice.centerCostId]);
 
   // ── Sync supplier ─────────────────────────────────────────────────────────
   useEffect(() => {
@@ -157,7 +164,25 @@ function OutstandingInvoicesDialog({
     }
   }, [selectedSupplier]);
 
-  // ── AutoComplete search handlers ──────────────────────────────────────────
+  // ── Fetch group installments ──────────────────────────────────────────────
+  useEffect(() => {
+    async function fetchGroup() {
+      if (visible && data.groupId) {
+        try {
+          setLoadingGroup(true);
+          const installments = await getInstallmentsByGroupId(data.groupId);
+          setGroupInstallments(installments.sort((a, b) => a.installmentNumber! - b.installmentNumber!));
+        } catch (error) {
+          console.error("Failed to fetch group installments", error);
+        } finally {
+          setLoadingGroup(false);
+        }
+      } else {
+        setGroupInstallments([]);
+      }
+    }
+    fetchGroup();
+  }, [visible, data.groupId]);
   const constructionSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
       const filtered = !event.query.trim().length
@@ -227,13 +252,23 @@ function OutstandingInvoicesDialog({
       </span>
       {isInstallment && (
         <Tag
-          value={`Parcela ${data.installmentNumber}/${data.totalInstallments}`}
+          value={`Parcela ${updatedInvoice.installmentNumber}/${updatedInvoice.totalInstallments}`}
           severity="danger"
           style={{ fontSize: "0.78rem", marginLeft: "8px" }}
         />
       )}
     </div>
   );
+
+  function handleSelectInstallment(installment: OutstandingInvoices) {
+    setUpdatedInvoice(installment);
+    setUpdatedPurchaseDate(convertStringToDate(installment.purchaseDate));
+    setUpdatedPaymentDeadline(convertStringToDate(installment.paymentDeadline));
+    setSelectedCategory(installment.costCategory);
+    setSelectedSupplier({ shortenedName: installment.vendorName });
+    const foundConstruction = allConstructions.find((c) => c.id === installment.centerCostId);
+    setCheckedConstruction(foundConstruction || null);
+  }
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
@@ -449,6 +484,73 @@ function OutstandingInvoicesDialog({
           />
         </div>
       </div>
+
+      {groupInstallments.length > 0 && (
+        <>
+          <Divider />
+          <div
+            className="flex align-items-center gap-2 mb-2"
+            style={{ fontSize: "0.8rem", color: "#718096", fontWeight: 600 }}
+          >
+            <i className="pi pi-list" />
+            <span>Outras parcelas deste pagamento</span>
+          </div>
+          <DataTable
+            value={groupInstallments}
+            size="small"
+            showGridlines
+            stripedRows
+            scrollable
+            scrollHeight="200px"
+            style={{ fontSize: "0.78rem", cursor: "pointer" }}
+            selectionMode="single"
+            selection={updatedInvoice}
+            onSelectionChange={(e) => handleSelectInstallment(e.value as OutstandingInvoices)}
+            loading={loadingGroup}
+            rowClassName={(rowData) =>
+              rowData.id === updatedInvoice.id ? { "bg-red-50 text-red-900": true } : {}
+            }
+          >
+            <Column
+              field="installmentNumber"
+              header="#"
+              style={{ width: "50px", textAlign: "center" }}
+              body={(row: OutstandingInvoices) => (
+                <Tag
+                  value={`${row.installmentNumber}/${row.totalInstallments}`}
+                  style={{
+                    background: row.id === updatedInvoice.id ? "#c53030" : "#e53e3e",
+                    fontSize: "0.72rem",
+                    padding: "2px 6px",
+                  }}
+                />
+              )}
+            />
+            <Column field="paymentDeadlineFormatted" header="Vencimento" />
+            <Column
+              field="totalAmount"
+              header="Valor"
+              body={(row: OutstandingInvoices) =>
+                (row.totalAmount / 100).toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })
+              }
+            />
+            <Column
+              field="paymentStatus"
+              header="Pago?"
+              body={(row: OutstandingInvoices) => (
+                <Tag
+                  value={row.paymentStatus ? "Sim" : "Não"}
+                  severity={row.paymentStatus ? "success" : "warning"}
+                  style={{ fontSize: "0.7rem", padding: "2px 4px" }}
+                />
+              )}
+            />
+          </DataTable>
+        </>
+      )}
 
       {/* ── Action Buttons ── */}
       <div className="flex gap-2 mt-2">
