@@ -121,6 +121,19 @@ function OutstadingInvoicesConstructionCreateDialog({
   const [allCategoryItems, setAllCategoryItems] =
     useState<string[]>(allCategories);
 
+  useEffect(() => {
+    setAllSupplierItems(allSuppliersShortenedName);
+  }, [allSuppliersShortenedName]);
+
+  useEffect(() => {
+    setAllCategoryItems(allCategories);
+  }, [allCategories]);
+
+  useEffect(() => {
+    handleGetAllShortenedName();
+    handleGetAllCategories();
+  }, []);
+
   const suppliersSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {
       let _filteredSuppliers;

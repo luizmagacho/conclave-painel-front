@@ -66,7 +66,7 @@ function OutstandingConstructionUpdateDialog({
     shortenedName: data.vendorName,
   });
 
-  const { allSuppliersShortenedName } = useContext(SupplierContext);
+  const { allSuppliersShortenedName, handleGetAllShortenedName } = useContext(SupplierContext);
 
   const [selectedCategory, setSelectedCategory] = useState<string>(
     data.costCategory
@@ -132,6 +132,19 @@ function OutstandingConstructionUpdateDialog({
 
   const [allCategoryItems, setAllCategoryItems] =
     useState<string[]>(allCategories);
+
+  useEffect(() => {
+    setAllSupplierItems(allSuppliersShortenedName);
+  }, [allSuppliersShortenedName]);
+
+  useEffect(() => {
+    setAllCategoryItems(allCategories);
+  }, [allCategories]);
+
+  useEffect(() => {
+    handleGetAllShortenedName();
+    handleGetAllCategories();
+  }, []);
 
   const supplierSearch = (event: AutoCompleteCompleteEvent) => {
     setTimeout(() => {

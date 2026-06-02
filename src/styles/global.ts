@@ -66,11 +66,13 @@ const GlobalStyle = createGlobalStyle`
     box-shadow: var(--shadow-dialog) !important;
     border: 1px solid #e2e8f0 !important;
     overflow: hidden;
+    width: 70vw !important;
+    max-width: 1000px !important;
   }
 
   .p-dialog .p-dialog-header {
     background-color: #fff !important;
-    padding: 1.25rem 1.5rem 1rem 1.5rem !important;
+    padding: 1.5rem 2rem !important;
     border-bottom: 1px solid #f1f5f9 !important;
   }
 
@@ -97,6 +99,17 @@ const GlobalStyle = createGlobalStyle`
     border: 1px solid #e2e8f0 !important;
     box-shadow: var(--shadow-soft) !important;
     padding: 0.25rem 0 !important;
+    max-height: 250px !important; /* limit height for scroll */
+    overflow-y: auto !important;
+  }
+
+  /* AutoComplete input field unified styling */
+  .p-autocomplete .p-inputtext {
+    border-radius: var(--border-radius-s) !important;
+    height: 30px !important;
+    font-size: 0.8rem !important;
+    padding: 0 0.75rem !important;
+    box-sizing: border-box !important;
   }
 
   .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item.p-highlight,
@@ -118,6 +131,19 @@ const GlobalStyle = createGlobalStyle`
     background-color: var(--cor-primaria) !important;
     border-color: var(--cor-primaria) !important;
     color: #ffffff !important;
+    height: 100% !important;
+    top: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-top-right-radius: var(--border-radius-s) !important;
+    border-bottom-right-radius: var(--border-radius-s) !important;
+    box-shadow: none !important;
+  }
+  .p-autocomplete .p-autocomplete-dropdown .p-icon {
+    font-size: 0.9rem !important;
   }
   .p-autocomplete .p-autocomplete-dropdown:hover,
   .p-dropdown .p-dropdown-trigger:hover {

@@ -109,7 +109,17 @@ function OutstandingInvoicesCreateDialog({
   useEffect(() => {
     setSupplierItems(allSuppliersShortenedName);
   }, [allSuppliersShortenedName]);
+
   const [categoryItems, setCategoryItems] = useState<string[]>(allCategories);
+
+  useEffect(() => {
+    setCategoryItems(allCategories);
+  }, [allCategories]);
+
+  useEffect(() => {
+    handleGetAllShortenedName();
+    handleGetAllCategories();
+  }, []);
 
   const paymentModeOptions = [
     { label: "À vista", value: "single" },
@@ -369,7 +379,7 @@ function OutstandingInvoicesCreateDialog({
               type="text"
               field="code"
               dropdown
-              style={{ height: "30px", fontSize: "0.8rem" }}
+              style={{ height: "30px", fontSize: "0.8rem", maxWidth: "450px" }}
               value={selectedConstruction}
               suggestions={constructionItems}
               completeMethod={constructionSearch}
@@ -415,7 +425,7 @@ function OutstandingInvoicesCreateDialog({
               type="text"
               dropdown
               field="shortenedName"
-              style={{ height: "30px", fontSize: "0.8rem" }}
+              style={{ height: "30px", fontSize: "0.8rem", maxWidth: "450px" }}
               value={selectedSupplier}
               suggestions={supplierItems}
               completeMethod={supplierSearch}
@@ -503,7 +513,7 @@ function OutstandingInvoicesCreateDialog({
             <AutoComplete
               type="text"
               dropdown
-              style={{ height: "30px", fontSize: "0.8rem" }}
+              style={{ height: "30px", fontSize: "0.8rem", maxWidth: "450px" }}
               value={selectedCategory}
               suggestions={categoryItems}
               completeMethod={categorySearch}

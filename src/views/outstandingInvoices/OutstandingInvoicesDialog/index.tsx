@@ -76,8 +76,8 @@ function OutstandingInvoicesDialog({
 
   const { allConstructions, handleGetConstructionById, selectedConstruction } =
     useContext(ConstructionContext);
-  const { allCategories } = useContext(OutstandingInvoicesContext);
-  const { allSuppliersShortenedName } = useContext(SupplierContext);
+  const { allCategories, handleGetAllCategories } = useContext(OutstandingInvoicesContext);
+  const { allSuppliersShortenedName, handleGetAllShortenedName } = useContext(SupplierContext);
 
   const [selectedSupplier, setSelectedSupplier] = useState<SupplierRecord>({
     shortenedName: data.vendorName,
@@ -123,7 +123,18 @@ function OutstandingInvoicesDialog({
   useEffect(() => {
     setSupplierItems(allSuppliersShortenedName);
   }, [allSuppliersShortenedName]);
+
   const [categoryItems, setCategoryItems] = useState<string[]>(allCategories);
+
+  useEffect(() => {
+    setCategoryItems(allCategories);
+  }, [allCategories]);
+
+  useEffect(() => {
+    handleGetConstructionById(data.centerCostId);
+    handleGetAllShortenedName();
+    handleGetAllCategories();
+  }, []);
 
   // ── Sync dates ────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -338,7 +349,7 @@ function OutstandingInvoicesDialog({
               type="text"
               field="code"
               dropdown
-              style={{ height: "30px", fontSize: "0.8rem" }}
+              style={{ height: "30px", fontSize: "0.8rem", maxWidth: "450px" }}
               value={checkedConstruction}
               suggestions={constructionItems}
               completeMethod={constructionSearch}
@@ -460,7 +471,7 @@ function OutstandingInvoicesDialog({
               type="text"
               field="shortenedName"
               dropdown
-              style={{ height: "30px", fontSize: "0.8rem" }}
+              style={{ height: "30px", fontSize: "0.8rem", maxWidth: "450px" }}
               value={selectedSupplier}
               suggestions={supplierItems}
               completeMethod={supplierSearch}
@@ -545,7 +556,7 @@ function OutstandingInvoicesDialog({
             <AutoComplete
               type="text"
               dropdown
-              style={{ height: "30px", fontSize: "0.8rem" }}
+              style={{ height: "30px", fontSize: "0.8rem", maxWidth: "450px" }}
               value={selectedCategory}
               suggestions={categoryItems}
               completeMethod={categorySearch}
