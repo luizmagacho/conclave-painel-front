@@ -35,7 +35,7 @@ export async function getSuppliers({
 }
 
 export async function getSupplierById(supplierId: string) {
-  let res = await api.get<Supplier>(`${baseUrl}/${supplierId}`);
+  let res = await api.get<Supplier>(`${baseUrl}/id/${supplierId}`);
   return res.data;
 }
 
