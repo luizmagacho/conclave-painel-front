@@ -278,7 +278,7 @@ function OutstandingInvoicesDialog({
     const isVendorInvalid =
       !updatedInvoice.vendorName || updatedInvoice.vendorName === "";
     const isAmountInvalid =
-      !updatedInvoice.totalAmount || updatedInvoice.totalAmount < 0;
+      updatedInvoice.totalAmount === undefined || updatedInvoice.totalAmount === null || updatedInvoice.totalAmount < 0;
     const isCenterCostInvalid =
       !updatedInvoice.centerCost || updatedInvoice.centerCost === "";
 
@@ -529,13 +529,11 @@ function OutstandingInvoicesDialog({
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={formatCurrency(updatedInvoice.totalAmount)}
             onChange={(e) => {
-              if (e.value !== null) {
-                setUpdatedInvoice({
-                  ...updatedInvoice,
-                  totalAmount: Math.round(e.value * 100),
-                });
-                setInvalidTotalAmount(false);
-              }
+              setUpdatedInvoice({
+                ...updatedInvoice,
+                totalAmount: e.value !== null ? Math.round(e.value * 100) : 0,
+              });
+              setInvalidTotalAmount(false);
             }}
           />
           {invalidTotalAmount && (

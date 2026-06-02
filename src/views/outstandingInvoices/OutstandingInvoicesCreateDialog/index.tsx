@@ -300,7 +300,7 @@ function OutstandingInvoicesCreateDialog({
   // ── Validation & submit ───────────────────────────────────────────────────
   function validateAndSubmit() {
     const isVendorInvalid = !newInvoice.vendorName;
-    const isAmountInvalid = !newInvoice.totalAmount || newInvoice.totalAmount <= 0;
+    const isAmountInvalid = newInvoice.totalAmount === undefined || newInvoice.totalAmount === null || newInvoice.totalAmount < 0;
     const isCenterCostInvalid = !newInvoice.centerCost;
     const isDeadlineInvalid =
       paymentMode === "single" && !newInvoice.paymentDeadline;
@@ -486,13 +486,11 @@ function OutstandingInvoicesCreateDialog({
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={formatCurrency(newInvoice.totalAmount)}
             onChange={(e) => {
-              if (e.value !== null) {
-                setNewInvoice({
-                  ...newInvoice,
-                  totalAmount: Math.round(e.value * 100),
-                });
-                setInvalidTotalAmount(false);
-              }
+              setNewInvoice({
+                ...newInvoice,
+                totalAmount: e.value !== null ? Math.round(e.value * 100) : 0,
+              });
+              setInvalidTotalAmount(false);
             }}
           />
           {invalidTotalAmount && (
