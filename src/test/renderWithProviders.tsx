@@ -26,7 +26,6 @@ const defaultAuth: AuthContextProps = {
   msg: "",
   loading: false,
   user: stubUser,
-  authReady: true,
 };
 
 export function renderWithProviders(

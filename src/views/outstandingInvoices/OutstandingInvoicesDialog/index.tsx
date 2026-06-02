@@ -584,7 +584,7 @@ function OutstandingInvoicesDialog({
                 }
                 checked={updatedInvoice.paymentStatus === true}
               />
-              <label className="ml-1">Sim</label>
+              <span className="ml-1">Sim</span>
             </div>
             <div className="flex align-items-center gap-1">
               <RadioButton
@@ -595,7 +595,7 @@ function OutstandingInvoicesDialog({
                 }
                 checked={updatedInvoice.paymentStatus === false}
               />
-              <label className="ml-1">Não</label>
+              <span className="ml-1">Não</span>
             </div>
           </div>
         </div>

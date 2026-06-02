@@ -12,7 +12,7 @@ interface ProviderProps {
   children: ReactNode;
 }
 
-interface AuthContextProps {
+export interface AuthContextProps {
   handleLogin: (loginDTO: LoginDTO) => Promise<void>;
   logout: () => void;
   softLogout: () => void;
