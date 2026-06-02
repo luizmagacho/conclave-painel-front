@@ -46,5 +46,11 @@
     "eslint-config-next": "13.4.17",
     "jsdom": "^27.0.1",
     "vitest": "^3.2.6"
+  },
+  "overrides": {
+    "stylis": "4.2.0",
+    "styled-components": {
+      "stylis": "4.2.0"
+    }
   }
 }

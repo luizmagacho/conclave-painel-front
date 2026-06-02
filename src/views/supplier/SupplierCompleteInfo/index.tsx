@@ -120,9 +120,13 @@ function SupplierCompleteInfo() {
   }
 
   useEffect(() => {
-    const { id } = router.query;
-    handleGetSupplierById(typeof id === "string" ? id : "");
-  }, []);
+    if (router.isReady) {
+      const { id } = router.query;
+      if (typeof id === "string") {
+        handleGetSupplierById(id);
+      }
+    }
+  }, [router.isReady, router.query, handleGetSupplierById]);
 
   useEffect(() => {
     setLoading(true);

@@ -109,12 +109,24 @@ function ToolListCenterCost() {
   }
 
   useEffect(() => {
-    const { id } = router.query;
-    handleGetConstructionById(typeof id === "string" ? id : "");
-    handleGetToolsByCenterCostId(typeof id === "string" ? id : "");
     handleGetAllNames();
     handleGetAllResponsible();
-  }, []);
+  }, [handleGetAllNames, handleGetAllResponsible]);
+
+  useEffect(() => {
+    if (router.isReady) {
+      const { id } = router.query;
+      if (typeof id === "string") {
+        handleGetConstructionById(id);
+        handleGetToolsByCenterCostId(id);
+      }
+    }
+  }, [
+    router.isReady,
+    router.query,
+    handleGetConstructionById,
+    handleGetToolsByCenterCostId,
+  ]);
 
   async function onCreateTool(tool: ToolDTO) {
     await handlePostTool(tool);

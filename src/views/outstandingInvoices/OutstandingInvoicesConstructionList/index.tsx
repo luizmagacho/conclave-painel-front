@@ -313,12 +313,19 @@ function OutstandingInvoicesConstructionList() {
   }
 
   useEffect(() => {
-    const { id } = router.query;
-    handleGetConstructionById(typeof id === "string" ? id : "");
-    handleGetOutstandingInvoicesByCenterCostId(
-      typeof id === "string" ? id : ""
-    );
-  }, []);
+    if (router.isReady) {
+      const { id } = router.query;
+      if (typeof id === "string") {
+        handleGetConstructionById(id);
+        handleGetOutstandingInvoicesByCenterCostId(id);
+      }
+    }
+  }, [
+    router.isReady,
+    router.query,
+    handleGetConstructionById,
+    handleGetOutstandingInvoicesByCenterCostId,
+  ]);
 
   useEffect(() => {
     handleSumTotalValueByFilter(

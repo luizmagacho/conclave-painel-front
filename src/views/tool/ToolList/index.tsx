@@ -116,11 +116,10 @@ function ToolList() {
   }
 
   useEffect(() => {
-    const { id } = router.query;
     handleGetTools();
     handleGetAllNames();
     handleGetAllResponsible();
-  }, []);
+  }, [handleGetTools, handleGetAllNames, handleGetAllResponsible]);
 
   async function onCreateTool(tool: ToolDTO) {
     await handlePostTool(tool);

@@ -499,9 +499,16 @@ function PurchaseUpdate() {
   useEffect(() => {
     handleGetAllShortenedName();
     handleGetAllMaterials();
-    const { id } = router.query;
-    handleGetPurchaseById(typeof id === "string" ? id : "");
-  }, []);
+  }, [handleGetAllShortenedName, handleGetAllMaterials]);
+
+  useEffect(() => {
+    if (router.isReady) {
+      const { id } = router.query;
+      if (typeof id === "string") {
+        handleGetPurchaseById(id);
+      }
+    }
+  }, [router.isReady, router.query, handleGetPurchaseById]);
 
   useEffect(() => {
     setLoading(true);
