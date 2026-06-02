@@ -58,10 +58,10 @@ function UserUpdateDialog({
   }, [data, profiles]);
 
   useEffect(() => {
-    setUpdatedUser({
-      ...updatedUser,
+    setUpdatedUser((prev) => ({
+      ...prev,
       profiles: updatedProfiles,
-    });
+    }));
   }, [updatedProfiles]);
 
   function validateFields() {

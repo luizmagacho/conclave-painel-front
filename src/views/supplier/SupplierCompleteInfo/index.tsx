@@ -125,7 +125,8 @@ function SupplierCompleteInfo() {
     if (router.isReady && typeof id === "string") {
       handleGetSupplierById(id);
     }
-  }, [router.isReady, id, handleGetSupplierById]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady, id]);
 
   useEffect(() => {
     setLoading(true);

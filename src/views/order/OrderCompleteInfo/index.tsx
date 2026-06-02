@@ -171,7 +171,8 @@ function OrderCompleteInfo() {
     if (router.isReady && typeof orderId === "string") {
       handleGetOrderById(orderId);
     }
-  }, [router.isReady, orderId, handleGetOrderById]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady, orderId]);
 
   useEffect(() => {
     setLoading(true);

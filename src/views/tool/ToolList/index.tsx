@@ -119,7 +119,8 @@ function ToolList() {
     handleGetTools();
     handleGetAllNames();
     handleGetAllResponsible();
-  }, [handleGetTools, handleGetAllNames, handleGetAllResponsible]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function onCreateTool(tool: ToolDTO) {
     await handlePostTool(tool);

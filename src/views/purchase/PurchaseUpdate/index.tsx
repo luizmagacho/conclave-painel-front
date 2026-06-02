@@ -499,7 +499,8 @@ function PurchaseUpdate() {
   useEffect(() => {
     handleGetAllShortenedName();
     handleGetAllMaterials();
-  }, [handleGetAllShortenedName, handleGetAllMaterials]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { id } = router.query;
 
@@ -507,7 +508,8 @@ function PurchaseUpdate() {
     if (router.isReady && typeof id === "string") {
       handleGetPurchaseById(id);
     }
-  }, [router.isReady, id, handleGetPurchaseById]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady, id]);
 
   useEffect(() => {
     setLoading(true);

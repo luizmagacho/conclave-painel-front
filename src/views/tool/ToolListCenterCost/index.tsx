@@ -111,7 +111,8 @@ function ToolListCenterCost() {
   useEffect(() => {
     handleGetAllNames();
     handleGetAllResponsible();
-  }, [handleGetAllNames, handleGetAllResponsible]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { id } = router.query;
 
@@ -120,11 +121,10 @@ function ToolListCenterCost() {
       handleGetConstructionById(id);
       handleGetToolsByCenterCostId(id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     router.isReady,
     id,
-    handleGetConstructionById,
-    handleGetToolsByCenterCostId,
   ]);
 
   async function onCreateTool(tool: ToolDTO) {

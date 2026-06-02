@@ -28,6 +28,7 @@ interface OptionType {
 function CostList() {
   const role = Cookies.get("portal.role");
   const router = useRouter();
+  const { id } = router.query;
   const [currCost, setCurrCost] = useState<Cost | null>(null);
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
@@ -94,10 +95,12 @@ function CostList() {
   }
 
   useEffect(() => {
-    const { id } = router.query;
-    handleGetConstructionById(typeof id === "string" ? id : "");
-    handleGetCostsByCenterCostId(typeof id === "string" ? id : "");
-  }, []);
+    if (router.isReady && typeof id === "string") {
+      handleGetConstructionById(id);
+      handleGetCostsByCenterCostId(id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady, id]);
 
   const formatCurrency = (value: number | null) => {
     if (!value) {

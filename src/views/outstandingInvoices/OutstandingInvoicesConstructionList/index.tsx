@@ -319,11 +319,10 @@ function OutstandingInvoicesConstructionList() {
       handleGetConstructionById(id);
       handleGetOutstandingInvoicesByCenterCostId(id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     router.isReady,
     id,
-    handleGetConstructionById,
-    handleGetOutstandingInvoicesByCenterCostId,
   ]);
 
   useEffect(() => {
