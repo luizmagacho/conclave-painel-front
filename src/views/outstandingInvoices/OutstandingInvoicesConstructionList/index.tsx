@@ -312,17 +312,16 @@ function OutstandingInvoicesConstructionList() {
     setAdditionalDetailsSearch(additionalDetails);
   }
 
+  const { id } = router.query;
+
   useEffect(() => {
-    if (router.isReady) {
-      const { id } = router.query;
-      if (typeof id === "string") {
-        handleGetConstructionById(id);
-        handleGetOutstandingInvoicesByCenterCostId(id);
-      }
+    if (router.isReady && typeof id === "string") {
+      handleGetConstructionById(id);
+      handleGetOutstandingInvoicesByCenterCostId(id);
     }
   }, [
     router.isReady,
-    router.query,
+    id,
     handleGetConstructionById,
     handleGetOutstandingInvoicesByCenterCostId,
   ]);

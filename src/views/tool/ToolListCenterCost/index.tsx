@@ -113,17 +113,16 @@ function ToolListCenterCost() {
     handleGetAllResponsible();
   }, [handleGetAllNames, handleGetAllResponsible]);
 
+  const { id } = router.query;
+
   useEffect(() => {
-    if (router.isReady) {
-      const { id } = router.query;
-      if (typeof id === "string") {
-        handleGetConstructionById(id);
-        handleGetToolsByCenterCostId(id);
-      }
+    if (router.isReady && typeof id === "string") {
+      handleGetConstructionById(id);
+      handleGetToolsByCenterCostId(id);
     }
   }, [
     router.isReady,
-    router.query,
+    id,
     handleGetConstructionById,
     handleGetToolsByCenterCostId,
   ]);

@@ -501,14 +501,13 @@ function PurchaseUpdate() {
     handleGetAllMaterials();
   }, [handleGetAllShortenedName, handleGetAllMaterials]);
 
+  const { id } = router.query;
+
   useEffect(() => {
-    if (router.isReady) {
-      const { id } = router.query;
-      if (typeof id === "string") {
-        handleGetPurchaseById(id);
-      }
+    if (router.isReady && typeof id === "string") {
+      handleGetPurchaseById(id);
     }
-  }, [router.isReady, router.query, handleGetPurchaseById]);
+  }, [router.isReady, id, handleGetPurchaseById]);
 
   useEffect(() => {
     setLoading(true);

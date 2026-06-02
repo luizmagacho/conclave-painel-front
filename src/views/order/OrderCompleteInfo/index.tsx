@@ -165,14 +165,13 @@ function OrderCompleteInfo() {
     );
   };
 
+  const { id: orderId } = router.query;
+
   useEffect(() => {
-    if (router.isReady) {
-      const { id } = router.query;
-      if (typeof id === "string") {
-        handleGetOrderById(id);
-      }
+    if (router.isReady && typeof orderId === "string") {
+      handleGetOrderById(orderId);
     }
-  }, [router.isReady, router.query, handleGetOrderById]);
+  }, [router.isReady, orderId, handleGetOrderById]);
 
   useEffect(() => {
     setLoading(true);
