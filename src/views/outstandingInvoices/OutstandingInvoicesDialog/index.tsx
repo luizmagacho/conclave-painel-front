@@ -136,41 +136,6 @@ function OutstandingInvoicesDialog({
     handleGetAllCategories();
   }, []);
 
-  // ── Sync dates ────────────────────────────────────────────────────────────
-  useEffect(() => {
-    setUpdatedInvoice((prev) => ({
-      ...prev,
-      purchaseDate:
-        formatDateToYYYYMMDD(updatedPurchaseDate) || prev.purchaseDate,
-      paymentDeadline:
-        formatDateToYYYYMMDD(updatedPaymentDeadline) || prev.paymentDeadline,
-    }));
-  }, [updatedPurchaseDate, updatedPaymentDeadline]);
-
-  // ── Sync construction + category ──────────────────────────────────────────
-  useEffect(() => {
-    if (checkedConstruction) {
-      const isString = typeof checkedConstruction === "string";
-      setUpdatedInvoice((prev) => ({
-        ...prev,
-        centerCostId: isString ? prev.centerCostId : (checkedConstruction.id || prev.centerCostId),
-        centerCost: isString ? checkedConstruction : (checkedConstruction.code || prev.centerCost),
-        bankBranch: isString ? prev.bankBranch : (checkedConstruction.bankBranch || prev.bankBranch || ""),
-        localBank: isString ? prev.localBank : (checkedConstruction.local || prev.localBank || ""),
-        costCategory: selectedCategory || prev.costCategory,
-      }));
-    } else {
-      setUpdatedInvoice((prev) => ({
-        ...prev,
-        centerCostId: "",
-        centerCost: "",
-        bankBranch: "",
-        localBank: "",
-        costCategory: selectedCategory || prev.costCategory,
-      }));
-    }
-  }, [checkedConstruction, selectedCategory]);
-
   useEffect(() => {
     if (allConstructions && allConstructions.length > 0) {
       const found = allConstructions.find((c) => c.id === updatedInvoice.centerCostId);
@@ -179,24 +144,6 @@ function OutstandingInvoicesDialog({
       }
     }
   }, [allConstructions, updatedInvoice.centerCostId]);
-
-  // ── Sync supplier ─────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (selectedSupplier) {
-      const name = typeof selectedSupplier === "string"
-        ? selectedSupplier
-        : selectedSupplier.shortenedName;
-      setUpdatedInvoice((prev) => ({
-        ...prev,
-        vendorName: name,
-      }));
-    } else {
-      setUpdatedInvoice((prev) => ({
-        ...prev,
-        vendorName: "",
-      }));
-    }
-  }, [selectedSupplier]);
 
   // ── Fetch group installments ──────────────────────────────────────────────
   async function loadGroupInstallments() {
@@ -356,6 +303,24 @@ function OutstandingInvoicesDialog({
               onChange={(e: AutoCompleteChangeEvent) => {
                 setCheckedConstruction(e.value);
                 setInvalidCenterCost(false);
+                if (e.value) {
+                  const isString = typeof e.value === "string";
+                  setUpdatedInvoice((prev) => ({
+                    ...prev,
+                    centerCostId: isString ? prev.centerCostId : (e.value.id || prev.centerCostId),
+                    centerCost: isString ? e.value : (e.value.code || prev.centerCost),
+                    bankBranch: isString ? prev.bankBranch : (e.value.bankBranch || prev.bankBranch || ""),
+                    localBank: isString ? prev.localBank : (e.value.local || prev.localBank || ""),
+                  }));
+                } else {
+                  setUpdatedInvoice((prev) => ({
+                    ...prev,
+                    centerCostId: "",
+                    centerCost: "",
+                    bankBranch: "",
+                    localBank: "",
+                  }));
+                }
               }}
             />
             {invalidCenterCost && (
@@ -478,6 +443,18 @@ function OutstandingInvoicesDialog({
               onChange={(e: AutoCompleteChangeEvent) => {
                 setSelectedSupplier(e.value);
                 setInvalidVendorName(false);
+                if (e.value) {
+                  const name = typeof e.value === "string" ? e.value : e.value.shortenedName;
+                  setUpdatedInvoice((prev) => ({
+                    ...prev,
+                    vendorName: name || "",
+                  }));
+                } else {
+                  setUpdatedInvoice((prev) => ({
+                    ...prev,
+                    vendorName: "",
+                  }));
+                }
               }}
             />
             {invalidVendorName && (
@@ -497,7 +474,14 @@ function OutstandingInvoicesDialog({
           />
           <Calendar
             id="paymentDeadline"
-            onChange={(e) => setUpdatedPaymentDeadline(e.value || null)}
+            onChange={(e) => {
+              const val = e.value || null;
+              setUpdatedPaymentDeadline(val);
+              setUpdatedInvoice((prev) => ({
+                ...prev,
+                paymentDeadline: formatDateToYYYYMMDD(val) || "",
+              }));
+            }}
             style={{ height: "30px", fontSize: "0.8rem" }}
             value={updatedPaymentDeadline}
             locale="pt"
@@ -558,9 +542,13 @@ function OutstandingInvoicesDialog({
               value={selectedCategory}
               suggestions={categoryItems}
               completeMethod={categorySearch}
-              onChange={(e: AutoCompleteChangeEvent) =>
-                setSelectedCategory(e.value)
-              }
+              onChange={(e: AutoCompleteChangeEvent) => {
+                setSelectedCategory(e.value);
+                setUpdatedInvoice((prev) => ({
+                  ...prev,
+                  costCategory: e.value || "",
+                }));
+              }}
             />
           </div>
         </div>
