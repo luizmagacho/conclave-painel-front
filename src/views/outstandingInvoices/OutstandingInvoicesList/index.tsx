@@ -620,8 +620,8 @@ function OutstandingInvoicesList() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      <section className="flex flex-column gap-2 px-5 py-3 w-full" style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+    <>
+      <section className="flex flex-column gap-2 px-5 py-3 w-full">
         <div className="flex justify-between items-center w-full flex-shrink-0">
           {/* Botão "Adicionar" no canto esquerdo */}
           <h1 className="m-2">Contas a Pagar</h1>
@@ -746,7 +746,7 @@ function OutstandingInvoicesList() {
           stripedRows
           showGridlines
           scrollable
-          scrollHeight="500px"
+          scrollHeight="85vh"
           rows={10}
           tableStyle={{ minWidth: "50rem" }}
           totalRecords={totalElements}
@@ -837,7 +837,7 @@ function OutstandingInvoicesList() {
           />
         )}
       </section>
-    </div>
+    </>
   );
 
   function optionsBodyTemplate(outstandingInvoices: OutstandingInvoices) {
