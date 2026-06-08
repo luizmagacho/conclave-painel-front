@@ -93,12 +93,11 @@ function OutstadingInvoicesConstructionCreateDialog({
       userId: userId || "",
     });
     setInvalidVendorName(newOutstandingInvoices.vendorName === "");
-    setInvalidTotalAmount(!newOutstandingInvoices.totalAmount);
-    if (
-      (newOutstandingInvoices.totalAmount ||
-        newOutstandingInvoices.totalAmount !== null) &&
-      newOutstandingInvoices.vendorName !== ""
-    ) {
+    const isAmountInvalid =
+      newOutstandingInvoices.totalAmount === undefined ||
+      newOutstandingInvoices.totalAmount === null;
+    setInvalidTotalAmount(isAmountInvalid);
+    if (!isAmountInvalid && newOutstandingInvoices.vendorName !== "") {
       onCreate(newOutstandingInvoices);
       onHide();
     }

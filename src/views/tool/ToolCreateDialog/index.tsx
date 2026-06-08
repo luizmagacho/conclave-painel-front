@@ -39,7 +39,7 @@ function ToolCreateDialog({
     centerCostId: selectedConstruction?.id || "",
     bankBranchLocalBank: selectedConstruction?.bankBranch
       ? `${selectedConstruction?.bankBranch} - ${selectedConstruction?.local}`
-      : "" || "",
+      : "",
     payer: selectedConstruction?.client || "",
     typeCenterCost: selectedConstruction?.service || "",
     dateLoanFrom: "",

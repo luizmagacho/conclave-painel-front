@@ -114,7 +114,7 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
     try {
       const { content, totalElements } = await getOutstandingInvoices({
         page: page !== undefined ? page : 0,
-        size: 15,
+        size: 10,
         centerCost: centerCost || undefined,
         localBank: localBank || undefined,
         vendorName: vendorName || undefined,

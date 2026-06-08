@@ -32,7 +32,7 @@ function CostCreateDialog({ visible, onCreate, onHide }: CostCreateDialog) {
     centerCostId: selectedConstruction?.id || "",
     bankBranchLocalBank: selectedConstruction?.bankBranch
       ? `${selectedConstruction?.bankBranch} - ${selectedConstruction?.local}`
-      : "" || "",
+      : "",
     typeCenterCost: selectedConstruction?.service || "",
     issueDate: "",
     receiptDate: "",

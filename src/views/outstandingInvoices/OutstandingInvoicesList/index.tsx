@@ -437,11 +437,8 @@ function OutstandingInvoicesList() {
 
 
   const formatCurrency = (value: number) => {
-    if (!value) {
-      return value.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      });
+    if (value === undefined || value === null) {
+      return "-";
     }
     return (value / 100).toLocaleString("pt-BR", {
       style: "currency",
@@ -750,7 +747,7 @@ function OutstandingInvoicesList() {
           showGridlines
           scrollable
           scrollHeight="flex"
-          rows={15}
+          rows={10}
           tableStyle={{ minWidth: "50rem" }}
           totalRecords={totalElements}
           size="small"

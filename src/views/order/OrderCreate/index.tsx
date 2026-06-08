@@ -252,7 +252,7 @@ function OrderCreate() {
       centerCost: selectedConstruction?.code || "",
       bankBranchLocalBank: selectedConstruction?.bankBranch
         ? `${selectedConstruction?.bankBranch} - ${selectedConstruction?.local}`
-        : "" || "",
+        : "",
 
       typeCenterCost: selectedConstruction?.service || "",
       payer: selectedConstruction?.client || "",
@@ -487,7 +487,7 @@ function OrderCreate() {
               type="text"
               field="name"
               value={newMaterial}
-              suggestions={materialsItems}
+              suggestions={materialsItems as any}
               completeMethod={materialSearch}
               onChange={(e: AutoCompleteChangeEvent) => {
                 setNewMaterial(e.value);

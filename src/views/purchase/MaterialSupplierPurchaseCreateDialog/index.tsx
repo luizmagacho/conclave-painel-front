@@ -88,7 +88,7 @@ function MaterialSupplierPurchaseCreateDialog({
               field="name"
               dropdown
               value={selectedMaterial}
-              suggestions={materialsItems}
+              suggestions={materialsItems as any}
               completeMethod={materialSearch}
               onChange={(e: AutoCompleteChangeEvent) =>
                 setSelectedMaterial(e.value)

@@ -300,7 +300,7 @@ function OutstandingInvoicesCreateDialog({
   // ── Validation & submit ───────────────────────────────────────────────────
   function validateAndSubmit() {
     const isVendorInvalid = !newInvoice.vendorName;
-    const isAmountInvalid = newInvoice.totalAmount === undefined || newInvoice.totalAmount === null || newInvoice.totalAmount < 0;
+    const isAmountInvalid = newInvoice.totalAmount === undefined || newInvoice.totalAmount === null;
     const isCenterCostInvalid = !newInvoice.centerCost;
     const isDeadlineInvalid =
       paymentMode === "single" && !newInvoice.paymentDeadline;

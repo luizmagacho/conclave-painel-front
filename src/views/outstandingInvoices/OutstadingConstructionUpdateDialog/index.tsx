@@ -110,16 +110,15 @@ function OutstandingConstructionUpdateDialog({
         updatedOutstandingInvoices.vendorName === ""
     );
     console.log(updatedOutstandingInvoices.totalAmount);
-    setInvalidTotalAmount(
-      !updatedOutstandingInvoices.totalAmount ||
-        updatedOutstandingInvoices.totalAmount < 0
-    );
+    const isAmountInvalid =
+      updatedOutstandingInvoices.totalAmount === undefined ||
+      updatedOutstandingInvoices.totalAmount === null;
+    setInvalidTotalAmount(isAmountInvalid);
 
     if (
-      (updatedOutstandingInvoices.totalAmount ||
-        updatedOutstandingInvoices.totalAmount >= 0) &&
-      (updatedOutstandingInvoices.vendorName ||
-        updatedOutstandingInvoices.vendorName !== "")
+      !isAmountInvalid &&
+      updatedOutstandingInvoices.vendorName &&
+      updatedOutstandingInvoices.vendorName !== ""
     ) {
       onUpdate(updatedOutstandingInvoices);
       onHide();

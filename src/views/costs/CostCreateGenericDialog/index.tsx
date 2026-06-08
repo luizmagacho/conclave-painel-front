@@ -123,7 +123,7 @@ function CostCreateGenericDialog({
       centerCost: selectedConstruction?.code || "",
       bankBranchLocalBank: selectedConstruction?.bankBranch
         ? `${selectedConstruction?.bankBranch} - ${selectedConstruction?.local}`
-        : "" || "",
+        : "",
       typeCenterCost: selectedConstruction?.service || "",
       payer: selectedConstruction?.client || "",
     }));

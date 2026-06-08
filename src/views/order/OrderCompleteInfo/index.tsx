@@ -506,7 +506,7 @@ function OrderCompleteInfo() {
               type="text"
               field="name"
               value={updatedMaterial}
-              suggestions={materialsItems}
+              suggestions={materialsItems as any}
               completeMethod={materialSearch}
               onChange={(e: AutoCompleteChangeEvent) => {
                 setUpdatedMaterial(e.value);

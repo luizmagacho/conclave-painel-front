@@ -678,7 +678,7 @@ function PurchasePost() {
               type="text"
               field="name"
               value={newMaterialPurchase}
-              suggestions={materialsItems}
+              suggestions={materialsItems as any}
               completeMethod={materialSearch}
               onChange={(e: AutoCompleteChangeEvent) => {
                 setNewMaterialPurchase(e.value);

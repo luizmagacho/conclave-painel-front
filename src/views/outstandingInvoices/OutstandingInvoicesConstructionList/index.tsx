@@ -353,14 +353,8 @@ function OutstandingInvoicesConstructionList() {
   };
 
   const formatCurrency = (value: number) => {
-    if (value < 0) {
+    if (value === undefined || value === null) {
       return "-";
-    }
-    if (value === 0) {
-      return value.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      });
     }
     return (value / 100).toLocaleString("pt-BR", {
       style: "currency",
@@ -628,7 +622,7 @@ function OutstandingInvoicesConstructionList() {
           loading={loading}
           stripedRows
           showGridlines
-          rows={15}
+          rows={10}
           tableStyle={{ minWidth: "50rem" }}
           totalRecords={totalElements}
           size="small"

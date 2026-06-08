@@ -263,7 +263,7 @@ function PaymentCreateForm({
       centerCost: selectedConstruction?.code || "",
       bankBranchLocalBank: selectedConstruction?.bankBranch
         ? `${selectedConstruction?.bankBranch} - ${selectedConstruction?.local}`
-        : "" || "",
+        : "",
 
       typeCenterCost: selectedConstruction?.service || "",
       payer: selectedConstruction?.client || "",
@@ -386,7 +386,7 @@ function PaymentCreateForm({
           <div className="flex flex-column md:flex-row gap-1 w-11/12">
             <div className="flex flex-column gap-1 w-full">
               <AutoComplete
-                suggestions={allSupplierItems}
+                suggestions={allSupplierItems as any}
                 dropdown
                 field="shortenedName"
                 style={{ height: "30px", fontSize: "0.75rem" }}

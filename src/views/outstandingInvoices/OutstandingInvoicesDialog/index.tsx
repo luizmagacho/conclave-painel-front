@@ -225,7 +225,7 @@ function OutstandingInvoicesDialog({
     const isVendorInvalid =
       !updatedInvoice.vendorName || updatedInvoice.vendorName === "";
     const isAmountInvalid =
-      updatedInvoice.totalAmount === undefined || updatedInvoice.totalAmount === null || updatedInvoice.totalAmount < 0;
+      updatedInvoice.totalAmount === undefined || updatedInvoice.totalAmount === null;
     const isCenterCostInvalid =
       !updatedInvoice.centerCost || updatedInvoice.centerCost === "";
 
