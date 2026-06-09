@@ -127,8 +127,14 @@ function OutstandingInvoicesConstructionList() {
   ) {
     await handlePostOutstandingInvoices(outstandingInvoices);
     const { id } = router.query;
+    const currentPage = Math.floor(first / 10);
     handleGetOutstandingInvoicesByCenterCostId(
-      typeof id === "string" ? id : ""
+      typeof id === "string" ? id : "",
+      currentPage,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
     );
     handleGetConstructionById(typeof id === "string" ? id : "");
   }
@@ -142,9 +148,10 @@ function OutstandingInvoicesConstructionList() {
   ) {
     await handleUpdateOutstandingInvoices(outstandingInvoices);
     const { id } = router.query;
+    const currentPage = Math.floor(first / 10);
     handleGetOutstandingInvoicesByCenterCostId(
       typeof id === "string" ? id : "",
-      0,
+      currentPage,
       vendorNameSearch,
       paymentDeadlineFromSearch,
       paymentDeadlineToSearch,
@@ -169,8 +176,14 @@ function OutstandingInvoicesConstructionList() {
   async function onDeleteOutstandingInvoices(outstandingInvoicesId: string) {
     const { id } = router.query;
     await handleDeleteOutstandingInvoices(outstandingInvoicesId);
+    const currentPage = Math.floor(first / 10);
     handleGetOutstandingInvoicesByCenterCostId(
-      typeof id === "string" ? id : ""
+      typeof id === "string" ? id : "",
+      currentPage,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
     );
   }
 
@@ -181,6 +194,7 @@ function OutstandingInvoicesConstructionList() {
 
   function onVendorNameSearch(vendorName: string) {
     const { id } = router.query;
+    setFirst(0);
     handleGetOutstandingInvoicesByCenterCostId(
       typeof id === "string" ? id : "",
       0,
@@ -206,6 +220,7 @@ function OutstandingInvoicesConstructionList() {
   function onPaymentDeadlineFromSearch(paymentDeadlineFrom: string) {
     setPaymentDeadlineFromSearch(paymentDeadlineFrom);
     const { id } = router.query;
+    setFirst(0);
     handleGetOutstandingInvoicesByCenterCostId(
       typeof id === "string" ? id : "",
       0,
@@ -227,6 +242,7 @@ function OutstandingInvoicesConstructionList() {
   function onChangePaymentDeadlineFrom(paymentDeadlineFrom: string) {
     setPaymentDeadlineFromSearch(paymentDeadlineFrom);
     const { id } = router.query;
+    setFirst(0);
     handleGetOutstandingInvoicesByCenterCostId(
       typeof id === "string" ? id : "",
       0,
@@ -248,6 +264,7 @@ function OutstandingInvoicesConstructionList() {
   function onPaymentDeadlineToSearch(paymentDeadlineTo: string) {
     setPaymentDeadlineToSearch(paymentDeadlineTo);
     const { id } = router.query;
+    setFirst(0);
     handleGetOutstandingInvoicesByCenterCostId(
       typeof id === "string" ? id : "",
       0,
@@ -269,6 +286,7 @@ function OutstandingInvoicesConstructionList() {
   function onChangePaymentDeadlineTo(paymentDeadlineTo: string) {
     setPaymentDeadlineToSearch(paymentDeadlineTo);
     const { id } = router.query;
+    setFirst(0);
     handleGetOutstandingInvoicesByCenterCostId(
       typeof id === "string" ? id : "",
       0,
@@ -290,12 +308,13 @@ function OutstandingInvoicesConstructionList() {
 
   function onAdditionalDetailsSearch(additionalDetails: string) {
     const { id } = router.query;
+    setFirst(0);
     handleGetOutstandingInvoicesByCenterCostId(
       typeof id === "string" ? id : "",
       0,
       vendorNameSearch,
       paymentDeadlineFromSearch,
-      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
       additionalDetails
     );
     handleSumTotalValueByFilter(

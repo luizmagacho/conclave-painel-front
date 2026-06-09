@@ -41,7 +41,7 @@ interface OutstandingInvoicesProps {
   handleGetOutstandingInvoicesByCenterCostId: (
     centerCostId: string,
     page?: number,
-    centerCost?: string,
+    vendorName?: string,
     paymentDeadlineFrom?: string,
     paymentDeadlineTo?: string,
     additionalDetails?: string
@@ -136,7 +136,7 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
   async function handleGetOutstandingInvoicesByCenterCostId(
     centerCostId: string,
     page: number = 0,
-    centerCost?: string,
+    vendorName?: string,
     paymentDeadlineFrom?: string,
     paymentDeadlineTo?: string,
     additionalDetails?: string
@@ -147,7 +147,7 @@ export const OutstandingInvoicesProvider = ({ children }: ProviderProps) => {
         await getOutstandingInvoicesByCenterCostId(centerCostId, {
           page,
           size: 10,
-          centerCost,
+          vendorName,
           paymentDeadlineFrom,
           paymentDeadlineTo,
           additionalDetails,

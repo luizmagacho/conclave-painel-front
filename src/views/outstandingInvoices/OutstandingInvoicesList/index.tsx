@@ -87,7 +87,7 @@ function OutstandingInvoicesList() {
   ) {
     await handlePostOutstandingInvoices(outstandingInvoices);
     handleGetOutstandingInvoices(
-      0,
+      currentPage,
       centerCostSearch,
       localBranchSearch,
       vendorNameSearch,
@@ -150,7 +150,7 @@ function OutstandingInvoicesList() {
     await handleDeleteOutstandingInvoices(outstandingInvoicesId);
 
     handleGetOutstandingInvoices(
-      first,
+      currentPage,
       centerCostSearch,
       localBranchSearch,
       vendorNameSearch,
@@ -227,6 +227,8 @@ function OutstandingInvoicesList() {
   };
 
   function onCenterCostSearch(centerCost: string) {
+    setFirst(0);
+    setCurrentPage(0);
     handleGetOutstandingInvoices(
       0,
       centerCost,
@@ -252,6 +254,8 @@ function OutstandingInvoicesList() {
   }
 
   function onLocalBranchSearch(localBranch: string) {
+    setFirst(0);
+    setCurrentPage(0);
     handleGetOutstandingInvoices(
       0,
       centerCostSearch,
@@ -277,6 +281,8 @@ function OutstandingInvoicesList() {
   }
 
   function onVendorNameSearch(vendorName: string) {
+    setFirst(0);
+    setCurrentPage(0);
     handleGetOutstandingInvoices(
       0,
       centerCostSearch,
@@ -303,6 +309,8 @@ function OutstandingInvoicesList() {
 
   function onPaymentDeadlineFromSearch(paymentDeadlineFrom: string) {
     setPaymentDeadlineFromSearch(paymentDeadlineFrom);
+    setFirst(0);
+    setCurrentPage(0);
     handleGetOutstandingInvoices(
       0,
       centerCostSearch,
@@ -326,6 +334,8 @@ function OutstandingInvoicesList() {
 
   function onChangePaymentDeadlineFrom(paymentDeadlineFrom: string) {
     setPaymentDeadlineFromSearch(paymentDeadlineFrom);
+    setFirst(0);
+    setCurrentPage(0);
     handleGetOutstandingInvoices(
       0,
       centerCostSearch,
@@ -348,6 +358,8 @@ function OutstandingInvoicesList() {
 
   function onPaymentDeadlineToSearch(paymentDeadlineTo: string) {
     setPaymentDeadlineToSearch(paymentDeadlineTo);
+    setFirst(0);
+    setCurrentPage(0);
     handleGetOutstandingInvoices(
       0,
       centerCostSearch,
@@ -370,6 +382,8 @@ function OutstandingInvoicesList() {
 
   function onChangePaymentDeadlineTo(paymentDeadlineTo: string) {
     setPaymentDeadlineToSearch(paymentDeadlineTo);
+    setFirst(0);
+    setCurrentPage(0);
     handleGetOutstandingInvoices(
       0,
       centerCostSearch,
@@ -391,6 +405,8 @@ function OutstandingInvoicesList() {
   }
 
   function onAdditionalDetailsSearch(additionalDetails: string) {
+    setFirst(0);
+    setCurrentPage(0);
     handleGetOutstandingInvoices(
       0,
       centerCostSearch,
