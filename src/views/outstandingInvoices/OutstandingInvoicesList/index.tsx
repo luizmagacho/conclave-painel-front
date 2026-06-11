@@ -856,11 +856,48 @@ function OutstandingInvoicesList() {
     </>
   );
 
+  async function togglePaymentStatus(invoice: OutstandingInvoices) {
+    const updated = {
+      ...invoice,
+      paymentStatus: !invoice.paymentStatus,
+      userId: localStorage.getItem("portal.id") || ""
+    };
+    await handleUpdateOutstandingInvoices(updated);
+    handleGetOutstandingInvoices(
+      currentPage,
+      centerCostSearch,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch,
+      undefined
+    );
+    handleSumTotalValueByFilter(
+      centerCostSearch,
+      localBranchSearch,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
+    handleGetAllCategories();
+  }
+
   function optionsBodyTemplate(outstandingInvoices: OutstandingInvoices) {
     return (
       <div className="flex gap-2 justify-content-center align-items-center">
         {(role === "Administrador" || role === "Contas") && (
           <>
+            <Button
+              icon={outstandingInvoices.paymentStatus ? "pi pi-check-circle" : "pi pi-circle"}
+              tooltip={outstandingInvoices.paymentStatus ? "Desmarcar como Pago" : "Confirmar Pagamento"}
+              tooltipOptions={{ position: "top", className: "text-xs" }}
+              size="small"
+              text
+              style={{ color: outstandingInvoices.paymentStatus ? "#22c55e" : "#64748b", padding: "4px 8px", minWidth: "auto" }}
+              onClick={() => togglePaymentStatus(outstandingInvoices)}
+            />
             <Button
               icon="pi pi-pencil"
               tooltip="Editar"

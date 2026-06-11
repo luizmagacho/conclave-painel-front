@@ -79,23 +79,7 @@ function OutstandingInvoicesConstructionList() {
     useContext(ConstructionContext);
   const [first, setFirst] = useState<number>(0);
 
-  const options: Options[] = [
-    {
-      ariaLabel: "Editar",
-      label: "Editar",
-      onClick: openDialog,
-    },
-    {
-      ariaLabel: "Excluir",
-      label: "Excluir",
-      onClick: openDeleteDialog,
-    },
-  ];
 
-  const columnBodyOptions = {
-    options: (outstandingInvoices: OutstandingInvoices) =>
-      optionsBodyTemplate(options, outstandingInvoices),
-  };
 
   function openDialog(outstandingInvoices: OutstandingInvoices) {
     setCurrOutstandingInvoices(outstandingInvoices);
@@ -682,7 +666,7 @@ function OutstandingInvoicesConstructionList() {
             className="smaller-text"
           />
 
-          <Column header="Opções" body={columnBodyOptions.options} />
+          <Column header="Opções" body={optionsBodyTemplate} />
         </DataTable>
         <Paginator
           first={first}
@@ -740,31 +724,63 @@ function OutstandingInvoicesConstructionList() {
     </>
   );
 
+  async function togglePaymentStatus(invoice: OutstandingInvoices) {
+    const updated = {
+      ...invoice,
+      paymentStatus: !invoice.paymentStatus,
+      userId: localStorage.getItem("portal.id") || ""
+    };
+    await handleUpdateOutstandingInvoices(updated);
+    const { id } = router.query;
+    const currentPage = Math.floor(first / 10);
+    handleGetOutstandingInvoicesByCenterCostId(
+      typeof id === "string" ? id : "",
+      currentPage,
+      vendorNameSearch,
+      paymentDeadlineFromSearch,
+      paymentDeadlineToSearch,
+      additionalDetailsSearch
+    );
+    handleGetConstructionById(typeof id === "string" ? id : "");
+  }
+
   function optionsBodyTemplate(
-    elements: Options[],
     outstandingInvoices: OutstandingInvoices
   ) {
     return (
-      <div className="flex gap-2">
-        {elements.map((el, index) => {
-          return (
-            <>
-              {(role === "Administrador" || role === "Contas") && (
-                <Button
-                  key={index}
-                  icon={el.icon}
-                  label={el.label}
-                  aria-label={el.ariaLabel}
-                  tooltip={el.tooltip}
-                  tooltipOptions={{ position: "top", className: "text-xs" }}
-                  size="small"
-                  severity="danger"
-                  onClick={() => el.onClick(outstandingInvoices)}
-                />
-              )}
-            </>
-          );
-        })}
+      <div className="flex gap-2 justify-content-center align-items-center">
+        {(role === "Administrador" || role === "Contas") && (
+          <>
+            <Button
+              icon={outstandingInvoices.paymentStatus ? "pi pi-check-circle" : "pi pi-circle"}
+              tooltip={outstandingInvoices.paymentStatus ? "Desmarcar como Pago" : "Confirmar Pagamento"}
+              tooltipOptions={{ position: "top", className: "text-xs" }}
+              size="small"
+              text
+              style={{ color: outstandingInvoices.paymentStatus ? "#22c55e" : "#64748b", padding: "4px 8px", minWidth: "auto" }}
+              onClick={() => togglePaymentStatus(outstandingInvoices)}
+            />
+            <Button
+              icon="pi pi-pencil"
+              tooltip="Editar"
+              tooltipOptions={{ position: "top", className: "text-xs" }}
+              size="small"
+              text
+              style={{ color: "var(--cor-primaria)", padding: "4px 8px", minWidth: "auto" }}
+              onClick={() => openDialog(outstandingInvoices)}
+            />
+            <Button
+              icon="pi pi-trash"
+              tooltip="Excluir"
+              tooltipOptions={{ position: "top", className: "text-xs" }}
+              size="small"
+              text
+              severity="danger"
+              style={{ padding: "4px 8px", minWidth: "auto" }}
+              onClick={() => openDeleteDialog(outstandingInvoices)}
+            />
+          </>
+        )}
       </div>
     );
   }

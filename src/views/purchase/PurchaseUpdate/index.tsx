@@ -397,7 +397,8 @@ function PurchaseUpdate() {
         _filteredSuppliers = allSuppliersShortenedName.filter((supplier) => {
           return supplier.shortenedName
             .toLocaleUpperCase()
-            .startsWith(event.query.toLocaleUpperCase());
+            .split(/[\s()\-./\\,]+/)
+            .some((word) => word.startsWith(event.query.toLocaleUpperCase()));
         });
       }
       setAllSupplierItems(_filteredSuppliers);
