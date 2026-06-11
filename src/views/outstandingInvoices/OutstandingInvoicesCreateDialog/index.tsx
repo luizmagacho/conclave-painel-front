@@ -280,7 +280,8 @@ function OutstandingInvoicesCreateDialog({
         : allSuppliersShortenedName.filter((s) =>
             s.shortenedName
               .toLocaleUpperCase()
-              .startsWith(event.query.toLocaleUpperCase())
+              .split(/[\s()\-./\\,]+/)
+              .some((word) => word.startsWith(event.query.toLocaleUpperCase()))
           );
       setSupplierItems(filtered);
     }, 150);

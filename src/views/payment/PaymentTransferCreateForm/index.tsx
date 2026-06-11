@@ -105,7 +105,8 @@ function PaymentTransferCreateForm({
         _filteredSuppliers = allSuppliers.filter((supplier) => {
           return supplier.shortenedName
             .toLocaleUpperCase()
-            .startsWith(event.query.toLocaleUpperCase());
+            .split(/[\s()\-./\\,]+/)
+            .some((word) => word.startsWith(event.query.toLocaleUpperCase()));
         });
       }
       setAllSupplierItems(_filteredSuppliers);
