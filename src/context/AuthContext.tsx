@@ -37,7 +37,11 @@ export const AuthProvider = ({ children }: ProviderProps) => {
     try {
       const resp = await login(loginDTO);
       if (resp) {
-        const cookieParams = {};
+        const cookieParams = {
+          path: "/",
+          sameSite: "lax" as const,
+          secure: process.env.NODE_ENV === "production",
+        };
         localStorage.setItem("portal.id", resp.id);
         localStorage.setItem("portal.name", resp.name);
         localStorage.setItem("portal.username", resp.username);
@@ -76,13 +80,13 @@ export const AuthProvider = ({ children }: ProviderProps) => {
   }
 
   function logout() {
-    destroyCookie(null, "portal.token", {});
+    destroyCookie(null, "portal.token", { path: "/" });
     localStorage.clear();
     router.push("/");
   }
 
   function softLogout() {
-    destroyCookie(null, "portal.token", {});
+    destroyCookie(null, "portal.token", { path: "/" });
     localStorage.clear();
   }
 

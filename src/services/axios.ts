@@ -2,22 +2,33 @@ import axios from "axios";
 import { destroyCookie, parseCookies } from "nookies";
 
 export function getAPIClient(ctx?: any) {
-  const { "portal.token": token } = parseCookies(ctx);
   const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BACKEND_ENDPOINT_API,
   });
 
-  if (token) {
-    api.defaults.headers["Authorization"] = `Bearer ${token}`;
-  }
+  api.interceptors.request.use(
+    (config) => {
+      const { "portal.token": token } = parseCookies(ctx);
+      if (token) {
+        config.headers["Authorization"] = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+
   api.interceptors.response.use(
     (response) => {
       return response;
     },
     (error) => {
       if (error.response?.status === 401 || error.response?.status === 403) {
-        destroyCookie(null, "portal.token");
-        window.location.href = "/";
+        destroyCookie(ctx, "portal.token", { path: "/" });
+        if (typeof window !== "undefined") {
+          window.location.href = "/";
+        }
       }
       return Promise.reject(error.response);
     }
