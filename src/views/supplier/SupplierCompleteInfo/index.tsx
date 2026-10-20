@@ -90,6 +90,13 @@ function SupplierCompleteInfo() {
 
   const router = useRouter();
 
+  useEffect(() => {
+    if (router.isReady && router.query.edit === "true") {
+      setShowDisabled(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady]);
+
   function validateFields() {
     setInvalidCpf(
       !updatedSupplier.cpf ||
@@ -205,7 +212,9 @@ function SupplierCompleteInfo() {
       <section className="flex flex-column gap-1 p-5 w-full">
         <div className="flex align-items-center justify-start w-full gap-2">
           <h1 className="text-xl m-0">Visualizar Fornecedor</h1>
-          {role === "Administrador" && (
+          {(role === "Administrador" ||
+            role === "Compras" ||
+            role === "Contas") && (
             <Button
               style={{
                 backgroundColor: "var(--cor-primaria)",
