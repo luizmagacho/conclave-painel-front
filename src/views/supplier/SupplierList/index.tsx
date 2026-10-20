@@ -85,6 +85,12 @@ function SupplierList() {
       onclick: openDetailsInfo,
     },
     {
+      ariaLabel: "Editar",
+      icon: "pi pi-pencil",
+      label: "Editar",
+      onclick: openEditInfo,
+    },
+    {
       ariaLabel: "Excluir",
       label: "Excluir",
       onclick: openDeleteDialog,
@@ -98,6 +104,11 @@ function SupplierList() {
   async function openDetailsInfo(supplier: Supplier) {
     await handleGetSupplierById(supplier.id);
     router.push(`/fornecedores/${supplier.id}`);
+  }
+
+  async function openEditInfo(supplier: Supplier) {
+    await handleGetSupplierById(supplier.id);
+    router.push(`/fornecedores/${supplier.id}?edit=true`);
   }
 
   function openCreatePage() {
@@ -316,7 +327,7 @@ function SupplierList() {
               {(role === "Administrador" ||
                 role === "Compras" ||
                 role === "Contas" ||
-                el.label !== "Excluir") && (
+                (el.label !== "Excluir" && el.label !== "Editar")) && (
                 <Button
                   key={index}
                   icon={el.icon}
